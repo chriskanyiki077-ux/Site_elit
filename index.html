@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Organisation</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
+header{background:linear-gradient(135deg,#ff6500,#ff9d00);color:white;text-align:center;padding:18px}
+nav{display:flex;overflow:auto;background:white;padding:7px;gap:5px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px #0002}
+button{border:0;border-radius:9px;padding:10px 13px;font-weight:bold;cursor:pointer}
+nav button{background:white;white-space:nowrap}
+main{max-width:1000px;margin:auto;padding:15px}
+section{display:none}
+section.active{display:block}
+.card,.member{background:white;border-radius:14px;padding:15px;margin-bottom:13px;box-shadow:0 2px 9px #0001}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.stat{background:linear-gradient(135deg,#ff6500,#ff9d00);color:white;border-radius:14px;padding:16px}
+.stat b{display:block;font-size:24px;margin-top:5px}
+.member h3{margin:0 0 6px;color:#e85d00}
+.points{font-size:21px;font-weight:bold}
+.rank{display:inline-block;background:#333;color:white;border-radius:20px;padding:4px 10px;margin:7px 0}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.plus{background:#18a957;color:white}
+.minus{background:#df3545;color:white}
+.orange{background:#ff7000;color:white}
+.blue{background:#1687e8;color:white}
+.dark{background:#333;color:white}
+.gray{background:#ddd}
+input,select{width:100%;padding:11px;margin:5px 0 10px;border:1px solid #ccc;border-radius:8px;font-size:15px}
+label{font-weight:bold}
+.small{font-size:13px;color:#666}
+.notice{background:#fff2df;padding:10px;border-radius:9px;margin:8px 0}
+.cash{text-align:center;font-size:30px;font-weight:bold;color:#159447}
+.history{background:#fafafa;border-left:4px solid #ff7000;padding:10px;border-radius:7px;margin:7px 0}
+table{width:100%;border-collapse:collapse}
+th,td{padding:9px;border-bottom:1px solid #ddd;text-align:left}
+@media(max-width:600px){
+ th,td{font-size:12px;padding:7px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🏢 MON ORGANISATION</h1>
+<p>Gestion des membres et des points</p>
+</header>
+
+<nav>
+<button onclick="show('accueil')">🏠 Accueil</button>
+<button onclick="show('membres')">👥 Membres</button>
+<button onclick="show('classement')">🏆 Classement</button>
+<button onclick="show('historique')">📜 Historique</button>
+<button onclick="show('caisse')">💰 Caisse</button>
+<button onclick="openLogin()">🔐 Admin</button>
+</nav>
+
+<main>
+
+<!-- ACCUEIL -->
+<section id="accueil" class="active">
+
+<div class="card">
+<h2>Bienvenue 👋</h2>
+<p>Consulte les membres, leurs points et leur rang.</p>
+</div>
+
+<div class="grid">
+<div class="stat">👥 Membres<b id="totalMembers">0</b></div>
+<div class="stat">🏆 Points<b id="totalPoints">0</b></div>
+<div class="stat">🟢 Présents<b id="totalPresent">0</b></div>
+<div class="stat">💰 Caisse<b id="totalCash">0 FC</b></div>
+</div>
+
+</section>
+
+
+<!-- MEMBRES -->
+<section id="membres">
+
+<div class="card">
+<h2>👥 Membres</h2>
+<input id="search" placeholder="🔎 Rechercher..." oninput="renderMembers()">
+</div>
+
+<div id="membersList"></div>
+
+</section>
+
+
+<!-- CLASSEMENT -->
+<section id="classement">
+
+<div class="card">
+<h2>🏆 Classement</h2>
+<div id="rankingList"></div>
+</div>
+
+</section>
+
+
+<!-- HISTORIQUE -->
+<section id="historique">
+
+<div class="card">
+<h2>📜 Historique</h2>
+<div id="historyList"></div>
+</div>
+
+</section>
+
+
+<!-- CAISSE -->
+<section id="caisse">
+
+<div class="card">
+<h2>💰 Caisse</h2>
+<div class="cash" id="cashPublic">0 FC</div>
+<p style="text-align:center">Solde actuel</p>
+</div>
+
+<div class="card">
+<h3>Mouvements</h3>
+<div id="cashHistory"></div>
+</div>
+
+</section>
+
+
+<!-- CONNEXION -->
+<section id="login">
+
+<div class="card" style="max-width:420px;margin:auto">
+
+<h2>🔐 Administration</h2>
+
+<label>Utilisateur</label>
+<input id="loginUser">
+
+<label>Mot de passe</label>
+<input id="loginPassword" type="password">
+
+<button class="orange" onclick="login()">Se connecter</button>
+
+<p id="loginMessage"></p>
+
+</div>
+
+</section>
+
+
+<!-- ADMINISTRATION -->
+<section id="admin">
+
+<div class="card">
+<h2>⚙️ Administration</h2>
+<p>Connecté : <b id="adminName"></b></p>
+<button class="dark" onclick="logout()">🚪 Déconnexion</button>
+</div>
+
+
+<!-- PAS GENERAL -->
+<div class="card">
+
+<h3>⚡ Pas général</h3>
+
+<div class="notice">
+Pas actuel :
+<strong id="stepDisplay">250</strong> points
+</div>
+
+<input id="stepInput" type="number" min="1"
+placeholder="Nouveau pas">
+
+<button class="orange" onclick="changeStep()">
+⚙️ Modifier le pas
+</button>
+
+<p class="small">
+Le même pas est utilisé pour tous les membres.
+</p>
+
+</div>
+
+
+<!-- MEMBRES ADMIN -->
+<div class="card">
+
+<h3>👥 Gestion rapide</h3>
+
+<div id="adminMembers"></div>
+
+</div>
+
+
+<!-- MODIFICATION MANUELLE -->
+<div class="card">
+
+<h3>✏️ Modification manuelle</h3>
+
+<select id="pointMember"></select>
+
+<input id="pointAmount"
+type="number"
+min="1"
+placeholder="Nombre de points">
+
+<input id="pointReason"
+placeholder="Motif">
+
+<div class="actions">
+
+<button class="plus" onclick="modifyPoints(1)">
+➕ Ajouter
+</button>
+
+<button class="minus" onclick="modifyPoints(-1)">
+➖ Retirer
+</button>
+
+</div>
+
+</div>
+
+
+<!-- RANG -->
+<div class="card">
+
+<h3>🎖️ Modifier le rang</h3>
+
+<select id="rankMember"></select>
+
+<select id="rankValue">
+<option>F</option>
+<option>E</option>
+<option>D</option>
+<option>C</option>
+<option>B</option>
+<option>A</option>
+<option>S</option>
+</select>
+
+<button class="orange" onclick="changeRank()">
+🎖️ Enregistrer
+</button>
+
+</div>
+
+
+<!-- PRESENCE -->
+<div class="card">
+
+<h3>🟢 Présence</h3>
+
+<select id="presenceMember"></select>
+
+<input id="presencePoints"
+type="number"
+min="1"
+placeholder="Points de présence">
+
+<button class="plus" onclick="markPresent()">
+🟢 Marquer présent
+</button>
+
+</div>
+
+
+<!-- CAISSE ADMIN -->
+<div class="card">
+
+<h3>💰 Gestion de la caisse</h3>
+
+<div class="cash" id="adminCash">0 FC</div>
+
+<input id="cashAmount"
+type="number"
+min="1"
+placeholder="Montant">
+
+<input id="cashReason"
+placeholder="Motif">
+
+<div class="actions">
+
+<button class="plus" onclick="cashMove(1)">
+➕ Ajouter
+</button>
+
+<button class="minus" onclick="cashMove(-1)">
+➖ Retirer
+</button>
+
+</div>
+
+</div>
+
+
+<!-- MOT DE PASSE -->
+<div class="card">
+
+<h3>🔑 Mot de passe</h3>
+
+<input id="oldPassword"
+type="password"
+placeholder="Ancien mot de passe">
+
+<input id="newPassword"
+type="password"
+placeholder="Nouveau mot de passe">
+
+<input id="confirmPassword"
+type="password"
+placeholder="Confirmer">
+
+<button class="blue" onclick="changePassword()">
+🔑 Changer le mot de passe
+</button>
+
+<p id="passwordMessage"></p>
+
+</div>
+
+
+<!-- AJOUT MEMBRE -->
+<div class="card">
+
+<h3>➕ Ajouter un membre</h3>
+
+<input id="newName" placeholder="Nom">
+
+<input id="newPoints"
+type="number"
+min="0"
+value="0"
+placeholder="Points">
+
+<select id="newRank">
+<option>F</option>
+<option>E</option>
+<option>D</option>
+<option>C</option>
+<option>B</option>
+<option>A</option>
+<option>S</option>
+</select>
+
+<button class="orange" onclick="addMember()">
+➕ Ajouter
+</button>
+
+</div>
+
+
+<!-- SUPPRESSION -->
+<div class="card">
+
+<h3>🗑️ Supprimer un membre</h3>
+
+<select id="deleteMember"></select>
+
+<button class="minus" onclick="deleteMember()">
+🗑️ Supprimer
+</button>
+
+</div>
+
+</section>
+
+</main>
+
+
+<script>
+
+/* ================================
+   DONNÉES
+================================ */
+
+const STORAGE="ORGANISATION_V4";
+
+const initialData={
+
+step:250,
+
+cash:0,
+
+members:[
+
+{
+name:"Ken",
+initial:8125,
+points:8375,
+rank:"A",
+present:false
+},
+
+{
+name:"Chris",
+initial:10500,
+points:10625,
+rank:"B",
+present:false
+},
+
+{
+name:"Ya Chris",
+initial:24125,
+points:24375,
+rank:"F",
+present:false
+},
+
+{
+name:"Mana",
+initial:17080,
+points:17205,
+rank:"A",
+present:false
+},
+
+{
+name:"Mani",
+initial:18250,
+points:17750,
+rank:"B",
+present:false
+},
+
+{
+name:"Ephraim",
+initial:11150,
+points:16275,
+rank:"C",
+present:false
+},
+
+{
+name:"Persis",
+initial:5175,
+points:5300,
+rank:"C",
+present:false
+},
+
+{
+name:"Olivier",
+initial:1750,
+points:1875,
+rank:"F",
+present:false
+}
+
+],
+
+history:[],
+
+cashHistory:[],
+
+admins:[
+
+{
+username:"admin",
+password:"1234",
+name:"Administrateur principal"
+},
+
+{
+username:"chef",
+password:"5678",
+name:"Chef de l'organisation"
+}
+
+]
+
+};
+
+
+/* ================================
+   CHARGEMENT
+================================ */
+
+let data=
+JSON.parse(localStorage.getItem(STORAGE))
+||initialData;
+
+let currentAdmin=null;
+
+
+/* ================================
+   OUTILS
+================================ */
+
+function save(){
+
+localStorage.setItem(
+STORAGE,
+JSON.stringify(data)
+);
+
+}
+
+
+function format(n){
+
+return Number(n)
+.toLocaleString("fr-FR");
+
+}
+
+
+function adminOnly(){
+
+if(!currentAdmin){
+
+alert("🔐 Cette action est réservée aux administrateurs.");
+
+return false;
+
+}
+
+return true;
+
+}
+
+
+/* ================================
+   NAVIGATION
+================================ */
+
+function show(id){
+
+document
+.querySelectorAll("main section")
+.forEach(s=>s.classList.remove("active"));
+
+document
+.getElementById(id)
+.classList.add("active");
+
+renderAll();
+
+}
+
+
+function openLogin(){
+
+show("login");
+
+}
+
+
+/* ================================
+   CONNEXION
+================================ */
+
+function login(){
+
+const username=
+document.getElementById("loginUser").value.trim();
+
+const password=
+document.getElementById("loginPassword").value;
+
+const admin=
+data.admins.find(
+a=>a.username===username
+&&
+a.password===password
+);
+
+if(!admin){
+
+document.getElementById("loginMessage")
+.textContent=
+"❌ Identifiants incorrects.";
+
+return;
+
+}
+
+currentAdmin=admin;
+
+document.getElementById("adminName")
+.textContent=admin.name;
+
+show("admin");
+
+}
+
+
+function logout(){
+
+currentAdmin=null;
+
+show("accueil");
+
+}
+
+
+/* ================================
+   HISTORIQUE
+================================ */
+
+function addHistory(
+member,
+type,
+points,
+reason
+){
+
+data.history.unshift({
+
+date:new Date()
+.toLocaleString("fr-FR"),
+
+member:member,
+
+type:type,
+
+points:points,
+
+reason:reason,
+
+author:currentAdmin
+?currentAdmin.name
+:"Système"
+
+});
+
+}
+
+
+/* ================================
+   PAS GENERAL
+================================ */
+
+function changeStep(){
+
+if(!adminOnly())return;
+
+const value=
+Number(
+document.getElementById("stepInput").value
+);
+
+if(
+!Number.isInteger(value)
+||
+value<=0
+){
+
+alert(
+"Le pas doit être un nombre entier supérieur à 0."
+);
+
+return;
+
+}
+
+data.step=value;
+
+document.getElementById(
+"stepInput"
+).value="";
+
+save();
+
+renderAll();
+
+}
+
+
+/* ================================
+   + / -
+================================ */
+
+function quickChange(index,sign){
+
+if(!adminOnly())return;
+
+const member=data.members[index];
+
+const amount=data.step;
+
+member.points=
+Math.max(
+0,
+member.points+(sign*amount)
+);
+
+addHistory(
+
+member.name,
+
+sign>0
+?"Bonus rapide"
+:"Sanction rapide",
+
+sign*amount,
+
+"Modification avec le pas général"
+
+);
+
+save();
+
+renderAll();
+
+}
+
+
+/* ================================
+   +1000 / -1000
+================================ */
+
+function bigChange(index,sign){
+
+if(!adminOnly())return;
+
+const member=data.members[index];
+
+const amount=1000;
+
+member.points=
+Math.max(
+0,
+member.points+(sign*amount)
+);
+
+addHistory(
+
+member.name,
+
+sign>0
+?"Bonus"
+:"Sanction",
+
+sign*amount,
+
+sign>0
+?"+1000"
+:"-1000"
+
+);
+
+save();
+
+renderAll();
+
+}
+
+
+/* ================================
+   MODIFICATION MANUELLE
+================================ */
+
+function modifyPoints(sign){
+
+if(!adminOnly())return;
+
+const index=
+Number(
+document.getElementById(
+"pointMember"
+).value
+);
+
+const amount=
+Number(
+document.getElementById(
+"pointAmount"
+).value
+);
+
+const reason=
+document.getElementById(
+"pointReason"
+).value.trim();
+
+if(
+!Number.isFinite(amount)
+||
+amount<=0
+){
+
+alert("Nombre de points invalide.");
+
+return;
+
+}
+
+if(!reason){
+
+alert("Indique le motif.");
+
+return;
+
+}
+
+const member=data.members[index];
+
+member.points=
+Math.max(
+0,
+member.points+(sign*amount)
+);
+
+addHistory(
+
+member.name,
+
+sign>0
+?"Bonus"
+:"Sanction",
+
+sign*amount,
+
+reason
+
+);
+
+document.getElementById(
+"pointAmount"
+).value="";
+
+document.getElementById(
+"pointReason"
+).value="";
+
+save();
+
+renderAll();
+
+}
+
+
+/* ================================
+   RANG
+================================ */
+
+function changeRank(){
+
+if(!adminOnly())return;
+
+const index=
+Number(
+document.getElementById(
+"rankMember"
+).value
+);
+
+const newRank=
+document.getElementById(
+"rankValue"
+).value;
+
+const member=data.members[index];
+
+const oldRank=member.rank;
+
+member.rank=newRank;
+
+addHistory(
+
+member.name,
+
+"Rang",
+
+0,
+
+oldRank+" → "+newRank
+
+);
+
+save();
+
+renderAll();
+
+}
+
+
+/* ================================
+   PRESENCE
+================================ */
+
+function markPresent(){
+
+if(!adminOnly())return;
+
+const index=
+Number(
+document.getElementById(
+"presenceMember"
+).value
+);
+
+const amount=
+Number(
+document.getElementById(
+"presencePoints"
+).value
+);
+
+if(!amount||amount<=0){
+
+alert("Entre les points de présence.");
+
+return;
+
+}
+
+const member=data.members[index];
+
+if(member.present){
+
+alert(
+member.name+
+" est déjà marqué présent."
+);
+
+return;
+
+}
+
+member.present=true;
+
+member.points+=amount;
+
+addHistory(
+
+member.name,
+
+"Présence",
+
+amount,
+
+"Points de présence"
+
+);
+
+document.getElementById(
+"presencePoints"
+).value="";
+
+save();
+
+renderAll();
+
+}
+
+
+/* ================================
+   CAISSE
+================================ */
+
+function cashMove(sign){
+
+if(!adminOnly())return;
+
+const amount=
+Number(
+document.getElementById(
+"cashAmount"
+).value
+);
+
+const reason=
+document.getElementById(
+"cashReason"
+).value.trim();
+
+if(!amount||amount<=0){
+
+alert("Montant invalide.");
+
+return;
+
+}
+
+if(
+sign<0
+&&
+amount>data.cash
+){
+
+alert(
+"La caisse ne possède pas assez d'argent."
+);
+
+return;
+
+}
+
+data.cash+=sign*amount;
+
+data.cashHistory.unshift({
+
+date:new Date()
+.toLocaleString("fr-FR"),
+
+amount:sign*amount,
+
+reason:reason,
+
+author:currentAdmin.name
+
+});
+
+document.getElementById(
+"cashAmount"
+).value="";
+
+document.getElementById(
+"cashReason"
+).value="";
+
+save();
+
+renderAll();
+
+}
+
+
+/* ================================
+   MOT DE PASSE
+================================ */
+
+function changePassword(){
+
+if(!adminOnly())return;
+
+const old=
+document.getElementById(
+"oldPassword"
+).value;
+
+const newPass=
+document.getElementById(
+"newPassword"
+).value;
+
+const confirm=
+document.getElementById(
+"confirmPassword"
+).value;
+
+const admin=
+data.admins.find(
+a=>a.username===currentAdmin.username
+);
+
+if(old!==admin.password){
+
+document.getElementById(
+"passwordMessage"
+).textContent=
+"❌ Ancien mot de passe incorrect.";
+
+return;
+
+}
+
+if(newPass.length<4){
+
+document.getElementById(
+"passwordMessage"
+).textContent=
+"❌ Minimum 4 caractères.";
+
+return;
+
+}
+
+if(newPass!==confirm){
+
+document.getElementById(
+"passwordMessage"
+).textContent=
+"❌ Les mots de passe ne correspondent pas.";
+
+return;
+
+}
+
+admin.password=newPass;
+
+currentAdmin=admin;
+
+document.getElementById(
+"passwordMessage"
+).textContent=
+"✅ Mot de passe changé.";
+
+document.getElementById(
+"oldPassword"
+).value="";
+
+document.getElementById(
+"newPassword"
+).value="";
+
+document.getElementById(
+"confirmPassword"
+).value="";
+
+save();
+
+}
+
+
+/* ================================
+   AJOUT MEMBRE
+================================ */
+
+function addMember(){
+
+if(!adminOnly())return;
+
+const name=
+document.getElementById(
+"newName"
+).value.trim();
+
+const points=
+Number(
+document.getElementById(
+"newPoints"
+).value
+)||0;
+
+const rank=
+document.getElementById(
+"newRank"
+).value;
+
+if(!name){
+
+alert("Entre le nom.");
+
+return;
+
+}
+
+if(
+data.members.some(
+m=>
+m.name.toLowerCase()
+===
+name.toLowerCase()
+)
+){
+
+alert("Ce membre existe déjà.");
+
+return;
+
+}
+
+data.members.push({
+
+name:name,
+
+initial:points,
+
+points:points,
+
+rank:rank,
+
+present:false
+
+});
+
+document.getElementById(
+"newName"
+).value="";
+
+document.getElementById(
+"newPoints"
+).value="0";
+
+save();
+
+renderAll();
+
+}
+
+
+/* ================================
+   SUPPRESSION
+================================ */
+
+function deleteMember(){
+
+if(!adminOnly())return;
+
+const index=
+Number(
+document.getElementById(
+"deleteMember"
+).value
+);
+
+const member=data.members[index];
+
+if(
+confirm(
+"Supprimer "+member.name+" ?"
+)
+){
+
+data.members.splice(index,1);
+
+save();
+
+renderAll();
+
+}
+
+}
+
+
+/* ================================
+   SELECTS
+================================ */
+
+function options(){
+
+return data.members
+.map(
+(m,i)=>
+`<option value="${i}">
+${m.name}
+</option>`
+)
+.join("");
+
+}
+
+
+/* ================================
+   AFFICHAGE MEMBRES
+================================ */
+
+function renderMembers(){
+
+const search=
+(
+document.getElementById("search")
+?.value||""
+).toLowerCase();
+
+const list=
+data.members.filter(
+m=>
+m.name.toLowerCase()
+.includes(search)
+);
+
+document.getElementById(
+"membersList"
+).innerHTML=
+
+list.map(m=>`
+
+<div class="member">
+
+<h3>👤 ${m.name}</h3>
+
+<div class="points">
+${format(m.points)} points
+</div>
+
+<span class="rank">
+Rang ${m.rank}
+</span>
+
+</div>
+
+`).join("");
+
+}
+
+
+/* ================================
+   ADMIN MEMBRES
+================================ */
+
+function renderAdminMembers(){
+
+document.getElementById(
+"adminMembers"
+).innerHTML=
+
+data.members.map(
+(m,i)=>`
+
+<div class="member">
+
+<h3>${m.name}</h3>
+
+<div class="points">
+${format(m.points)} points
+</div>
+
+<span class="rank">
+Rang ${m.rank}
+</span>
+
+<div class="actions">
+
+<button
+class="plus"
+onclick="quickChange(${i},1)">
+➕
+</button>
+
+<button
+class="minus"
+onclick="quickChange(${i},-1)">
+➖
+</button>
+
+<button
+class="plus"
+onclick="bigChange(${i},1)">
++1000
+</button>
+
+<button
+class="minus"
+onclick="bigChange(${i},-1)">
+-1000
+</button>
+
+</div>
+
+</div>
+
+`
+).join("");
+
+}
+
+
+/* ================================
+   CLASSEMENT
+================================ */
+
+function renderRanking(){
+
+const sorted=
+[...data.members]
+.sort(
+(a,b)=>b.points-a.points
+);
+
+document.getElementById(
+"rankingList"
+).innerHTML=
+
+sorted.map(
+(m,i)=>`
+
+<div class="member">
+
+<b>
+${i+1}. ${m.name}
+</b>
+
+<br>
+
+${format(m.points)} points
+
+<br>
+
+<span class="rank">
+${m.rank}
+</span>
+
+</div>
+
+`
+).join("");
+
+}
+
+
+/* ================================
+   HISTORIQUE
+================================ */
+
+function renderHistory(){
+
+document.getElementById(
+"historyList"
+).innerHTML=
+
+data.history.length
+
+?
+
+data.history.map(
+h=>`
+
+<div class="history">
+
+<b>${h.member}</b>
+
+<br>
+
+${
+h.points>0
+?"+"
+:""
+}${format(h.points)} points
+
+<br>
+
+${h.reason}
+
+<br>
+
+<span class="small">
+${h.date} — ${h.author}
+</span>
+
+</div>
+
+`
+).join("")
+
+:
+
+"<p>Aucun historique.</p>";
+
+}
+
+
+/* ================================
+   CAISSE
+================================ */
+
+function renderCashHistory(){
+
+document.getElementById(
+"cashHistory"
+).innerHTML=
+
+data.cashHistory.length
+
+?
+
+data.cashHistory.map(
+h=>`
+
+<div class="history">
+
+<b>
+${h.amount>0?"+":""}
+${format(h.amount)} FC
+</b>
+
+<br>
+
+${h.reason}
+
+<br>
+
+<span class="small">
+${h.date} — ${h.author}
+</span>
+
+</div>
+
+`
+).join("")
+
+:
+
+"<p>Aucun mouvement.</p>";
+
+}
+
+
+/* ================================
+   TOUT METTRE À JOUR
+================================ */
+
+function renderAll(){
+
+const total=
+data.members.reduce(
+(sum,m)=>sum+m.points,
+0
+);
+
+const present=
+data.members.filter(
+m=>m.present
+).length;
+
+document.getElementById(
+"totalMembers"
+).textContent=
+data.members.length;
+
+document.getElementById(
+"totalPoints"
+).textContent=
+format(total);
+
+document.getElementById(
+"totalPresent"
+).textContent=
+present;
+
+document.getElementById(
+"totalCash"
+).textContent=
+format(data.cash)+" FC";
+
+document.getElementById(
+"cashPublic"
+).textContent=
+format(data.cash)+" FC";
+
+if(currentAdmin){
+
+document.getElementById(
+"stepDisplay"
+).textContent=
+format(data.step);
+
+document.getElementById(
+"adminCash"
+).textContent=
+format(data.cash)+" FC";
+
+document.getElementById(
+"adminMembers"
+).innerHTML="";
+
+const opts=options();
+
+[
+"pointMember",
+"rankMember",
+"presenceMember",
+"deleteMember"
+]
+.forEach(id=>{
+
+document.getElementById(id)
+.innerHTML=opts;
+
+});
+
+renderAdminMembers();
+
+}
+
+renderMembers();
+
+renderRanking();
+
+renderHistory();
+
+renderCashHistory();
+
+}
+
+
+/* ================================
+   DÉMARRAGE
+================================ */
+
+save();
+
+renderAll();
+
+</script>
+
+</body>
+</html>
