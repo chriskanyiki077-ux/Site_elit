@@ -3,386 +3,477 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Organisation</title>
-
-<style>
+<title>Mon Organisation</title><style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
-header{background:linear-gradient(135deg,#ff6500,#ff9d00);color:white;text-align:center;padding:18px}
-nav{display:flex;overflow:auto;background:white;padding:7px;gap:5px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px #0002}
-button{border:0;border-radius:9px;padding:10px 13px;font-weight:bold;cursor:pointer}
-nav button{background:white;white-space:nowrap}
-main{max-width:1000px;margin:auto;padding:15px}
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#f5f5f5;
+color:#222
+}
+
+header{
+background:linear-gradient(135deg,#ff6500,#ff9d00);
+color:white;
+text-align:center;
+padding:18px
+}
+
+header h1{margin:0 0 5px}
+header p{margin:0}
+
+nav{
+display:flex;
+overflow:auto;
+background:white;
+padding:7px;
+gap:5px;
+position:sticky;
+top:0;
+z-index:10;
+box-shadow:0 2px 8px #0002
+}
+
+nav button{
+background:white;
+white-space:nowrap
+}
+
+button{
+border:0;
+border-radius:9px;
+padding:10px 13px;
+font-weight:bold;
+cursor:pointer
+}
+
+button:active{
+transform:scale(.97)
+}
+
+main{
+max-width:1000px;
+margin:auto;
+padding:15px
+}
+
 section{display:none}
 section.active{display:block}
-.card,.member{background:white;border-radius:14px;padding:15px;margin-bottom:13px;box-shadow:0 2px 9px #0001}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
-.stat{background:linear-gradient(135deg,#ff6500,#ff9d00);color:white;border-radius:14px;padding:16px}
-.stat b{display:block;font-size:24px;margin-top:5px}
-.member h3{margin:0 0 6px;color:#e85d00}
-.points{font-size:21px;font-weight:bold}
-.rank{display:inline-block;background:#333;color:white;border-radius:20px;padding:4px 10px;margin:7px 0}
-.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+
+.card,.member{
+background:white;
+border-radius:14px;
+padding:15px;
+margin-bottom:13px;
+box-shadow:0 2px 9px #0001
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+gap:10px
+}
+
+.stat{
+background:linear-gradient(135deg,#ff6500,#ff9d00);
+color:white;
+border-radius:14px;
+padding:16px
+}
+
+.stat b{
+display:block;
+font-size:24px;
+margin-top:5px
+}
+
+.member h3{
+margin:0 0 6px;
+color:#e85d00
+}
+
+.points{
+font-size:21px;
+font-weight:bold
+}
+
+.rank{
+display:inline-block;
+background:#333;
+color:white;
+border-radius:20px;
+padding:4px 10px;
+margin:7px 0
+}
+
+.actions{
+display:flex;
+gap:7px;
+flex-wrap:wrap;
+margin-top:8px
+}
+
 .plus{background:#18a957;color:white}
 .minus{background:#df3545;color:white}
 .orange{background:#ff7000;color:white}
 .blue{background:#1687e8;color:white}
 .dark{background:#333;color:white}
 .gray{background:#ddd}
-input,select{width:100%;padding:11px;margin:5px 0 10px;border:1px solid #ccc;border-radius:8px;font-size:15px}
-label{font-weight:bold}
-.small{font-size:13px;color:#666}
-.notice{background:#fff2df;padding:10px;border-radius:9px;margin:8px 0}
-.cash{text-align:center;font-size:30px;font-weight:bold;color:#159447}
-.history{background:#fafafa;border-left:4px solid #ff7000;padding:10px;border-radius:7px;margin:7px 0}
-table{width:100%;border-collapse:collapse}
-th,td{padding:9px;border-bottom:1px solid #ddd;text-align:left}
-@media(max-width:600px){
- th,td{font-size:12px;padding:7px}
+
+input,select{
+width:100%;
+padding:11px;
+margin:5px 0 10px;
+border:1px solid #ccc;
+border-radius:8px;
+font-size:15px
 }
-</style>
-</head>
 
-<body>
+label{font-weight:bold}
 
-<header>
+.small{
+font-size:13px;
+color:#666
+}
+
+.notice{
+background:#fff2df;
+padding:10px;
+border-radius:9px;
+margin:8px 0
+}
+
+.cash{
+text-align:center;
+font-size:30px;
+font-weight:bold;
+color:#159447
+}
+
+.history{
+background:#fafafa;
+border-left:4px solid #ff7000;
+padding:10px;
+border-radius:7px;
+margin:7px 0
+}
+
+.status{
+position:fixed;
+right:10px;
+bottom:10px;
+z-index:100;
+padding:9px 13px;
+border-radius:20px;
+font-size:13px;
+font-weight:bold;
+color:white;
+box-shadow:0 2px 8px #0003
+}
+
+.status.loading{background:#777}
+.status.online{background:#159447}
+.status.offline{background:#df3545}
+
+.error{
+color:#df3545;
+font-weight:bold
+}
+
+.success{
+color:#159447;
+font-weight:bold
+}
+
+.loadingBox{
+text-align:center;
+padding:25px;
+font-weight:bold
+}
+
+@media(max-width:600px){
+button{padding:9px 11px}
+}
+
+</style></head><body><header>
 <h1>🏢 MON ORGANISATION</h1>
 <p>Gestion des membres et des points</p>
-</header>
+</header><div id="connectionStatus" class="status loading">
+☁️ Connexion...
+</div><nav><button onclick="show('accueil')">
+🏠 Accueil
+</button><button onclick="show('membres')">
+👥 Membres
+</button><button onclick="show('classement')">
+🏆 Classement
+</button><button onclick="show('historique')">
+📜 Historique
+</button><button onclick="show('caisse')">
+💰 Caisse
+</button><button onclick="openLogin()">
+🔐 Admin
+</button></nav><main><!-- ACCUEIL --><section id="accueil" class="active"><div class="card"><h2>Bienvenue 👋</h2><p>
+Consulte les membres, leurs points et leur rang.
+</p></div><div class="grid"><div class="stat">
+👥 Membres
+<b id="totalMembers">0</b>
+</div><div class="stat">
+🏆 Points
+<b id="totalPoints">0</b>
+</div><div class="stat">
+🟢 Présents
+<b id="totalPresent">0</b>
+</div><div class="stat">
+💰 Caisse
+<b id="totalCash">0 FC</b>
+</div></div></section><!-- MEMBRES --><section id="membres"><div class="card"><h2>👥 Membres</h2><input
+id="search"
+placeholder="🔎 Rechercher..."
+oninput="renderMembers()">
 
-<nav>
-<button onclick="show('accueil')">🏠 Accueil</button>
-<button onclick="show('membres')">👥 Membres</button>
-<button onclick="show('classement')">🏆 Classement</button>
-<button onclick="show('historique')">📜 Historique</button>
-<button onclick="show('caisse')">💰 Caisse</button>
-<button onclick="openLogin()">🔐 Admin</button>
-</nav>
+</div><div id="membersList"></div></section><!-- CLASSEMENT --><section id="classement"><div class="card"><h2>🏆 Classement</h2><div id="rankingList"></div></div></section><!-- HISTORIQUE --><section id="historique"><div class="card"><h2>📜 Historique</h2><div id="historyList"></div></div></section><!-- CAISSE --><section id="caisse"><div class="card"><h2>💰 Caisse</h2><div
+class="cash"
+id="cashPublic">
+0 FC
+</div><p style="text-align:center">
+Solde actuel
+</p></div><div class="card"><h3>Mouvements</h3><div id="cashHistory"></div></div></section><!-- CONNEXION ADMIN --><section id="login"><div
+class="card"
+style="max-width:420px;margin:auto"><h2>🔐 Administration</h2><label>Email administrateur</label>
 
-<main>
-
-<!-- ACCUEIL -->
-<section id="accueil" class="active">
-
-<div class="card">
-<h2>Bienvenue 👋</h2>
-<p>Consulte les membres, leurs points et leur rang.</p>
-</div>
-
-<div class="grid">
-<div class="stat">👥 Membres<b id="totalMembers">0</b></div>
-<div class="stat">🏆 Points<b id="totalPoints">0</b></div>
-<div class="stat">🟢 Présents<b id="totalPresent">0</b></div>
-<div class="stat">💰 Caisse<b id="totalCash">0 FC</b></div>
-</div>
-
-</section>
-
-
-<!-- MEMBRES -->
-<section id="membres">
-
-<div class="card">
-<h2>👥 Membres</h2>
-<input id="search" placeholder="🔎 Rechercher..." oninput="renderMembers()">
-</div>
-
-<div id="membersList"></div>
-
-</section>
-
-
-<!-- CLASSEMENT -->
-<section id="classement">
-
-<div class="card">
-<h2>🏆 Classement</h2>
-<div id="rankingList"></div>
-</div>
-
-</section>
-
-
-<!-- HISTORIQUE -->
-<section id="historique">
-
-<div class="card">
-<h2>📜 Historique</h2>
-<div id="historyList"></div>
-</div>
-
-</section>
-
-
-<!-- CAISSE -->
-<section id="caisse">
-
-<div class="card">
-<h2>💰 Caisse</h2>
-<div class="cash" id="cashPublic">0 FC</div>
-<p style="text-align:center">Solde actuel</p>
-</div>
-
-<div class="card">
-<h3>Mouvements</h3>
-<div id="cashHistory"></div>
-</div>
-
-</section>
-
-
-<!-- CONNEXION -->
-<section id="login">
-
-<div class="card" style="max-width:420px;margin:auto">
-
-<h2>🔐 Administration</h2>
-
-<label>Utilisateur</label>
-<input id="loginUser">
+<input
+id="loginEmail"
+type="email"
+autocomplete="email"
+placeholder="exemple@email.com">
 
 <label>Mot de passe</label>
-<input id="loginPassword" type="password">
 
-<button class="orange" onclick="login()">Se connecter</button>
+<input
+id="loginPassword"
+type="password"
+autocomplete="current-password"
+placeholder="Mot de passe">
 
-<p id="loginMessage"></p>
+<button
+class="orange"
+onclick="login()">
 
-</div>
+🔐 Se connecter
 
-</section>
+</button><p id="loginMessage"></p></div></section><!-- ADMIN --><section id="admin"><div class="card"><h2>⚙️ Administration</h2><p>
+Connecté :
+<b id="adminName"></b>
+</p><button
+class="dark"
+onclick="logout()">
 
+🚪 Déconnexion
 
-<!-- ADMINISTRATION -->
-<section id="admin">
+</button></div><!-- PAS --><div class="card"><h3>⚡ Pas général</h3><div class="notice">Pas actuel :
+<strong id="stepDisplay">250</strong>
+points
 
-<div class="card">
-<h2>⚙️ Administration</h2>
-<p>Connecté : <b id="adminName"></b></p>
-<button class="dark" onclick="logout()">🚪 Déconnexion</button>
-</div>
-
-
-<!-- PAS GENERAL -->
-<div class="card">
-
-<h3>⚡ Pas général</h3>
-
-<div class="notice">
-Pas actuel :
-<strong id="stepDisplay">250</strong> points
-</div>
-
-<input id="stepInput" type="number" min="1"
+</div><input
+id="stepInput"
+type="number"
+min="1"
 placeholder="Nouveau pas">
 
-<button class="orange" onclick="changeStep()">
+<button
+class="orange"
+onclick="changeStep()">
+
 ⚙️ Modifier le pas
-</button>
 
-<p class="small">
-Le même pas est utilisé pour tous les membres.
-</p>
+</button></div><!-- GESTION MEMBRES --><div class="card"><h3>👥 Gestion rapide</h3><div id="adminMembers"></div></div><!-- MODIFICATION MANUELLE --><div class="card"><h3>✏️ Modification manuelle</h3><select id="pointMember"></select>
 
-</div>
-
-
-<!-- MEMBRES ADMIN -->
-<div class="card">
-
-<h3>👥 Gestion rapide</h3>
-
-<div id="adminMembers"></div>
-
-</div>
-
-
-<!-- MODIFICATION MANUELLE -->
-<div class="card">
-
-<h3>✏️ Modification manuelle</h3>
-
-<select id="pointMember"></select>
-
-<input id="pointAmount"
+<input
+id="pointAmount"
 type="number"
 min="1"
 placeholder="Nombre de points">
 
-<input id="pointReason"
+<input
+id="pointReason"
 placeholder="Motif">
 
-<div class="actions">
+<div class="actions"><button
+class="plus"
+onclick="modifyPoints(1)">
 
-<button class="plus" onclick="modifyPoints(1)">
 ➕ Ajouter
-</button>
 
-<button class="minus" onclick="modifyPoints(-1)">
+</button><button
+class="minus"
+onclick="modifyPoints(-1)">
+
 ➖ Retirer
-</button>
 
-</div>
+</button></div></div><!-- RANG --><div class="card"><h3>🎖️ Modifier le rang</h3><select id="rankMember"></select>
 
-</div>
-
-
-<!-- RANG -->
-<div class="card">
-
-<h3>🎖️ Modifier le rang</h3>
-
-<select id="rankMember"></select>
-
-<select id="rankValue">
-<option>F</option>
+<select id="rankValue"><option>F</option>
 <option>E</option>
 <option>D</option>
 <option>C</option>
 <option>B</option>
 <option>A</option>
-<option>S</option>
-</select>
+<option>S</option></select><button
+class="orange"
+onclick="changeRank()">
 
-<button class="orange" onclick="changeRank()">
 🎖️ Enregistrer
-</button>
 
-</div>
+</button></div><!-- PRESENCE --><div class="card"><h3>🟢 Présence</h3><select id="presenceMember"></select>
 
-
-<!-- PRESENCE -->
-<div class="card">
-
-<h3>🟢 Présence</h3>
-
-<select id="presenceMember"></select>
-
-<input id="presencePoints"
+<input
+id="presencePoints"
 type="number"
 min="1"
 placeholder="Points de présence">
 
-<button class="plus" onclick="markPresent()">
+<button
+class="plus"
+onclick="markPresent()">
+
 🟢 Marquer présent
-</button>
 
-</div>
+</button></div><!-- CAISSE ADMIN --><div class="card"><h3>💰 Gestion de la caisse</h3><div
+class="cash"
+id="adminCash">0 FC
 
-
-<!-- CAISSE ADMIN -->
-<div class="card">
-
-<h3>💰 Gestion de la caisse</h3>
-
-<div class="cash" id="adminCash">0 FC</div>
-
-<input id="cashAmount"
+</div><input
+id="cashAmount"
 type="number"
 min="1"
 placeholder="Montant">
 
-<input id="cashReason"
+<input
+id="cashReason"
 placeholder="Motif">
 
-<div class="actions">
+<div class="actions"><button
+class="plus"
+onclick="cashMove(1)">
 
-<button class="plus" onclick="cashMove(1)">
 ➕ Ajouter
-</button>
 
-<button class="minus" onclick="cashMove(-1)">
+</button><button
+class="minus"
+onclick="cashMove(-1)">
+
 ➖ Retirer
-</button>
 
-</div>
+</button></div></div><!-- AJOUT MEMBRE --><div class="card"><h3>➕ Ajouter un membre</h3><input
+id="newName"
+placeholder="Nom">
 
-</div>
-
-
-<!-- MOT DE PASSE -->
-<div class="card">
-
-<h3>🔑 Mot de passe</h3>
-
-<input id="oldPassword"
-type="password"
-placeholder="Ancien mot de passe">
-
-<input id="newPassword"
-type="password"
-placeholder="Nouveau mot de passe">
-
-<input id="confirmPassword"
-type="password"
-placeholder="Confirmer">
-
-<button class="blue" onclick="changePassword()">
-🔑 Changer le mot de passe
-</button>
-
-<p id="passwordMessage"></p>
-
-</div>
-
-
-<!-- AJOUT MEMBRE -->
-<div class="card">
-
-<h3>➕ Ajouter un membre</h3>
-
-<input id="newName" placeholder="Nom">
-
-<input id="newPoints"
+<input
+id="newPoints"
 type="number"
 min="0"
 value="0"
 placeholder="Points">
 
-<select id="newRank">
-<option>F</option>
+<select id="newRank"><option>F</option>
 <option>E</option>
 <option>D</option>
 <option>C</option>
 <option>B</option>
 <option>A</option>
-<option>S</option>
-</select>
+<option>S</option></select><button
+class="orange"
+onclick="addMember()">
 
-<button class="orange" onclick="addMember()">
 ➕ Ajouter
-</button>
 
-</div>
+</button></div><!-- SUPPRESSION --><div class="card"><h3>🗑️ Supprimer un membre</h3><select id="deleteMember"></select>
 
+<button
+class="minus"
+onclick="deleteMember()">
 
-<!-- SUPPRESSION -->
-<div class="card">
-
-<h3>🗑️ Supprimer un membre</h3>
-
-<select id="deleteMember"></select>
-
-<button class="minus" onclick="deleteMember()">
 🗑️ Supprimer
-</button>
 
-</div>
+</button></div></section></main><script type="module">
 
-</section>
+import {
+initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
-</main>
+import {
+getAuth,
+onAuthStateChanged,
+signInWithEmailAndPassword,
+signOut
+}
+from
+"https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+getDoc,
+setDoc,
+onSnapshot
+}
+from
+"https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 
-<script>
+/* =====================================================
+   FIREBASE
+===================================================== */
 
-/* ================================
-   DONNÉES
-================================ */
+const firebaseConfig = {
 
-const STORAGE="ORGANISATION_V4";
+apiKey:
+"AIzaSyCq7Iesi9uK-r5ScRldDtcMWmkCnsaVlfw",
 
-const initialData={
+authDomain:
+"elit-bdb.firebaseapp.com",
+
+projectId:
+"elit-bdb",
+
+storageBucket:
+"elit-bdb.firebasestorage.app",
+
+messagingSenderId:
+"748409772019",
+
+appId:
+"1:748409772019:web:06cb5a784792c85b33a486"
+
+};
+
+const app =
+initializeApp(firebaseConfig);
+
+const auth =
+getAuth(app);
+
+const db =
+getFirestore(app);
+
+const dataRef =
+doc(
+db,
+"organisation",
+"donnees"
+);
+
+
+/* =====================================================
+   DONNEES DE DEPART
+===================================================== */
+
+const initialData = {
+
+version:6,
 
 step:250,
 
@@ -458,57 +549,469 @@ present:false
 
 history:[],
 
-cashHistory:[],
-
-admins:[
-
-{
-username:"admin",
-password:"1234",
-name:"Administrateur principal"
-},
-
-{
-username:"chef",
-password:"5678",
-name:"Chef de l'organisation"
-}
-
-]
+cashHistory:[]
 
 };
 
 
-/* ================================
-   CHARGEMENT & SAUVEGARDE
-================================ */
+/* =====================================================
+   ETAT
+===================================================== */
 
-window.data=
-JSON.parse(localStorage.getItem(STORAGE))
-||initialData;
+let data = null;
 
-let currentAdmin=null;
+let currentUser = null;
 
-function save(){
-  localStorage.setItem(STORAGE, JSON.stringify(window.data));
-  if (typeof window.saveToFirebase === "function") {
-    window.saveToFirebase();
-  }
+let unsubscribeData = null;
+
+
+/* =====================================================
+   STATUT
+===================================================== */
+
+function status(type,text){
+
+const el =
+document.getElementById(
+"connectionStatus"
+);
+
+el.className =
+"status "+type;
+
+el.textContent=text;
+
 }
 
-/* ================================
-   OUTILS
-================================ */
+
+/* =====================================================
+   UTILITAIRES
+===================================================== */
 
 function format(n){
-  return Number(n).toLocaleString("fr-FR");
+
+return Number(n || 0)
+.toLocaleString("fr-FR");
+
 }
+
+
+function escapeHTML(value){
+
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+function cloneData(){
+
+return JSON.parse(
+JSON.stringify(initialData)
+);
+
+}
+
+
+/* =====================================================
+   NORMALISATION
+===================================================== */
+
+function normalizeData(value){
+
+const result =
+value || cloneData();
+
+if(!Array.isArray(result.members)){
+result.members=[];
+}
+
+if(!Array.isArray(result.history)){
+result.history=[];
+}
+
+if(!Array.isArray(result.cashHistory)){
+result.cashHistory=[];
+}
+
+if(!Number.isFinite(Number(result.step))){
+result.step=250;
+}
+
+if(!Number.isFinite(Number(result.cash))){
+result.cash=0;
+}
+
+result.members =
+result.members.map(m=>({
+
+name:String(m.name ?? "Sans nom"),
+
+initial:Number(m.initial)||0,
+
+points:Number(m.points)||0,
+
+rank:String(m.rank ?? "F"),
+
+present:Boolean(m.present)
+
+}));
+
+return result;
+
+}
+
+
+/* =====================================================
+   FIRESTORE
+===================================================== */
+
+async function loadData(){
+
+status(
+"loading",
+"☁️ Chargement..."
+);
+
+try{
+
+const snapshot =
+await getDoc(dataRef);
+
+if(snapshot.exists()){
+
+data =
+normalizeData(
+snapshot.data()
+);
+
+}else{
+
+data =
+cloneData();
+
+await setDoc(
+dataRef,
+data
+);
+
+}
+
+renderAll();
+
+status(
+"online",
+"☁️ Synchronisé"
+);
+
+}catch(error){
+
+console.error(error);
+
+status(
+"offline",
+"❌ Erreur Firebase"
+);
+
+alert(
+"Impossible de charger les données. Vérifie les règles Firestore."
+);
+
+}
+
+}
+
+
+/* =====================================================
+   SYNCHRONISATION TEMPS REEL
+===================================================== */
+
+function startRealtime(){
+
+if(unsubscribeData){
+unsubscribeData();
+}
+
+unsubscribeData =
+onSnapshot(
+
+dataRef,
+
+snapshot=>{
+
+if(snapshot.exists()){
+
+data =
+normalizeData(
+snapshot.data()
+);
+
+renderAll();
+
+status(
+"online",
+"☁️ Synchronisé"
+);
+
+}
+
+},
+
+error=>{
+
+console.error(
+"Synchronisation:",
+error
+);
+
+status(
+"offline",
+"❌ Hors connexion"
+);
+
+}
+
+);
+
+}
+
+
+/* =====================================================
+   SAUVEGARDE
+===================================================== */
+
+async function save(){
+
+if(!data)return;
+
+try{
+
+status(
+"loading",
+"☁️ Enregistrement..."
+);
+
+data.version =
+Number(data.version || 0)+1;
+
+await setDoc(
+dataRef,
+data
+);
+
+renderAll();
+
+status(
+"online",
+"☁️ Synchronisé"
+);
+
+}catch(error){
+
+console.error(error);
+
+status(
+"offline",
+"❌ Enregistrement refusé"
+);
+
+alert(
+"❌ Firebase a refusé l'enregistrement.\n\nVérifie que ton compte administrateur est autorisé dans les règles Firestore."
+);
+
+}
+
+}
+
+
+/* =====================================================
+   AUTHENTIFICATION
+===================================================== */
+
+onAuthStateChanged(
+auth,
+
+async user=>{
+
+currentUser=user;
+
+if(user){
+
+document
+.getElementById("adminName")
+.textContent =
+user.email || "Administrateur";
+
+show("admin");
+
+await loadData();
+
+startRealtime();
+
+}else{
+
+show("accueil");
+
+await loadData();
+
+startRealtime();
+
+}
+
+}
+
+);
+
+
+/* =====================================================
+   CONNEXION
+===================================================== */
+
+window.login =
+async function(){
+
+const email =
+document
+.getElementById("loginEmail")
+.value
+.trim();
+
+const password =
+document
+.getElementById("loginPassword")
+.value;
+
+const message =
+document
+.getElementById("loginMessage");
+
+if(!email || !password){
+
+message.className="error";
+
+message.textContent =
+"❌ Entre ton email et ton mot de passe.";
+
+return;
+
+}
+
+try{
+
+message.className="";
+
+message.textContent =
+"⏳ Connexion...";
+
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+message.className="success";
+
+message.textContent =
+"✅ Connexion réussie.";
+
+}catch(error){
+
+console.error(error);
+
+message.className="error";
+
+if(
+error.code ===
+"auth/invalid-credential"
+){
+
+message.textContent =
+"❌ Email ou mot de passe incorrect.";
+
+}else{
+
+message.textContent =
+"❌ Impossible de se connecter.";
+
+}
+
+}
+
+};
+
+
+/* =====================================================
+   DECONNEXION
+===================================================== */
+
+window.logout =
+async function(){
+
+try{
+
+await signOut(auth);
+
+}catch(error){
+
+console.error(error);
+
+}
+
+};
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+window.show =
+function(id){
+
+document
+.querySelectorAll("main section")
+.forEach(
+s=>s.classList.remove("active")
+);
+
+const section =
+document.getElementById(id);
+
+if(section){
+
+section.classList.add("active");
+
+}
+
+renderAll();
+
+};
+
+
+window.openLogin =
+function(){
+
+show("login");
+
+};
+
+
+/* =====================================================
+   ADMIN
+===================================================== */
 
 function adminOnly(){
 
-if(!currentAdmin){
+if(!currentUser){
 
-alert("🔐 Cette action est réservée aux administrateurs.");
+alert(
+"🔐 Connecte-toi en tant qu'administrateur."
+);
+
+show("login");
 
 return false;
 
@@ -519,83 +1022,9 @@ return true;
 }
 
 
-/* ================================
-   NAVIGATION
-================================ */
-
-function show(id){
-
-document
-.querySelectorAll("main section")
-.forEach(s=>s.classList.remove("active"));
-
-document
-.getElementById(id)
-.classList.add("active");
-
-renderAll();
-
-}
-
-
-function openLogin(){
-
-show("login");
-
-}
-
-
-/* ================================
-   CONNEXION
-================================ */
-
-function login(){
-
-const username=
-document.getElementById("loginUser").value.trim();
-
-const password=
-document.getElementById("loginPassword").value;
-
-const admin=
-window.data.admins.find(
-a=>a.username===username
-&&
-a.password===password
-);
-
-if(!admin){
-
-document.getElementById("loginMessage")
-.textContent=
-"❌ Identifiants incorrects.";
-
-return;
-
-}
-
-currentAdmin=admin;
-
-document.getElementById("adminName")
-.textContent=admin.name;
-
-show("admin");
-
-}
-
-
-function logout(){
-
-currentAdmin=null;
-
-show("accueil");
-
-}
-
-
-/* ================================
+/* =====================================================
    HISTORIQUE
-================================ */
+===================================================== */
 
 function addHistory(
 member,
@@ -604,44 +1033,44 @@ points,
 reason
 ){
 
-window.data.history.unshift({
+data.history.unshift({
 
 date:new Date()
 .toLocaleString("fr-FR"),
 
-member:member,
+member,
 
-type:type,
+type,
 
-points:points,
+points,
 
-reason:reason,
+reason,
 
-author:currentAdmin
-?currentAdmin.name
-:"Système"
+author:
+currentUser?.email ||
+"Administrateur"
 
 });
 
 }
 
 
-/* ================================
-   PAS GENERAL
-================================ */
+/* =====================================================
+   PAS
+===================================================== */
 
-function changeStep(){
+window.changeStep =
+async function(){
 
 if(!adminOnly())return;
 
-const value=
+const value =
 Number(
 document.getElementById("stepInput").value
 );
 
 if(
-!Number.isInteger(value)
-||
+!Number.isInteger(value) ||
 value<=0
 ){
 
@@ -653,35 +1082,39 @@ return;
 
 }
 
-window.data.step=value;
+data.step=value;
 
-document.getElementById(
-"stepInput"
-).value="";
+document
+.getElementById("stepInput")
+.value="";
 
-save();
+await save();
 
-renderAll();
-
-}
+};
 
 
-/* ================================
-   + / -
-================================ */
+/* =====================================================
+   MODIFICATION RAPIDE
+===================================================== */
 
-function quickChange(index,sign){
+window.quickChange =
+async function(index,sign){
 
 if(!adminOnly())return;
 
-const member=window.data.members[index];
+const member =
+data.members[index];
 
-const amount=window.data.step;
+if(!member)return;
 
-member.points=
+const amount =
+Number(data.step);
+
+member.points =
 Math.max(
 0,
-member.points+(sign*amount)
+Number(member.points)+
+sign*amount
 );
 
 addHistory(
@@ -698,29 +1131,32 @@ sign*amount,
 
 );
 
-save();
+await save();
 
-renderAll();
-
-}
+};
 
 
-/* ================================
-   +1000 / -1000
-================================ */
+/* =====================================================
+   1000
+===================================================== */
 
-function bigChange(index,sign){
+window.bigChange =
+async function(index,sign){
 
 if(!adminOnly())return;
 
-const member=window.data.members[index];
+const member =
+data.members[index];
+
+if(!member)return;
 
 const amount=1000;
 
-member.points=
+member.points =
 Math.max(
 0,
-member.points+(sign*amount)
+Number(member.points)+
+sign*amount
 );
 
 addHistory(
@@ -733,51 +1169,50 @@ sign>0
 
 sign*amount,
 
-sign>0
-?"+1000"
-:"-1000"
+sign>0?"+1000":"-1000"
 
 );
 
-save();
+await save();
 
-renderAll();
-
-}
+};
 
 
-/* ================================
+/* =====================================================
    MODIFICATION MANUELLE
-================================ */
+===================================================== */
 
-function modifyPoints(sign){
+window.modifyPoints =
+async function(sign){
 
 if(!adminOnly())return;
 
-const index=
+const index =
 Number(
-document.getElementById(
-"pointMember"
-).value
+document
+.getElementById("pointMember")
+.value
 );
 
-const amount=
+const amount =
 Number(
-document.getElementById(
-"pointAmount"
-).value
+document
+.getElementById("pointAmount")
+.value
 );
 
-const reason=
-document.getElementById(
-"pointReason"
-).value.trim();
+const reason =
+document
+.getElementById("pointReason")
+.value
+.trim();
 
-if(
-!Number.isFinite(amount)
-||
-amount<=0
-){
+const member =
+data.members[index];
+
+if(!member)return;
+
+if(!Number.isFinite(amount)||amount<=0){
 
 alert("Nombre de points invalide.");
 
@@ -793,21 +1228,18 @@ return;
 
 }
 
-const member=window.data.members[index];
-
-member.points=
+member.points =
 Math.max(
 0,
-member.points+(sign*amount)
+Number(member.points)+
+sign*amount
 );
 
 addHistory(
 
 member.name,
 
-sign>0
-?"Bonus"
-:"Sanction",
+sign>0?"Bonus":"Sanction",
 
 sign*amount,
 
@@ -815,97 +1247,102 @@ reason
 
 );
 
-document.getElementById(
-"pointAmount"
-).value="";
+document
+.getElementById("pointAmount")
+.value="";
 
-document.getElementById(
-"pointReason"
-).value="";
+document
+.getElementById("pointReason")
+.value="";
 
-save();
+await save();
 
-renderAll();
-
-}
+};
 
 
-/* ================================
+/* =====================================================
    RANG
-================================ */
+===================================================== */
 
-function changeRank(){
+window.changeRank =
+async function(){
 
 if(!adminOnly())return;
 
-const index=
+const index =
 Number(
-document.getElementById(
-"rankMember"
-).value
+document
+.getElementById("rankMember")
+.value
 );
 
-const newRank=
-document.getElementById(
-"rankValue"
-).value;
+const rank =
+document
+.getElementById("rankValue")
+.value;
 
-const member=window.data.members[index];
+const member =
+data.members[index];
 
-const oldRank=member.rank;
+if(!member)return;
 
-member.rank=newRank;
+const old =
+member.rank;
+
+member.rank=rank;
 
 addHistory(
-
 member.name,
-
 "Rang",
-
 0,
-
-oldRank+" → "+newRank
-
+old+" → "+rank
 );
 
-save();
+await save();
 
-renderAll();
-
-}
+};
 
 
-/* ================================
+/* =====================================================
    PRESENCE
-================================ */
+===================================================== */
 
-function markPresent(){
+window.markPresent =
+async function(){
 
 if(!adminOnly())return;
 
-const index=
+const index =
 Number(
-document.getElementById(
-"presenceMember"
-).value
+document
+.getElementById("presenceMember")
+.value
 );
 
-const amount=
+const amount =
 Number(
-document.getElementById(
-"presencePoints"
-).value
+document
+.getElementById("presencePoints")
+.value
 );
 
-if(!amount||amount<=0){
+const member =
+data.members[index];
 
-alert("Entre les points de présence.");
+if(!member)return;
+
+if(
+!Number.isFinite(amount)||
+amount<=0
+){
+
+alert(
+"Entre les points de présence."
+);
 
 return;
 
 }
-
-const member=window.data.members[index];
 
 if(member.present){
 
@@ -920,52 +1357,50 @@ return;
 
 member.present=true;
 
-member.points+=amount;
+member.points += amount;
 
 addHistory(
-
 member.name,
-
 "Présence",
-
 amount,
-
 "Points de présence"
-
 );
 
-document.getElementById(
-"presencePoints"
-).value="";
+document
+.getElementById("presencePoints")
+.value="";
 
-save();
+await save();
 
-renderAll();
-
-}
+};
 
 
-/* ================================
+/* =====================================================
    CAISSE
-================================ */
+===================================================== */
 
-function cashMove(sign){
+window.cashMove =
+async function(sign){
 
 if(!adminOnly())return;
 
-const amount=
+const amount =
 Number(
-document.getElementById(
-"cashAmount"
-).value
+document
+.getElementById("cashAmount")
+.value
 );
 
-const reason=
-document.getElementById(
-"cashReason"
-).value.trim();
+const reason =
+document
+.getElementById("cashReason")
+.value
+.trim();
 
-if(!amount||amount<=0){
+if(
+!Number.isFinite(amount)||
+amount<=0
+){
 
 alert("Montant invalide.");
 
@@ -973,10 +1408,17 @@ return;
 
 }
 
+if(!reason){
+
+alert("Indique le motif.");
+
+return;
+
+}
+
 if(
-sign<0
-&&
-amount>window.data.cash
+sign<0 &&
+amount>Number(data.cash)
 ){
 
 alert(
@@ -987,147 +1429,62 @@ return;
 
 }
 
-window.data.cash+=sign*amount;
+data.cash += sign*amount;
 
-window.data.cashHistory.unshift({
+data.cashHistory.unshift({
 
 date:new Date()
 .toLocaleString("fr-FR"),
 
 amount:sign*amount,
 
-reason:reason,
+reason,
 
-author:currentAdmin.name
+author:
+currentUser?.email ||
+"Administrateur"
 
 });
 
-document.getElementById(
-"cashAmount"
-).value="";
+document
+.getElementById("cashAmount")
+.value="";
 
-document.getElementById(
-"cashReason"
-).value="";
+document
+.getElementById("cashReason")
+.value="";
 
-save();
+await save();
 
-renderAll();
-
-}
+};
 
 
-/* ================================
-   MOT DE PASSE
-================================ */
-
-function changePassword(){
-
-if(!adminOnly())return;
-
-const old=
-document.getElementById(
-"oldPassword"
-).value;
-
-const newPass=
-document.getElementById(
-"newPassword"
-).value;
-
-const confirm=
-document.getElementById(
-"confirmPassword"
-).value;
-
-const admin=
-window.data.admins.find(
-a=>a.username===currentAdmin.username
-);
-
-if(old!==admin.password){
-
-document.getElementById(
-"passwordMessage"
-).textContent=
-"❌ Ancien mot de passe incorrect.";
-
-return;
-
-}
-
-if(newPass.length<4){
-
-document.getElementById(
-"passwordMessage"
-).textContent=
-"❌ Minimum 4 caractères.";
-
-return;
-
-}
-
-if(newPass!==confirm){
-
-document.getElementById(
-"passwordMessage"
-).textContent=
-"❌ Les mots de passe ne correspondent pas.";
-
-return;
-
-}
-
-admin.password=newPass;
-
-currentAdmin=admin;
-
-document.getElementById(
-"passwordMessage"
-).textContent=
-"✅ Mot de passe changé.";
-
-document.getElementById(
-"oldPassword"
-).value="";
-
-document.getElementById(
-"newPassword"
-).value="";
-
-document.getElementById(
-"confirmPassword"
-).value="";
-
-save();
-
-}
-
-
-/* ================================
+/* =====================================================
    AJOUT MEMBRE
-================================ */
+===================================================== */
 
-function addMember(){
+window.addMember =
+async function(){
 
 if(!adminOnly())return;
 
-const name=
-document.getElementById(
-"newName"
-).value.trim();
+const name =
+document
+.getElementById("newName")
+.value
+.trim();
 
-const points=
+const points =
 Number(
-document.getElementById(
-"newPoints"
-).value
+document
+.getElementById("newPoints")
+.value
 )||0;
 
-const rank=
-document.getElementById(
-"newRank"
-).value;
+const rank =
+document
+.getElementById("newRank")
+.value;
 
 if(!name){
 
@@ -1138,94 +1495,96 @@ return;
 }
 
 if(
-window.data.members.some(
+data.members.some(
 m=>
-m.name.toLowerCase()
-===
+m.name.toLowerCase()===
 name.toLowerCase()
 )
 ){
 
-alert("Ce membre existe déjà.");
+alert(
+"Ce membre existe déjà."
+);
 
 return;
 
 }
 
-window.data.members.push({
+data.members.push({
 
-name:name,
+name,
 
 initial:points,
 
-points:points,
+points,
 
-rank:rank,
+rank,
 
 present:false
 
 });
 
-document.getElementById(
-"newName"
-).value="";
+document
+.getElementById("newName")
+.value="";
 
-document.getElementById(
-"newPoints"
-).value="0";
+document
+.getElementById("newPoints")
+.value="0";
 
-save();
+await save();
 
-renderAll();
-
-}
+};
 
 
-/* ================================
+/* =====================================================
    SUPPRESSION
-================================ */
+===================================================== */
 
-function deleteMember(){
+window.deleteMember =
+async function(){
 
 if(!adminOnly())return;
 
-const index=
+const index =
 Number(
-document.getElementById(
-"deleteMember"
-).value
+document
+.getElementById("deleteMember")
+.value
 );
 
-const member=window.data.members[index];
+const member =
+data.members[index];
+
+if(!member)return;
 
 if(
-confirm(
+!confirm(
 "Supprimer "+member.name+" ?"
 )
-){
+)return;
 
-window.data.members.splice(index,1);
+data.members.splice(
+index,
+1
+);
 
-save();
+await save();
 
-renderAll();
-
-}
-
-}
+};
 
 
-/* ================================
-   SELECTS
-================================ */
+/* =====================================================
+   AFFICHAGE
+===================================================== */
 
 function options(){
 
-return window.data.members
+return data.members
 .map(
 (m,i)=>
 `<option value="${i}">
-${m.name}
+${escapeHTML(m.name)}
 </option>`
 )
 .join("");
@@ -1233,73 +1592,89 @@ ${m.name}
 }
 
 
-/* ================================
-   AFFICHAGE MEMBRES
-================================ */
-
 function renderMembers(){
 
-const search=
+const search =
 (
-document.getElementById("search")
+document
+.getElementById("search")
 ?.value||""
-).toLowerCase();
+)
+.toLowerCase();
 
-const list=
-window.data.members.filter(
+const members =
+data.members.filter(
 m=>
-m.name.toLowerCase()
+m.name
+.toLowerCase()
 .includes(search)
 );
 
-document.getElementById(
-"membersList"
-).innerHTML=
+document
+.getElementById("membersList")
+.innerHTML =
 
-list.map(m=>`
+members.length
+
+?
+
+members.map(
+m=>`
 
 <div class="member">
 
-<h3>👤 ${m.name}</h3>
+<h3>
+👤 ${escapeHTML(m.name)}
+</h3>
 
 <div class="points">
 ${format(m.points)} points
 </div>
 
 <span class="rank">
-Rang ${m.rank}
+Rang ${escapeHTML(m.rank)}
 </span>
 
 </div>
 
-`).join("");
+`
+).join("")
+
+:
+
+"<p>Aucun membre trouvé.</p>";
 
 }
 
 
-/* ================================
-   ADMIN MEMBRES
-================================ */
-
 function renderAdminMembers(){
 
-document.getElementById(
-"adminMembers"
-).innerHTML=
+const box =
+document
+.getElementById("adminMembers");
 
-window.data.members.map(
+if(!box)return;
+
+box.innerHTML =
+data.members.length
+
+?
+
+data.members.map(
 (m,i)=>`
 
 <div class="member">
 
-<h3>${m.name}</h3>
+<h3>
+${escapeHTML(m.name)}
+</h3>
 
 <div class="points">
 ${format(m.points)} points
 </div>
 
 <span class="rank">
-Rang ${m.rank}
+Rang ${escapeHTML(m.rank)}
 </span>
 
 <div class="actions">
@@ -1333,26 +1708,27 @@ onclick="bigChange(${i},-1)">
 </div>
 
 `
-).join("");
+).join("")
+
+:
+
+"<p>Aucun membre.</p>";
 
 }
 
 
-/* ================================
-   CLASSEMENT
-================================ */
-
 function renderRanking(){
 
-const sorted=
-[...window.data.members]
+const sorted =
+[...data.members]
 .sort(
-(a,b)=>b.points-a.points
+(a,b)=>
+b.points-a.points
 );
 
-document.getElementById(
-"rankingList"
-).innerHTML=
+document
+.getElementById("rankingList")
+.innerHTML =
 
 sorted.map(
 (m,i)=>`
@@ -1360,7 +1736,7 @@ sorted.map(
 <div class="member">
 
 <b>
-${i+1}. ${m.name}
+${i+1}. ${escapeHTML(m.name)}
 </b>
 
 <br>
@@ -1370,7 +1746,7 @@ ${format(m.points)} points
 <br>
 
 <span class="rank">
-${m.rank}
+${escapeHTML(m.rank)}
 </span>
 
 </div>
@@ -1381,43 +1757,43 @@ ${m.rank}
 }
 
 
-/* ================================
-   HISTORIQUE
-================================ */
-
 function renderHistory(){
 
-document.getElementById(
-"historyList"
-).innerHTML=
+document
+.getElementById("historyList")
+.innerHTML =
 
-window.data.history.length
+data.history.length
 
 ?
 
-window.data.history.map(
+data.history.map(
 h=>`
 
 <div class="history">
 
-<b>${h.member}</b>
+<b>
+${escapeHTML(h.member)}
+</b>
 
 <br>
 
 ${
-h.points>0
-?"+"
-:""
+h.points>0?"+":""
 }${format(h.points)} points
 
 <br>
 
-${h.reason}
+${escapeHTML(h.reason)}
 
 <br>
 
 <span class="small">
-${h.date} — ${h.author}
+
+${escapeHTML(h.date)}
+—
+${escapeHTML(h.author)}
+
 </span>
 
 </div>
@@ -1432,21 +1808,17 @@ ${h.date} — ${h.author}
 }
 
 
-/* ================================
-   CAISSE
-================================ */
-
 function renderCashHistory(){
 
-document.getElementById(
-"cashHistory"
-).innerHTML=
+document
+.getElementById("cashHistory")
+.innerHTML =
 
-window.data.cashHistory.length
+data.cashHistory.length
 
 ?
 
-window.data.cashHistory.map(
+data.cashHistory.map(
 h=>`
 
 <div class="history">
@@ -1458,12 +1830,16 @@ ${format(h.amount)} FC
 
 <br>
 
-${h.reason}
+${escapeHTML(h.reason)}
 
 <br>
 
 <span class="small">
-${h.date} — ${h.author}
+
+${escapeHTML(h.date)}
+—
+${escapeHTML(h.author)}
+
 </span>
 
 </div>
@@ -1478,65 +1854,63 @@ ${h.date} — ${h.author}
 }
 
 
-/* ================================
-   TOUT METTRE À JOUR
-================================ */
+/* =====================================================
+   AFFICHAGE GENERAL
+===================================================== */
 
 function renderAll(){
 
-const total=
-window.data.members.reduce(
-(sum,m)=>sum+m.points,
+if(!data)return;
+
+const total =
+data.members.reduce(
+(sum,m)=>
+sum+Number(m.points||0),
 0
 );
 
-const present=
-window.data.members.filter(
+const present =
+data.members.filter(
 m=>m.present
 ).length;
 
-document.getElementById(
-"totalMembers"
-).textContent=
-window.data.members.length;
+document
+.getElementById("totalMembers")
+.textContent =
+data.members.length;
 
-document.getElementById(
-"totalPoints"
-).textContent=
+document
+.getElementById("totalPoints")
+.textContent =
 format(total);
 
-document.getElementById(
-"totalPresent"
-).textContent=
+document
+.getElementById("totalPresent")
+.textContent =
 present;
 
-document.getElementById(
-"totalCash"
-).textContent=
-format(window.data.cash)+" FC";
+document
+.getElementById("totalCash")
+.textContent =
+format(data.cash)+" FC";
 
-document.getElementById(
-"cashPublic"
-).textContent=
-format(window.data.cash)+" FC";
+document
+.getElementById("cashPublic")
+.textContent =
+format(data.cash)+" FC";
 
-if(currentAdmin){
+document
+.getElementById("stepDisplay")
+.textContent =
+format(data.step);
 
-document.getElementById(
-"stepDisplay"
-).textContent=
-format(window.data.step);
+document
+.getElementById("adminCash")
+.textContent =
+format(data.cash)+" FC";
 
-document.getElementById(
-"adminCash"
-).textContent=
-format(window.data.cash)+" FC";
-
-document.getElementById(
-"adminMembers"
-).innerHTML="";
-
-const opts=options();
+const opts =
+options();
 
 [
 "pointMember",
@@ -1546,73 +1920,43 @@ const opts=options();
 ]
 .forEach(id=>{
 
-document.getElementById(id)
-.innerHTML=opts;
+const el =
+document.getElementById(id);
 
-});
+if(el){
 
-renderAdminMembers();
+const old =
+el.value;
+
+el.innerHTML=opts;
+
+if(
+[...el.options]
+.some(o=>o.value===old)
+){
+
+el.value=old;
 
 }
 
+}
+
+});
+
 renderMembers();
-
+renderAdminMembers();
 renderRanking();
-
 renderHistory();
-
 renderCashHistory();
 
 }
 
 
-/* ================================
-   DÉMARRAGE
-================================ */
+/* =====================================================
+   DEMARRAGE
+===================================================== */
 
-renderAll();
+loadData();
 
-</script>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCq7Iesi9uK-r5ScRldDtcMWmkCnsaVlfw",
-    authDomain: "elit-bdb.firebaseapp.com",
-    projectId: "elit-bdb",
-    storageBucket: "elit-bdb.firebasestorage.app",
-    messagingSenderId: "748409772019",
-    appId: "1:748409772019:web:06cb5a784792c85b33a486"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const docRef = doc(db, "organisation", "donnees");
-
-  // Synchronisation automatique Firebase vers Interface Local
-  onSnapshot(docRef, (snapshot) => {
-    if (snapshot.exists()) {
-      window.data = snapshot.data();
-      localStorage.setItem("ORGANISATION_V4", JSON.stringify(window.data));
-      if (typeof renderAll === "function") renderAll();
-    } else {
-      setDoc(docRef, window.data);
-    }
-  });
-
-  // Fonction globale d'envoi vers Firebase
-  window.saveToFirebase = async function() {
-    if (window.data) {
-      try {
-        await setDoc(docRef, window.data);
-      } catch (e) {
-        console.error("Erreur d'envoi vers Firebase :", e);
-      }
-    }
-  };
-</script>
-
-</body>
+</script></body>
 </html>
