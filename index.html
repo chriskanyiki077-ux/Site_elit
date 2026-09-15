@@ -1573,6 +1573,7 @@ renderCashHistory();
 renderAll();
 
 </script>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
   import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
@@ -1588,22 +1589,26 @@ renderAll();
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const docRef = doc(db, "organisation", "donnees");
 
-  // Synchronisation en direct
-  onSnapshot(doc(db, "organisation", "donnees"), (snapshot) => {
+  // Synchronisation automatique Firebase vers Interface Local
+  onSnapshot(docRef, (snapshot) => {
     if (snapshot.exists()) {
       window.data = snapshot.data();
+      localStorage.setItem("ORGANISATION_V4", JSON.stringify(window.data));
       if (typeof renderAll === "function") renderAll();
+    } else {
+      setDoc(docRef, window.data);
     }
   });
 
-  // Fonction d'envoi vers Firestore
+  // Fonction globale d'envoi vers Firebase
   window.saveToFirebase = async function() {
     if (window.data) {
       try {
-        await setDoc(doc(db, "organisation", "donnees"), window.data);
+        await setDoc(docRef, window.data);
       } catch (e) {
-        console.error("Erreur : ", e);
+        console.error("Erreur d'envoi vers Firebase :", e);
       }
     }
   };
