@@ -480,37 +480,29 @@ name:"Chef de l'organisation"
 
 
 /* ================================
-   CHARGEMENT
+   CHARGEMENT & SAUVEGARDE
 ================================ */
 
-let data=
+window.data=
 JSON.parse(localStorage.getItem(STORAGE))
 ||initialData;
 
 let currentAdmin=null;
 
+function save(){
+  localStorage.setItem(STORAGE, JSON.stringify(window.data));
+  if (typeof window.saveToFirebase === "function") {
+    window.saveToFirebase();
+  }
+}
 
 /* ================================
    OUTILS
 ================================ */
 
-function save(){
-
-localStorage.setItem(
-STORAGE,
-JSON.stringify(data)
-);
-
-}
-
-
 function format(n){
-
-return Number(n)
-.toLocaleString("fr-FR");
-
+  return Number(n).toLocaleString("fr-FR");
 }
-
 
 function adminOnly(){
 
@@ -566,7 +558,7 @@ const password=
 document.getElementById("loginPassword").value;
 
 const admin=
-data.admins.find(
+window.data.admins.find(
 a=>a.username===username
 &&
 a.password===password
@@ -612,7 +604,7 @@ points,
 reason
 ){
 
-data.history.unshift({
+window.data.history.unshift({
 
 date:new Date()
 .toLocaleString("fr-FR"),
@@ -661,7 +653,7 @@ return;
 
 }
 
-data.step=value;
+window.data.step=value;
 
 document.getElementById(
 "stepInput"
@@ -682,9 +674,9 @@ function quickChange(index,sign){
 
 if(!adminOnly())return;
 
-const member=data.members[index];
+const member=window.data.members[index];
 
-const amount=data.step;
+const amount=window.data.step;
 
 member.points=
 Math.max(
@@ -721,7 +713,7 @@ function bigChange(index,sign){
 
 if(!adminOnly())return;
 
-const member=data.members[index];
+const member=window.data.members[index];
 
 const amount=1000;
 
@@ -801,7 +793,7 @@ return;
 
 }
 
-const member=data.members[index];
+const member=window.data.members[index];
 
 member.points=
 Math.max(
@@ -858,7 +850,7 @@ document.getElementById(
 "rankValue"
 ).value;
 
-const member=data.members[index];
+const member=window.data.members[index];
 
 const oldRank=member.rank;
 
@@ -913,7 +905,7 @@ return;
 
 }
 
-const member=data.members[index];
+const member=window.data.members[index];
 
 if(member.present){
 
@@ -984,7 +976,7 @@ return;
 if(
 sign<0
 &&
-amount>data.cash
+amount>window.data.cash
 ){
 
 alert(
@@ -995,9 +987,9 @@ return;
 
 }
 
-data.cash+=sign*amount;
+window.data.cash+=sign*amount;
 
-data.cashHistory.unshift({
+window.data.cashHistory.unshift({
 
 date:new Date()
 .toLocaleString("fr-FR"),
@@ -1049,7 +1041,7 @@ document.getElementById(
 ).value;
 
 const admin=
-data.admins.find(
+window.data.admins.find(
 a=>a.username===currentAdmin.username
 );
 
@@ -1146,7 +1138,7 @@ return;
 }
 
 if(
-data.members.some(
+window.data.members.some(
 m=>
 m.name.toLowerCase()
 ===
@@ -1160,7 +1152,7 @@ return;
 
 }
 
-data.members.push({
+window.data.members.push({
 
 name:name,
 
@@ -1204,7 +1196,7 @@ document.getElementById(
 ).value
 );
 
-const member=data.members[index];
+const member=window.data.members[index];
 
 if(
 confirm(
@@ -1212,7 +1204,7 @@ confirm(
 )
 ){
 
-data.members.splice(index,1);
+window.data.members.splice(index,1);
 
 save();
 
@@ -1229,7 +1221,7 @@ renderAll();
 
 function options(){
 
-return data.members
+return window.data.members
 .map(
 (m,i)=>
 `<option value="${i}">
@@ -1254,7 +1246,7 @@ document.getElementById("search")
 ).toLowerCase();
 
 const list=
-data.members.filter(
+window.data.members.filter(
 m=>
 m.name.toLowerCase()
 .includes(search)
@@ -1295,7 +1287,7 @@ document.getElementById(
 "adminMembers"
 ).innerHTML=
 
-data.members.map(
+window.data.members.map(
 (m,i)=>`
 
 <div class="member">
@@ -1353,7 +1345,7 @@ onclick="bigChange(${i},-1)">
 function renderRanking(){
 
 const sorted=
-[...data.members]
+[...window.data.members]
 .sort(
 (a,b)=>b.points-a.points
 );
@@ -1399,11 +1391,11 @@ document.getElementById(
 "historyList"
 ).innerHTML=
 
-data.history.length
+window.data.history.length
 
 ?
 
-data.history.map(
+window.data.history.map(
 h=>`
 
 <div class="history">
@@ -1450,11 +1442,11 @@ document.getElementById(
 "cashHistory"
 ).innerHTML=
 
-data.cashHistory.length
+window.data.cashHistory.length
 
 ?
 
-data.cashHistory.map(
+window.data.cashHistory.map(
 h=>`
 
 <div class="history">
@@ -1493,20 +1485,20 @@ ${h.date} — ${h.author}
 function renderAll(){
 
 const total=
-data.members.reduce(
+window.data.members.reduce(
 (sum,m)=>sum+m.points,
 0
 );
 
 const present=
-data.members.filter(
+window.data.members.filter(
 m=>m.present
 ).length;
 
 document.getElementById(
 "totalMembers"
 ).textContent=
-data.members.length;
+window.data.members.length;
 
 document.getElementById(
 "totalPoints"
@@ -1521,24 +1513,24 @@ present;
 document.getElementById(
 "totalCash"
 ).textContent=
-format(data.cash)+" FC";
+format(window.data.cash)+" FC";
 
 document.getElementById(
 "cashPublic"
 ).textContent=
-format(data.cash)+" FC";
+format(window.data.cash)+" FC";
 
 if(currentAdmin){
 
 document.getElementById(
 "stepDisplay"
 ).textContent=
-format(data.step);
+format(window.data.step);
 
 document.getElementById(
 "adminCash"
 ).textContent=
-format(data.cash)+" FC";
+format(window.data.cash)+" FC";
 
 document.getElementById(
 "adminMembers"
@@ -1578,18 +1570,13 @@ renderCashHistory();
    DÉMARRAGE
 ================================ */
 
-save();
-
 renderAll();
 
 </script>
 <script type="module">
-  // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+  import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-  // Your web app's Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyCq7Iesi9uK-r5ScRldDtcMWmkCnsaVlfw",
     authDomain: "elit-bdb.firebaseapp.com",
@@ -1599,8 +1586,28 @@ renderAll();
     appId: "1:748409772019:web:06cb5a784792c85b33a486"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Synchronisation en direct
+  onSnapshot(doc(db, "organisation", "donnees"), (snapshot) => {
+    if (snapshot.exists()) {
+      window.data = snapshot.data();
+      if (typeof renderAll === "function") renderAll();
+    }
+  });
+
+  // Fonction d'envoi vers Firestore
+  window.saveToFirebase = async function() {
+    if (window.data) {
+      try {
+        await setDoc(doc(db, "organisation", "donnees"), window.data);
+      } catch (e) {
+        console.error("Erreur : ", e);
+      }
+    }
+  };
 </script>
+
 </body>
 </html>
