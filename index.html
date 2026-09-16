@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Organisation d'Élite</title>
+<title>ORGANISATION D'ÉLITE</title>
 
 <style>
 *{box-sizing:border-box}
@@ -12,186 +12,173 @@ body{
     margin:0;
     font-family:Arial,sans-serif;
     background:#071426;
-    color:#eef6ff;
+    color:#eaf4ff;
 }
 
 header{
-    background:linear-gradient(135deg,#071a32,#0b4d83,#168bd0);
+    background:linear-gradient(135deg,#06152b,#0b3b72,#0879c9);
     color:white;
     text-align:center;
     padding:22px 15px;
-    box-shadow:0 5px 20px #0008;
+    box-shadow:0 3px 15px #0008;
 }
 
 header h1{
-    margin:0;
-    font-size:29px;
+    margin:0 0 8px;
+    font-size:28px;
 }
 
 header p{
-    margin:7px 0 0;
-    color:#b9ddf7;
+    margin:0;
+    opacity:.85;
 }
 
 nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    justify-content:center;
+    padding:12px;
+    background:#0b1e36;
     position:sticky;
     top:0;
     z-index:20;
-    display:flex;
-    overflow-x:auto;
-    background:#081525;
-    border-bottom:1px solid #23405d;
 }
 
 nav button{
     border:0;
-    background:transparent;
-    color:#9db6ce;
-    padding:15px 17px;
-    white-space:nowrap;
-    cursor:pointer;
-}
-
-nav button.active{
+    border-radius:12px;
+    padding:11px 14px;
+    background:#12345a;
     color:white;
-    background:#0d5e99;
+    font-weight:bold;
 }
 
-.container{
+nav button:hover{
+    background:#1765a7;
+}
+
+main{
     max-width:1100px;
     margin:auto;
     padding:18px;
 }
 
-.section{display:none}
-.section.active{display:block}
-
 .card{
-    background:linear-gradient(145deg,#10233a,#0b1b2d);
-    border:1px solid #1e3b58;
+    background:#0d213b;
+    border:1px solid #1c4b75;
     border-radius:18px;
     padding:18px;
-    margin-bottom:18px;
-    box-shadow:0 8px 25px #0005;
+    margin-bottom:15px;
+    box-shadow:0 5px 18px #0005;
 }
 
-.hero{
-    background:linear-gradient(135deg,#0c3154,#0b1d31);
-    border:1px solid #205985;
-    border-radius:20px;
-    padding:22px;
-    margin-bottom:18px;
-}
-
-.stats{
+.dashboard{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-    gap:14px;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:12px;
 }
 
 .stat{
-    background:linear-gradient(145deg,#102942,#0c1d31);
-    border:1px solid #21435f;
+    background:linear-gradient(145deg,#0d2949,#0b1c32);
+    border:1px solid #1d5d91;
     border-radius:17px;
     padding:18px;
+    text-align:center;
 }
 
-.icon{font-size:25px}
-.number{
-    font-size:25px;
-    font-weight:bold;
-    margin-top:7px;
-    color:#57bcff;
-}
-
-.label{
-    color:#91aac1;
-    font-size:13px;
-    margin-top:4px;
-}
-
-.members-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(245px,1fr));
-    gap:14px;
-}
-
-.member{
-    background:linear-gradient(145deg,#10243b,#0b1b2c);
-    border:1px solid #1d3d5a;
-    border-radius:17px;
-    padding:17px;
-}
-
-.member-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-.member-name{
-    font-size:19px;
-    font-weight:bold;
-}
-
-.rank{
-    background:#0d6eb1;
-    padding:5px 10px;
-    border-radius:9px;
-    font-weight:bold;
-}
-
-.points{
-    color:#58bfff;
-    font-size:25px;
-    font-weight:bold;
-    margin:13px 0;
-}
-
-.small{
-    color:#91aac1;
-    font-size:13px;
+.stat strong{
+    display:block;
+    font-size:30px;
+    color:#58b9ff;
+    margin-bottom:6px;
 }
 
 input,select{
     width:100%;
     padding:12px;
-    margin:5px 0;
+    margin:6px 0;
     border-radius:10px;
-    border:1px solid #294761;
-    background:#071525;
+    border:1px solid #2b5e88;
+    background:#071426;
     color:white;
     outline:none;
 }
 
-input:focus,select:focus{
-    border-color:#249de7;
-}
-
-.action{
+button.action{
     border:0;
     border-radius:10px;
-    padding:11px 14px;
+    padding:11px 15px;
     margin:4px;
-    cursor:pointer;
-    font-weight:bold;
+    background:#0879c9;
     color:white;
-    background:#126aa5;
+    font-weight:bold;
+    cursor:pointer;
 }
 
-.action:hover{
+button.action:hover{
     filter:brightness(1.15);
 }
 
-.green{background:#087b58}
-.red{background:#a82e42}
-.yellow{background:#a87813}
-.dark{background:#253c55}
+.green{background:#09894b!important}
+.red{background:#bd3030!important}
+.orange{background:#d87800!important}
 
-.form-grid{
+.member-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:15px;
+}
+
+.member{
+    background:linear-gradient(145deg,#0d2745,#091a2e);
+    border:1px solid #245d89;
+    border-radius:18px;
+    padding:17px;
+}
+
+.member h3{
+    margin:0 0 6px;
+    font-size:21px;
+}
+
+.points{
+    font-size:27px;
+    font-weight:bold;
+    color:#55bdff;
+    margin:8px 0 12px;
+}
+
+.rank{
+    display:inline-block;
+    padding:5px 10px;
+    border-radius:20px;
+    background:#164c78;
+    font-weight:bold;
+}
+
+.quick{
+    display:flex;
     gap:8px;
+}
+
+.quick button{
+    flex:1;
+    border:0;
+    border-radius:10px;
+    padding:13px 5px;
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.plus{
+    background:#087dca;
+}
+
+.minus{
+    background:#a82d35;
 }
 
 table{
@@ -200,49 +187,68 @@ table{
 }
 
 th,td{
-    padding:12px;
-    border-bottom:1px solid #1e3850;
+    padding:10px;
+    border-bottom:1px solid #21425f;
     text-align:left;
 }
 
-th{color:#62c1ff}
-
-.table-wrap{overflow-x:auto}
+th{
+    background:#103355;
+}
 
 .history-item{
-    background:#0b1c2f;
-    border-left:3px solid #168bd0;
-    border-radius:8px;
     padding:12px;
-    margin-bottom:8px;
+    border-bottom:1px solid #1b3d5b;
 }
 
-.status{
-    padding:10px;
-    border-radius:9px;
-    background:#0a2035;
-    color:#75c8ff;
-    margin-top:10px;
+.notice{
+    padding:12px;
+    border-radius:10px;
+    background:#103655;
+    margin:8px 0;
 }
 
-.login-box{
-    max-width:430px;
-    margin:30px auto;
+.error{
+    background:#57232b;
+    color:#ffb3b3;
 }
 
-.hidden{display:none!important}
+.success{
+    background:#123f31;
+    color:#8dffd0;
+}
 
-.empty{
-    text-align:center;
-    padding:30px;
-    color:#8299ae;
+.hidden{
+    display:none!important;
+}
+
+.transfer-box{
+    border:1px solid #236493;
+    background:linear-gradient(145deg,#0b2948,#091a2e);
+    padding:18px;
+    border-radius:18px;
 }
 
 footer{
     text-align:center;
-    color:#60788e;
-    padding:30px;
-    font-size:12px;
+    padding:25px;
+    opacity:.7;
+}
+
+.small-info{
+    opacity:.8;
+    font-size:14px;
+}
+
+.danger-zone{
+    border:1px solid #8d3038;
+    background:#301923;
+}
+
+@media(max-width:600px){
+    main{padding:10px}
+    header h1{font-size:23px}
+    nav button{font-size:12px;padding:9px}
 }
 </style>
 </head>
@@ -250,577 +256,866 @@ footer{
 <body>
 
 <header>
-<h1>🏆 ORGANISATION D'ÉLITE</h1>
-<p>Points • Membres • Présence • Classement • Caisse</p>
+    <h1>🏆 ORGANISATION D'ÉLITE</h1>
+    <p>Points • Membres • Présence • Classement • Historique • Caisse</p>
 </header>
 
 <nav>
-<button class="active" onclick="showSection('accueil',this)">🏠 Accueil</button>
-<button onclick="showSection('membres',this)">👥 Membres</button>
-<button onclick="showSection('classement',this)">🏆 Classement</button>
-<button onclick="showSection('historique',this)">📜 Historique</button>
-<button onclick="showSection('caisse',this)">💰 Caisse</button>
-<button onclick="showSection('admin',this)">🔐 Admin</button>
+    <button onclick="showSection('accueil')">🏠 Accueil</button>
+    <button onclick="showSection('membres')">👥 Membres</button>
+    <button onclick="showSection('classement')">🏆 Classement</button>
+    <button onclick="showSection('historique')">📜 Historique</button>
+    <button onclick="showSection('vente')">💸 Vente de points</button>
+    <button onclick="showSection('caisse')">💰 Caisse</button>
+    <button onclick="showSection('admin')">🔐 Administration</button>
 </nav>
 
-<div class="container">
+<main>
 
-<section id="accueil" class="section active">
+<section id="accueil">
 
-<div class="hero">
-<h2>Bienvenue dans l'Organisation d'Élite 👋</h2>
-<p>Consulte les membres, les points, les rangs, les présences et la caisse.</p>
-<div class="status" id="connectionStatus">
-💾 Données enregistrées sur cet appareil
-</div>
-</div>
+    <div class="card">
 
-<div class="stats">
+        <h2>Bienvenue 👋</h2>
 
-<div class="stat">
-<div class="icon">👥</div>
-<div class="number" id="totalMembers">0</div>
-<div class="label">Membres</div>
-</div>
+        <p>
+            Consulte les membres, leurs points et le classement.
+        </p>
 
-<div class="stat">
-<div class="icon">🏆</div>
-<div class="number" id="totalPoints">0</div>
-<div class="label">Points totaux</div>
-</div>
+        <div class="notice success">
+            🟢 Mode local activé — données enregistrées sur cet appareil
+        </div>
 
-<div class="stat">
-<div class="icon">🟢</div>
-<div class="number" id="presentCount">0</div>
-<div class="label">Présents</div>
-</div>
+    </div>
 
-<div class="stat">
-<div class="icon">💰</div>
-<div class="number" id="cashBalance">0 FC</div>
-<div class="label">Caisse</div>
-</div>
+    <div class="dashboard">
 
-</div>
-</section>
+        <div class="stat">
+            <strong id="totalMembers">0</strong>
+            Membres
+        </div>
 
+        <div class="stat">
+            <strong id="totalPoints">0</strong>
+            Points totaux
+        </div>
 
-<section id="membres" class="section">
+        <div class="stat">
+            <strong id="totalPresent">0</strong>
+            Présents
+        </div>
 
-<div class="card">
-<h2>👥 Membres</h2>
-<input id="searchMember"
-placeholder="🔎 Rechercher un membre..."
-oninput="renderMembers()">
-</div>
+        <div class="stat">
+            <strong id="cashValue">0</strong>
+            FC
+        </div>
 
-<div id="membersList" class="members-grid"></div>
+    </div>
 
 </section>
 
 
-<section id="classement" class="section">
+<section id="membres" class="hidden">
 
-<div class="card">
-<h2>🏆 Classement</h2>
+    <div class="card">
 
-<div class="table-wrap">
-<table>
-<thead>
-<tr>
-<th>#</th>
-<th>Nom</th>
-<th>Rang</th>
-<th>Points</th>
-</tr>
-</thead>
-<tbody id="rankingBody"></tbody>
-</table>
-</div>
+        <h2>👥 Membres</h2>
 
-</div>
-</section>
+        <input
+            id="searchMember"
+            placeholder="🔎 Rechercher un membre..."
+            oninput="renderMembers()"
+        >
 
+    </div>
 
-<section id="historique" class="section">
-
-<div class="card">
-<h2>📜 Historique</h2>
-<div id="historyList"></div>
-</div>
+    <div id="membersContainer" class="member-grid"></div>
 
 </section>
 
 
-<section id="caisse" class="section">
+<section id="classement" class="hidden">
 
-<div class="card">
+    <div class="card">
 
-<h2>💰 Caisse</h2>
+        <h2>🏆 Classement</h2>
 
-<div class="stat">
-<div class="label">Solde actuel</div>
-<div class="number" id="cashBalanceLarge">0 FC</div>
-</div>
+        <table>
 
-<h3>Mouvements</h3>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nom</th>
+                    <th>Rang</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
 
-<div id="cashHistoryList"></div>
+            <tbody id="rankingBody"></tbody>
 
-</div>
+        </table>
+
+    </div>
 
 </section>
 
 
-<section id="admin" class="section">
+<section id="historique" class="hidden">
 
-<div id="loginArea" class="card login-box">
+    <div class="card">
 
-<h2>🔐 Administration</h2>
+        <h2>📜 Historique</h2>
 
-<p class="small">
-Entre d'abord ton nom puis ton mot de passe.
-</p>
+        <div id="historyContainer"></div>
 
-<input id="adminName"
-type="text"
-placeholder="Nom de l'administrateur">
-
-<input id="adminPassword"
-type="password"
-placeholder="Mot de passe">
-
-<button class="action" onclick="loginAdmin()">
-🔐 Se connecter
-</button>
-
-<div id="loginMessage"></div>
-
-</div>
-
-
-<div id="adminPanel" class="hidden">
-
-<div class="card">
-
-<h2>⚙️ Administration</h2>
-
-<div class="status">
-✅ Administrateur connecté
-</div>
-
-<button class="action red" onclick="logoutAdmin()">
-🚪 Déconnexion
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h3>⚡ Pas général</h3>
-
-<p>Pas actuel :
-<strong id="currentStep">250</strong> points</p>
-
-<input id="newStep"
-type="number"
-placeholder="Nouveau pas">
-
-<button class="action" onclick="changeStep()">
-⚙️ Modifier
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h3>👥 Gestion rapide</h3>
-
-<select id="quickMember"></select>
-
-<button class="action green"
-onclick="quickPoints(1)">
-➕ Ajouter le pas
-</button>
-
-<button class="action red"
-onclick="quickPoints(-1)">
-➖ Retirer le pas
-</button>
-
-<br>
-
-<button class="action green"
-onclick="quickPoints(4)">
-➕ +1000
-</button>
-
-<button class="action red"
-onclick="quickPoints(-4)">
-➖ -1000
-</button>
-
-<br>
-
-<button class="action yellow"
-onclick="sanctionMember()">
-⚠️ Sanction -100
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h3>✏️ Modification manuelle</h3>
-
-<select id="manualMember"></select>
-
-<div class="form-grid">
-
-<input id="manualPoints"
-type="number"
-placeholder="Nombre de points">
-
-<input id="manualReason"
-placeholder="Motif">
-
-</div>
-
-<button class="action green"
-onclick="manualPoints(1)">
-➕ Ajouter
-</button>
-
-<button class="action red"
-onclick="manualPoints(-1)">
-➖ Retirer
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h3>🎖️ Modifier le rang</h3>
-
-<select id="rankMember"></select>
-
-<select id="rankSelect">
-<option>F</option>
-<option>E</option>
-<option>D</option>
-<option>C</option>
-<option>B</option>
-<option>A</option>
-<option>S</option>
-</select>
-
-<button class="action"
-onclick="changeRank()">
-🎖️ Enregistrer
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h3>🟢 Présence</h3>
-
-<select id="presenceMember"></select>
-
-<input id="presencePoints"
-type="number"
-value="250">
-
-<button class="action green"
-onclick="markPresent()">
-🟢 Présent + points
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h3>💰 Gestion de la caisse</h3>
-
-<div class="form-grid">
-
-<input id="cashAmount"
-type="number"
-placeholder="Montant">
-
-<input id="cashReason"
-placeholder="Motif">
-
-</div>
-
-<button class="action green"
-onclick="cashMove(1)">
-➕ Ajouter
-</button>
-
-<button class="action red"
-onclick="cashMove(-1)">
-➖ Retirer
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h3>➕ Ajouter un membre</h3>
-
-<input id="newMemberName"
-placeholder="Nom">
-
-<input id="newMemberPoints"
-type="number"
-value="0"
-placeholder="Points">
-
-<select id="newMemberRank">
-<option>F</option>
-<option>E</option>
-<option>D</option>
-<option>C</option>
-<option>B</option>
-<option>A</option>
-<option>S</option>
-</select>
-
-<button class="action green"
-onclick="addMember()">
-➕ Ajouter le membre
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h3>🗑️ Supprimer un membre</h3>
-
-<select id="deleteMemberSelect"></select>
-
-<button class="action red"
-onclick="deleteMember()">
-🗑️ Supprimer
-</button>
-
-</div>
-
-</div>
+    </div>
 
 </section>
 
-</div>
+
+<section id="vente" class="hidden">
+
+    <div class="transfer-box">
+
+        <h2>💸 Vente de points</h2>
+
+        <p>
+            Utilise uniquement ton propre compte pour vendre tes points.
+        </p>
+
+        <label>👤 Ton nom</label>
+
+        <select id="sellerSelect"></select>
+
+        <label>🔐 Ton mot de passe</label>
+
+        <input
+            id="sellerPassword"
+            type="password"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="4"
+            placeholder="4 chiffres maximum"
+        >
+
+        <label>👥 Destinataire</label>
+
+        <select id="receiverSelect"></select>
+
+        <label>💰 Points à vendre</label>
+
+        <input
+            id="transferAmount"
+            type="number"
+            min="1"
+            placeholder="Nombre de points"
+        >
+
+        <button
+            class="action green"
+            onclick="transferPoints()"
+        >
+            💸 Vendre
+        </button>
+
+        <div id="transferMessage"></div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>🔑 Changer mon mot de passe</h3>
+
+        <select id="passwordMemberSelect"></select>
+
+        <input
+            id="oldPlayerPassword"
+            type="password"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="4"
+            placeholder="Ancien mot de passe"
+        >
+
+        <input
+            id="newPlayerPassword"
+            type="password"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="4"
+            placeholder="Nouveau mot de passe — 4 chiffres maximum"
+        >
+
+        <button
+            class="action"
+            onclick="changeOwnPassword()"
+        >
+            🔑 Changer mon mot de passe
+        </button>
+
+        <div id="passwordMessage"></div>
+
+    </div>
+
+</section>
+
+
+<section id="caisse" class="hidden">
+
+    <div class="card">
+
+        <h2>💰 Caisse</h2>
+
+        <div class="notice">
+            🔐 La caisse est gérée uniquement par l'administrateur.
+        </div>
+
+        <h3>
+            Solde :
+            <span id="cashBalance">0</span> FC
+        </h3>
+
+        <div id="cashPublicHistory"></div>
+
+    </div>
+
+</section>
+
+
+<section id="admin" class="hidden">
+
+    <div id="loginBox" class="card">
+
+        <h2>🔐 Administration</h2>
+
+        <p>
+            Cette partie est réservée à l'administrateur.
+        </p>
+
+        <input
+            id="adminName"
+            placeholder="Nom de l'administrateur"
+        >
+
+        <input
+            id="adminPassword"
+            type="password"
+            placeholder="Mot de passe administrateur"
+        >
+
+        <button
+            class="action"
+            onclick="loginAdmin()"
+        >
+            🔐 Se connecter
+        </button>
+
+        <div id="loginMessage"></div>
+
+    </div>
+
+
+    <div id="adminPanel" class="hidden">
+
+        <div class="card">
+
+            <h2>⚙️ Administration</h2>
+
+            <div class="notice success">
+                ✅ Administrateur connecté
+            </div>
+
+            <button
+                class="action red"
+                onclick="logoutAdmin()"
+            >
+                🚪 Déconnexion
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>⚡ Gestion rapide des points</h3>
+
+            <p>
+                Pas actuel :
+                <strong id="stepDisplay">250</strong>
+                points
+            </p>
+
+            <input
+                id="newStep"
+                type="number"
+                min="1"
+                placeholder="Nouveau pas"
+            >
+
+            <button
+                class="action"
+                onclick="changeStep()"
+            >
+                Modifier le pas
+            </button>
+
+            <hr>
+
+            <div id="adminMembersContainer"></div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>🟢 Présence</h3>
+
+            <select id="presenceMember"></select>
+
+            <input
+                id="presencePoints"
+                type="number"
+                value="250"
+            >
+
+            <button
+                class="action green"
+                onclick="markPresence()"
+            >
+                🟢 Présent
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>✏️ Modification des points</h3>
+
+            <select id="manualMember"></select>
+
+            <input
+                id="manualAmount"
+                type="number"
+                placeholder="Nombre de points"
+            >
+
+            <input
+                id="manualReason"
+                placeholder="Motif"
+            >
+
+            <button
+                class="action green"
+                onclick="manualChange(1)"
+            >
+                ➕ Ajouter
+            </button>
+
+            <button
+                class="action red"
+                onclick="manualChange(-1)"
+            >
+                ➖ Retirer
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>🎖️ Rang</h3>
+
+            <select id="rankMember"></select>
+
+            <select id="rankValue">
+
+                <option value="F">F</option>
+                <option value="E">E</option>
+                <option value="D">D</option>
+                <option value="C">C</option>
+                <option value="B">B</option>
+                <option value="A">A</option>
+                <option value="S">S</option>
+
+            </select>
+
+            <button
+                class="action"
+                onclick="changeRank()"
+            >
+                🎖️ Modifier
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>💰 Caisse</h3>
+
+            <input
+                id="adminCashAmount"
+                type="number"
+                placeholder="Montant"
+            >
+
+            <input
+                id="adminCashReason"
+                placeholder="Motif"
+            >
+
+            <button
+                class="action green"
+                onclick="adminCashChange(1)"
+            >
+                ➕ Ajouter
+            </button>
+
+            <button
+                class="action red"
+                onclick="adminCashChange(-1)"
+            >
+                ➖ Retirer
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>👤 Ajouter un membre</h3>
+
+            <input
+                id="newMemberName"
+                placeholder="Nom"
+            >
+
+            <input
+                id="newMemberPoints"
+                type="number"
+                value="0"
+                placeholder="Points"
+            >
+
+            <select id="newMemberRank">
+
+                <option value="F">F</option>
+                <option value="E">E</option>
+                <option value="D">D</option>
+                <option value="C">C</option>
+                <option value="B">B</option>
+                <option value="A">A</option>
+                <option value="S">S</option>
+
+            </select>
+
+            <input
+                id="newMemberPassword"
+                type="password"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="4"
+                placeholder="Mot de passe — 4 chiffres maximum"
+            >
+
+            <button
+                class="action green"
+                onclick="addMember()"
+            >
+                ➕ Ajouter
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>🔑 Mot de passe d'un membre</h3>
+
+            <select id="adminPasswordMember"></select>
+
+            <input
+                id="adminNewPassword"
+                type="password"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="4"
+                placeholder="Nouveau mot de passe — 4 chiffres maximum"
+            >
+
+            <button
+                class="action"
+                onclick="adminChangePlayerPassword()"
+            >
+                🔑 Modifier le mot de passe
+            </button>
+
+            <div id="adminPasswordMessage"></div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>🗑️ Supprimer un membre</h3>
+
+            <select id="deleteMember"></select>
+
+            <button
+                class="action red"
+                onclick="deleteMember()"
+            >
+                🗑️ Supprimer
+            </button>
+
+        </div>
+
+
+        <div class="card danger-zone">
+
+            <h3>⚠️ Données locales</h3>
+
+            <p class="small-info">
+                Cette action remet l'application à son état initial.
+            </p>
+
+            <button
+                class="action red"
+                onclick="resetLocalData()"
+            >
+                ♻️ Réinitialiser les données
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+</main>
 
 <footer>
-ORGANISATION D'ÉLITE • Système de gestion
+    ORGANISATION D'ÉLITE
 </footer>
 
 
 <script>
 
 /* =====================================================
-   DONNÉES DE DÉPART
+   MODE LOCAL
 ===================================================== */
 
-const INITIAL_DATA = {
+const STORAGE_KEY="organisationEliteLocal";
 
-step:250,
 
-cash:0,
+/* =====================================================
+   MOTS DE PASSE
+===================================================== */
 
-members:[
+const ADMIN_PASSWORD="1234Elite";
 
-{
-id:"ken",
-name:"ken",
-points:8375,
-rank:"A",
-present:false
-},
+const DEFAULT_PLAYER_PASSWORD="1234";
 
-{
-id:"chris",
-name:"Chris",
-points:10625,
-rank:"B",
-present:false
-},
 
-{
-id:"ya-chris",
-name:"ya Chris",
-points:24375,
-rank:"F",
-present:false
-},
+/* =====================================================
+   DONNÉES INITIALES
+===================================================== */
 
-{
-id:"mana",
-name:"Mana",
-points:17205,
-rank:"A",
-present:false
-},
+const INITIAL_DATA={
 
-{
-id:"mani",
-name:"Mani",
-points:17750,
-rank:"B",
-present:false
-},
+    step:250,
 
-{
-id:"ephraim",
-name:"ephraim",
-points:16275,
-rank:"C",
-present:false
-},
+    cash:0,
 
-{
-id:"persis",
-name:"Persis",
-points:5300,
-rank:"C",
-present:false
-},
+    members:[
 
-{
-id:"olivier",
-name:"Olivier",
-points:1875,
-rank:"F",
-present:false
-}
+        {
+            id:"ken",
+            name:"ken",
+            points:8375,
+            rank:"A",
+            present:false,
+            password:"1234"
+        },
 
-],
+        {
+            id:"chris",
+            name:"Chris",
+            points:10625,
+            rank:"F",
+            present:false,
+            password:"1234"
+        },
 
-history:[],
+        {
+            id:"ya-chris",
+            name:"ya Chris",
+            points:24375,
+            rank:"B",
+            present:false,
+            password:"1234"
+        },
 
-cashHistory:[]
+        {
+            id:"mana",
+            name:"Mana",
+            points:17205,
+            rank:"F",
+            present:false,
+            password:"1234"
+        },
+
+        {
+            id:"mani",
+            name:"Mani",
+            points:17750,
+            rank:"E",
+            present:false,
+            password:"1234"
+        },
+
+        {
+            id:"ephraim",
+            name:"ephraim",
+            points:16275,
+            rank:"D",
+            present:false,
+            password:"1234"
+        },
+
+        {
+            id:"persis",
+            name:"Persis",
+            points:5300,
+            rank:"F",
+            present:false,
+            password:"1234"
+        },
+
+        {
+            id:"olivier",
+            name:"Olivier",
+            points:1875,
+            rank:"E",
+            present:false,
+            password:"1234"
+        }
+
+    ],
+
+    history:[],
+
+    cashHistory:[]
 
 };
 
 
-/* =====================================================
-   STOCKAGE
-===================================================== */
-
-let data =
-JSON.parse(
-localStorage.getItem("ORGANISATION_ELITE")
-) || JSON.parse(JSON.stringify(INITIAL_DATA));
-
+let data=null;
 
 let adminConnected=false;
 
 
 /* =====================================================
-   SAUVEGARDE
+   CHARGEMENT LOCAL
 ===================================================== */
 
-function save(){
+function loadData(){
 
-localStorage.setItem(
-"ORGANISATION_ELITE",
-JSON.stringify(data)
-);
+    const saved=
+        localStorage.getItem(
+            STORAGE_KEY
+        );
 
-renderAll();
+    if(saved){
+
+        try{
+
+            data=JSON.parse(saved);
+
+        }catch(error){
+
+            console.error(
+                "Erreur lecture données :",
+                error
+            );
+
+            data=JSON.parse(
+                JSON.stringify(INITIAL_DATA)
+            );
+
+        }
+
+    }else{
+
+        data=JSON.parse(
+            JSON.stringify(INITIAL_DATA)
+        );
+
+        saveData();
+
+    }
+
+    if(!Array.isArray(data.members))
+        data.members=[];
+
+    if(!Array.isArray(data.history))
+        data.history=[];
+
+    if(!Array.isArray(data.cashHistory))
+        data.cashHistory=[];
+
+    if(typeof data.step!=="number")
+        data.step=250;
+
+    if(typeof data.cash!=="number")
+        data.cash=0;
+
+    renderAll();
 
 }
 
 
 /* =====================================================
-   OUTILS
+   SAUVEGARDE LOCALE
 ===================================================== */
 
-function id(){
+function saveData(){
 
-return Date.now().toString(36)+
-Math.random().toString(36).slice(2);
-
-}
-
-
-function format(n){
-
-return Number(n||0).toLocaleString("fr-FR");
-
-}
-
-
-function escapeHTML(value){
-
-return String(value??"")
-.replaceAll("&","&amp;")
-.replaceAll("<","&lt;")
-.replaceAll(">","&gt;")
-.replaceAll('"',"&quot;")
-.replaceAll("'","&#039;");
-
-}
-
-
-function history(text){
-
-data.history.unshift({
-
-text:text,
-
-date:new Date().toLocaleString("fr-FR")
-
-});
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(data)
+    );
 
 }
 
 
 /* =====================================================
-   RENDU
+   UTILITAIRES
+===================================================== */
+
+function formatNumber(number){
+
+    return Number(number||0)
+        .toLocaleString("fr-FR");
+
+}
+
+
+function makeId(){
+
+    return Date.now().toString(36)
+        +
+        Math.random()
+        .toString(36)
+        .slice(2);
+
+}
+
+
+function escapeHTML(text){
+
+    return String(text)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+/* =====================================================
+   VALIDATION MOT DE PASSE
+   4 CHIFFRES MAXIMUM
+===================================================== */
+
+function validPlayerPassword(password){
+
+    return /^[0-9]{1,4}$/.test(password);
+
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+window.showSection=function(id){
+
+    document
+        .querySelectorAll("main > section")
+        .forEach(
+            section=>
+                section.classList.add("hidden")
+        );
+
+    document
+        .getElementById(id)
+        .classList.remove("hidden");
+
+};
+
+
+/* =====================================================
+   RENDU GLOBAL
 ===================================================== */
 
 function renderAll(){
 
-document.getElementById("totalMembers")
-.textContent=format(data.members.length);
+    if(!data)return;
 
-document.getElementById("totalPoints")
-.textContent=format(
-data.members.reduce(
-(a,m)=>a+Number(m.points||0),0
-)
-);
+    document.getElementById(
+        "totalMembers"
+    ).textContent=
+        data.members.length;
 
-document.getElementById("presentCount")
-.textContent=format(
-data.members.filter(m=>m.present).length
-);
+    document.getElementById(
+        "totalPoints"
+    ).textContent=
+        formatNumber(
+            data.members.reduce(
+                (sum,member)=>
+                    sum+
+                    Number(member.points||0),
+                0
+            )
+        );
 
-document.getElementById("cashBalance")
-.textContent=format(data.cash)+" FC";
+    document.getElementById(
+        "totalPresent"
+    ).textContent=
+        data.members.filter(
+            member=>member.present
+        ).length;
 
-document.getElementById("cashBalanceLarge")
-.textContent=format(data.cash)+" FC";
+    document.getElementById(
+        "cashValue"
+    ).textContent=
+        formatNumber(data.cash);
 
-document.getElementById("currentStep")
-.textContent=format(data.step);
+    document.getElementById(
+        "cashBalance"
+    ).textContent=
+        formatNumber(data.cash);
 
-renderMembers();
-renderRanking();
-renderHistory();
-renderCash();
-updateSelects();
+    document.getElementById(
+        "stepDisplay"
+    ).textContent=
+        formatNumber(data.step);
+
+    renderMembers();
+
+    renderAdminMembers();
+
+    renderRanking();
+
+    renderHistory();
+
+    renderCashHistory();
+
+    fillSelects();
 
 }
 
@@ -829,54 +1124,233 @@ updateSelects();
    MEMBRES
 ===================================================== */
 
-function renderMembers(){
+window.renderMembers=function(){
 
-const box=document.getElementById("membersList");
+    if(!data)return;
 
-const search=
-(document.getElementById("searchMember")?.value||"")
-.toLowerCase();
+    const container=
+        document.getElementById(
+            "membersContainer"
+        );
 
-const list=data.members.filter(m=>
-m.name.toLowerCase().includes(search)
-);
+    const search=
+        document
+        .getElementById(
+            "searchMember"
+        )
+        .value
+        .toLowerCase();
 
-if(!list.length){
+    const members=
+        data.members.filter(
+            member=>
+                member.name
+                .toLowerCase()
+                .includes(search)
+        );
 
-box.innerHTML=
-'<div class="empty">Aucun membre trouvé.</div>';
+    container.innerHTML="";
 
-return;
+    members.forEach(member=>{
+
+        const div=
+            document.createElement("div");
+
+        div.className="member";
+
+        div.innerHTML=`
+
+            <h3>
+                ${escapeHTML(member.name)}
+            </h3>
+
+            <span class="rank">
+                Rang ${escapeHTML(member.rank)}
+            </span>
+
+            ${
+                member.present
+                ?
+                `<span class="rank">
+                    🟢 Présent
+                </span>`
+                :
+                ""
+            }
+
+            <div class="points">
+                ${formatNumber(member.points)} pts
+            </div>
+
+        `;
+
+        container.appendChild(div);
+
+    });
+
+};
+
+
+/* =====================================================
+   GESTION RAPIDE ADMIN
+===================================================== */
+
+function renderAdminMembers(){
+
+    const container=
+        document.getElementById(
+            "adminMembersContainer"
+        );
+
+    if(!container||!data)return;
+
+    container.innerHTML="";
+
+    data.members.forEach(member=>{
+
+        const div=
+            document.createElement("div");
+
+        div.className="member";
+
+        div.innerHTML=`
+
+            <h3>
+                ${escapeHTML(member.name)}
+            </h3>
+
+            <div class="small-info">
+                Rang ${escapeHTML(member.rank)}
+            </div>
+
+            <div class="points">
+                ${formatNumber(member.points)} pts
+            </div>
+
+            <div class="quick">
+
+                <button
+                    class="plus"
+                    onclick="individualChange('${member.id}',1)"
+                >
+                    ➕
+                </button>
+
+                <button
+                    class="minus"
+                    onclick="individualChange('${member.id}',-1)"
+                >
+                    ➖
+                </button>
+
+            </div>
+
+        `;
+
+        container.appendChild(div);
+
+    });
 
 }
 
-box.innerHTML=list.map(m=>`
 
-<div class="member">
+window.individualChange=function(
+    id,
+    direction
+){
 
-<div class="member-top">
+    if(!adminConnected){
 
-<div class="member-name">
-${escapeHTML(m.name)}
-</div>
+        alert(
+            "🔐 Accès réservé à l'administrateur."
+        );
 
-<div class="rank">
-${escapeHTML(m.rank)}
-</div>
+        return;
 
-</div>
+    }
 
-<div class="points">
-${format(m.points)} pts
-</div>
+    const amount=
+        Number(data.step)*direction;
 
-<div class="small">
-${m.present?"🟢 Présent":"⚪ Non présent"}
-</div>
+    changeMemberPoints(
+        id,
+        amount,
+        "Gestion rapide"
+    );
 
-</div>
+};
 
-`).join("");
+
+/* =====================================================
+   MODIFICATION DES POINTS
+===================================================== */
+
+function changeMemberPoints(
+    id,
+    amount,
+    reason
+){
+
+    const member=
+        data.members.find(
+            member=>member.id===id
+        );
+
+    if(!member){
+
+        alert("❌ Membre introuvable.");
+
+        return;
+
+    }
+
+    const oldPoints=
+        Number(member.points||0);
+
+    const newPoints=
+        oldPoints+
+        Number(amount);
+
+    if(newPoints<0){
+
+        alert(
+            "❌ Les points ne peuvent pas être négatifs."
+        );
+
+        return;
+
+    }
+
+    member.points=newPoints;
+
+    data.history.unshift({
+
+        id:makeId(),
+
+        date:new Date().toISOString(),
+
+        type:"points",
+
+        member:member.name,
+
+        amount:Number(amount),
+
+        reason:reason,
+
+        text:
+            `${member.name} : `
+            +
+            `${amount>=0?"+":""}`
+            +
+            `${formatNumber(amount)} points`
+            +
+            ` (${reason})`
+
+    });
+
+    saveData();
+
+    renderAll();
 
 }
 
@@ -887,26 +1361,53 @@ ${m.present?"🟢 Présent":"⚪ Non présent"}
 
 function renderRanking(){
 
-const body=document.getElementById("rankingBody");
+    const body=
+        document.getElementById(
+            "rankingBody"
+        );
 
-const list=[...data.members]
-.sort((a,b)=>b.points-a.points);
+    if(!data)return;
 
-body.innerHTML=list.map((m,i)=>`
+    const sorted=
+        [...data.members].sort(
+            (a,b)=>
+                Number(b.points)-
+                Number(a.points)
+        );
 
-<tr>
+    body.innerHTML="";
 
-<td>${i+1}</td>
+    sorted.forEach(
+        (member,index)=>{
 
-<td>${escapeHTML(m.name)}</td>
+            body.innerHTML+=`
 
-<td><strong>${escapeHTML(m.rank)}</strong></td>
+                <tr>
 
-<td>${format(m.points)}</td>
+                    <td>
+                        ${index+1}
+                    </td>
 
-</tr>
+                    <td>
+                        ${escapeHTML(member.name)}
+                    </td>
 
-`).join("");
+                    <td>
+                        ${escapeHTML(member.rank)}
+                    </td>
+
+                    <td>
+                        <strong>
+                            ${formatNumber(member.points)}
+                        </strong>
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
 
 }
 
@@ -917,71 +1418,49 @@ body.innerHTML=list.map((m,i)=>`
 
 function renderHistory(){
 
-const box=document.getElementById("historyList");
+    const container=
+        document.getElementById(
+            "historyContainer"
+        );
 
-if(!data.history.length){
+    if(!data)return;
 
-box.innerHTML=
-'<div class="empty">Aucun événement.</div>';
+    if(!data.history.length){
 
-return;
+        container.innerHTML=
+            "<p>Aucun historique.</p>";
 
-}
+        return;
 
-box.innerHTML=data.history.map(h=>`
+    }
 
-<div class="history-item">
+    container.innerHTML=
+        data.history
+        .slice(0,100)
+        .map(
+            item=>`
 
-<strong>${escapeHTML(h.text)}</strong>
+                <div class="history-item">
 
-<div class="small">
-${escapeHTML(h.date)}
-</div>
+                    <strong>
+                        ${escapeHTML(
+                            item.text||""
+                        )}
+                    </strong>
 
-</div>
+                    <br>
 
-`).join("");
+                    <small>
+                        ${new Date(
+                            item.date
+                        ).toLocaleString("fr-FR")}
+                    </small>
 
-}
+                </div>
 
-
-/* =====================================================
-   CAISSE
-===================================================== */
-
-function renderCash(){
-
-const box=document.getElementById("cashHistoryList");
-
-if(!data.cashHistory.length){
-
-box.innerHTML=
-'<div class="empty">Aucun mouvement.</div>';
-
-return;
-
-}
-
-box.innerHTML=data.cashHistory.map(h=>`
-
-<div class="history-item">
-
-<strong>
-${h.amount>=0?"➕":"➖"}
-${format(Math.abs(h.amount))} FC
-</strong>
-
-<div>
-${escapeHTML(h.reason)}
-</div>
-
-<div class="small">
-${escapeHTML(h.date)}
-</div>
-
-</div>
-
-`).join("");
+            `
+        )
+        .join("");
 
 }
 
@@ -990,510 +1469,1019 @@ ${escapeHTML(h.date)}
    SELECTS
 ===================================================== */
 
-function updateSelects(){
+function fillSelects(){
 
-const ids=[
-"quickMember",
-"manualMember",
-"rankMember",
-"presenceMember",
-"deleteMemberSelect"
-];
+    if(!data)return;
 
-ids.forEach(idName=>{
+    const ids=[
 
-const select=document.getElementById(idName);
+        "presenceMember",
+        "manualMember",
+        "rankMember",
+        "deleteMember",
+        "adminPasswordMember",
+        "passwordMemberSelect",
+        "sellerSelect",
+        "receiverSelect"
 
-if(!select)return;
+    ];
 
-select.innerHTML=data.members.map(m=>`
+    ids.forEach(id=>{
 
-<option value="${m.id}">
-${escapeHTML(m.name)}
-</option>
+        const select=
+            document.getElementById(id);
 
-`).join("");
+        if(!select)return;
 
-});
+        const old=select.value;
 
-}
+        select.innerHTML="";
 
+        data.members.forEach(member=>{
 
-function member(id){
+            select.innerHTML+=`
 
-return data.members.find(m=>m.id===id);
+                <option value="${member.id}">
+                    ${escapeHTML(member.name)}
+                </option>
 
-}
+            `;
 
+        });
 
-/* =====================================================
-   CONNEXION
-===================================================== */
+        if(
+            [...select.options]
+            .some(
+                option=>
+                    option.value===old
+            )
+        ){
 
-function loginAdmin(){
+            select.value=old;
 
-const name=
-document.getElementById("adminName")
-.value.trim();
+        }
 
-const password=
-document.getElementById("adminPassword")
-.value;
-
-const message=
-document.getElementById("loginMessage");
-
-
-if(!name){
-
-message.innerHTML=
-'<div class="status">⚠️ Entre ton nom.</div>';
-
-return;
-
-}
-
-
-/*
-   MOT DE PASSE ADMINISTRATEUR
-*/
-
-if(password!=="1234ABCD;"){
-
-message.innerHTML=
-'<div class="status">❌ Mot de passe incorrect.</div>';
-
-return;
-
-}
-
-
-adminConnected=true;
-
-document.getElementById("loginArea")
-.classList.add("hidden");
-
-document.getElementById("adminPanel")
-.classList.remove("hidden");
-
-message.innerHTML="";
+    });
 
 }
 
 
 /* =====================================================
-   DÉCONNEXION
+   ADMIN
 ===================================================== */
 
-function logoutAdmin(){
+window.loginAdmin=function(){
 
-adminConnected=false;
+    const name=
+        document
+        .getElementById("adminName")
+        .value
+        .trim();
 
-document.getElementById("loginArea")
-.classList.remove("hidden");
+    const password=
+        document
+        .getElementById("adminPassword")
+        .value;
 
-document.getElementById("adminPanel")
-.classList.add("hidden");
+    const message=
+        document.getElementById(
+            "loginMessage"
+        );
 
-document.getElementById("adminPassword").value="";
+    if(!name){
 
-}
+        message.innerHTML=
+            `<div class="notice error">
+                ❌ Entre ton nom.
+            </div>`;
 
+        return;
 
-/* =====================================================
-   VÉRIFICATION ADMIN
-===================================================== */
+    }
 
-function checkAdmin(){
+    if(password!==ADMIN_PASSWORD){
 
-if(!adminConnected){
+        message.innerHTML=
+            `<div class="notice error">
+                ❌ Mot de passe incorrect.
+            </div>`;
 
-alert("🔐 Connecte-toi d'abord comme administrateur.");
+        return;
 
-return false;
+    }
 
-}
+    adminConnected=true;
 
-return true;
+    document
+        .getElementById("loginBox")
+        .classList.add("hidden");
 
-}
+    document
+        .getElementById("adminPanel")
+        .classList.remove("hidden");
 
+};
 
-/* =====================================================
-   POINTS RAPIDES
-===================================================== */
 
-function quickPoints(multiplier){
+window.logoutAdmin=function(){
 
-if(!checkAdmin())return;
+    adminConnected=false;
 
-const m=member(
-document.getElementById("quickMember").value
-);
+    document
+        .getElementById("loginBox")
+        .classList.remove("hidden");
 
-if(!m)return;
+    document
+        .getElementById("adminPanel")
+        .classList.add("hidden");
 
-const amount=data.step*multiplier;
-
-m.points=Math.max(
-0,
-m.points+amount
-);
-
-history(
-`${m.name} : ${amount>=0?"+":""}${amount} points`
-);
-
-save();
-
-}
-
-
-/* =====================================================
-   POINTS MANUELS
-===================================================== */
-
-function manualPoints(direction){
-
-if(!checkAdmin())return;
-
-const m=member(
-document.getElementById("manualMember").value
-);
-
-const amount=Number(
-document.getElementById("manualPoints").value
-);
-
-const reason=
-document.getElementById("manualReason")
-.value.trim() ||
-"Modification manuelle";
-
-
-if(!m||!amount||amount<0){
-
-alert("Entre un nombre de points valide.");
-
-return;
-
-}
-
-const value=amount*direction;
-
-m.points=Math.max(
-0,
-m.points+value
-);
-
-history(
-`${m.name} : ${value>=0?"+":""}${value} points — ${reason}`
-);
-
-document.getElementById("manualPoints").value="";
-document.getElementById("manualReason").value="";
-
-save();
-
-}
-
-
-/* =====================================================
-   SANCTION
-===================================================== */
-
-function sanctionMember(){
-
-if(!checkAdmin())return;
-
-const m=member(
-document.getElementById("quickMember").value
-);
-
-if(!m)return;
-
-m.points=Math.max(
-0,
-m.points-100
-);
-
-history(
-`${m.name} : sanction -100 points`
-);
-
-save();
-
-}
-
-
-/* =====================================================
-   RANG
-===================================================== */
-
-function changeRank(){
-
-if(!checkAdmin())return;
-
-const m=member(
-document.getElementById("rankMember").value
-);
-
-const rank=
-document.getElementById("rankSelect").value;
-
-if(!m)return;
-
-const old=m.rank;
-
-m.rank=rank;
-
-history(
-`${m.name} : rang ${old} → ${rank}`
-);
-
-save();
-
-}
-
-
-/* =====================================================
-   PRÉSENCE
-===================================================== */
-
-function markPresent(){
-
-if(!checkAdmin())return;
-
-const m=member(
-document.getElementById("presenceMember").value
-);
-
-const points=Number(
-document.getElementById("presencePoints").value
-);
-
-if(!m||points<0){
-
-alert("Points invalides.");
-
-return;
-
-}
-
-m.present=true;
-
-m.points+=points;
-
-history(
-`${m.name} présent : +${points} points`
-);
-
-save();
-
-}
+};
 
 
 /* =====================================================
    PAS
 ===================================================== */
 
-function changeStep(){
+window.changeStep=function(){
 
-if(!checkAdmin())return;
+    if(!adminConnected)return;
 
-const step=Number(
-document.getElementById("newStep").value
-);
+    const value=
+        Number(
+            document
+            .getElementById("newStep")
+            .value
+        );
 
-if(!step||step<=0){
+    if(!value||value<=0){
 
-alert("Pas invalide.");
+        alert(
+            "Entre un pas valide."
+        );
 
-return;
+        return;
 
-}
+    }
 
-data.step=step;
+    data.step=value;
 
-history(
-`Pas général : ${step} points`
-);
+    saveData();
 
-document.getElementById("newStep").value="";
+    renderAll();
 
-save();
+    document
+        .getElementById("newStep")
+        .value="";
 
-}
+};
 
 
 /* =====================================================
-   CAISSE
+   MODIFICATION MANUELLE
 ===================================================== */
 
-function cashMove(direction){
+window.manualChange=function(direction){
 
-if(!checkAdmin())return;
+    if(!adminConnected)return;
 
-const amount=Number(
-document.getElementById("cashAmount").value
-);
+    const id=
+        document
+        .getElementById("manualMember")
+        .value;
 
-const reason=
-document.getElementById("cashReason")
-.value.trim() ||
-"Mouvement de caisse";
+    const amount=
+        Number(
+            document
+            .getElementById("manualAmount")
+            .value
+        );
 
-if(!amount||amount<=0){
+    const reason=
+        document
+        .getElementById("manualReason")
+        .value
+        .trim()
+        ||
+        "Modification manuelle";
 
-alert("Montant invalide.");
+    if(!amount||amount<=0){
 
-return;
+        alert(
+            "Entre un nombre de points valide."
+        );
 
-}
+        return;
 
-const value=amount*direction;
+    }
 
-if(data.cash+value<0){
+    changeMemberPoints(
+        id,
+        amount*direction,
+        reason
+    );
 
-alert("La caisse ne peut pas être négative.");
+};
 
-return;
 
-}
+/* =====================================================
+   RANG
+===================================================== */
 
-data.cash+=value;
+window.changeRank=function(){
 
-data.cashHistory.unshift({
+    if(!adminConnected)return;
 
-amount:value,
+    const id=
+        document
+        .getElementById("rankMember")
+        .value;
 
-reason:reason,
+    const rank=
+        document
+        .getElementById("rankValue")
+        .value;
 
-date:new Date().toLocaleString("fr-FR")
+    const member=
+        data.members.find(
+            member=>member.id===id
+        );
 
-});
+    if(!member)return;
 
-history(
-`Caisse : ${value>=0?"+":""}${value} FC — ${reason}`
-);
+    member.rank=rank;
 
-document.getElementById("cashAmount").value="";
-document.getElementById("cashReason").value="";
+    data.history.unshift({
 
-save();
+        id:makeId(),
 
-}
+        date:new Date().toISOString(),
+
+        type:"rank",
+
+        member:member.name,
+
+        amount:0,
+
+        reason:"Changement de rang",
+
+        text:
+            `${member.name} : rang ${rank}`
+
+    });
+
+    saveData();
+
+    renderAll();
+
+};
+
+
+/* =====================================================
+   PRÉSENCE
+===================================================== */
+
+window.markPresence=function(){
+
+    if(!adminConnected)return;
+
+    const id=
+        document
+        .getElementById("presenceMember")
+        .value;
+
+    const points=
+        Number(
+            document
+            .getElementById("presencePoints")
+            .value
+        );
+
+    const member=
+        data.members.find(
+            member=>member.id===id
+        );
+
+    if(!member)return;
+
+    if(!points||points<0){
+
+        alert("Points invalides.");
+
+        return;
+
+    }
+
+    member.present=true;
+
+    member.points=
+        Number(member.points)+points;
+
+    data.history.unshift({
+
+        id:makeId(),
+
+        date:new Date().toISOString(),
+
+        type:"presence",
+
+        member:member.name,
+
+        amount:points,
+
+        reason:"Présence",
+
+        text:
+            `${member.name} présent : +`
+            +
+            `${formatNumber(points)} points`
+
+    });
+
+    saveData();
+
+    renderAll();
+
+};
 
 
 /* =====================================================
    AJOUT MEMBRE
 ===================================================== */
 
-function addMember(){
+window.addMember=function(){
 
-if(!checkAdmin())return;
+    if(!adminConnected)return;
 
-const name=
-document.getElementById("newMemberName")
-.value.trim();
+    const name=
+        document
+        .getElementById("newMemberName")
+        .value
+        .trim();
 
-const points=Number(
-document.getElementById("newMemberPoints").value
-);
+    const points=
+        Number(
+            document
+            .getElementById("newMemberPoints")
+            .value
+        )||0;
 
-const rank=
-document.getElementById("newMemberRank").value;
+    const rank=
+        document
+        .getElementById("newMemberRank")
+        .value;
 
-if(!name){
+    const password=
+        document
+        .getElementById("newMemberPassword")
+        .value
+        ||
+        DEFAULT_PLAYER_PASSWORD;
 
-alert("Entre un nom.");
+    if(!name){
 
-return;
+        alert("Entre un nom.");
 
-}
+        return;
 
-data.members.push({
+    }
 
-id:id(),
+    if(!validPlayerPassword(password)){
 
-name:name,
+        alert(
+            "❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres."
+        );
 
-points:Math.max(0,points||0),
+        return;
 
-rank:rank,
+    }
 
-present:false
+    data.members.push({
 
-});
+        id:makeId(),
 
-history(
-`Membre ajouté : ${name}`
-);
+        name:name,
 
-document.getElementById("newMemberName").value="";
-document.getElementById("newMemberPoints").value="0";
+        points:points,
 
-save();
+        rank:rank,
 
-}
+        present:false,
+
+        password:password
+
+    });
+
+    data.history.unshift({
+
+        id:makeId(),
+
+        date:new Date().toISOString(),
+
+        type:"member",
+
+        member:name,
+
+        amount:0,
+
+        reason:"Nouveau membre",
+
+        text:
+            `Nouveau membre : ${name}`
+
+    });
+
+    saveData();
+
+    renderAll();
+
+    document
+        .getElementById("newMemberName")
+        .value="";
+
+    document
+        .getElementById("newMemberPoints")
+        .value="0";
+
+    document
+        .getElementById("newMemberPassword")
+        .value="";
+
+};
 
 
 /* =====================================================
    SUPPRESSION
 ===================================================== */
 
-function deleteMember(){
+window.deleteMember=function(){
 
-if(!checkAdmin())return;
+    if(!adminConnected)return;
 
-const select=
-document.getElementById("deleteMemberSelect");
+    const id=
+        document
+        .getElementById("deleteMember")
+        .value;
 
-const m=member(select.value);
+    const member=
+        data.members.find(
+            member=>member.id===id
+        );
 
-if(!m)return;
+    if(!member)return;
 
-if(!confirm(
-`Supprimer ${m.name} ?`
-))return;
+    if(
+        !confirm(
+            `Supprimer ${member.name} ?`
+        )
+    )return;
 
-data.members=
-data.members.filter(x=>x.id!==m.id);
+    data.members=
+        data.members.filter(
+            member=>member.id!==id
+        );
 
-history(
-`Membre supprimé : ${m.name}`
-);
+    data.history.unshift({
 
-save();
+        id:makeId(),
+
+        date:new Date().toISOString(),
+
+        type:"member",
+
+        member:member.name,
+
+        amount:0,
+
+        reason:"Suppression",
+
+        text:
+            `Membre supprimé : ${member.name}`
+
+    });
+
+    saveData();
+
+    renderAll();
+
+};
+
+
+/* =====================================================
+   VENTE DE POINTS
+===================================================== */
+
+window.transferPoints=function(){
+
+    const sellerId=
+        document
+        .getElementById("sellerSelect")
+        .value;
+
+    const receiverId=
+        document
+        .getElementById("receiverSelect")
+        .value;
+
+    const password=
+        document
+        .getElementById("sellerPassword")
+        .value;
+
+    const amount=
+        Number(
+            document
+            .getElementById("transferAmount")
+            .value
+        );
+
+    const message=
+        document
+        .getElementById("transferMessage");
+
+    message.innerHTML="";
+
+    if(sellerId===receiverId){
+
+        message.innerHTML=
+            `<div class="notice error">
+                ❌ Choisis un autre destinataire.
+            </div>`;
+
+        return;
+
+    }
+
+    if(!amount||amount<=0){
+
+        message.innerHTML=
+            `<div class="notice error">
+                ❌ Nombre de points invalide.
+            </div>`;
+
+        return;
+
+    }
+
+    const seller=
+        data.members.find(
+            member=>member.id===sellerId
+        );
+
+    const receiver=
+        data.members.find(
+            member=>member.id===receiverId
+        );
+
+    if(!seller||!receiver){
+
+        message.innerHTML=
+            `<div class="notice error">
+                ❌ Membre introuvable.
+            </div>`;
+
+        return;
+
+    }
+
+    if(
+        String(seller.password)
+        !==String(password)
+    ){
+
+        message.innerHTML=
+            `<div class="notice error">
+                ❌ Mot de passe incorrect.
+            </div>`;
+
+        return;
+
+    }
+
+    if(
+        Number(seller.points)<amount
+    ){
+
+        message.innerHTML=
+            `<div class="notice error">
+                ❌ Tu n'as pas assez de points.
+            </div>`;
+
+        return;
+
+    }
+
+    seller.points=
+        Number(seller.points)-amount;
+
+    receiver.points=
+        Number(receiver.points)+amount;
+
+    data.history.unshift({
+
+        id:makeId(),
+
+        date:new Date().toISOString(),
+
+        type:"transfer",
+
+        member:seller.name,
+
+        receiver:receiver.name,
+
+        amount:amount,
+
+        reason:"Vente de points",
+
+        text:
+            `${seller.name} → `
+            +
+            `${receiver.name} : `
+            +
+            `${formatNumber(amount)} points`
+
+    });
+
+    saveData();
+
+    renderAll();
+
+    document
+        .getElementById("sellerPassword")
+        .value="";
+
+    document
+        .getElementById("transferAmount")
+        .value="";
+
+    message.innerHTML=
+        `<div class="notice success">
+            ✅ Vente effectuée.
+        </div>`;
+
+};
+
+
+/* =====================================================
+   CHANGEMENT MOT DE PASSE JOUEUR
+===================================================== */
+
+window.changeOwnPassword=function(){
+
+    const memberId=
+        document
+        .getElementById(
+            "passwordMemberSelect"
+        )
+        .value;
+
+    const oldPassword=
+        document
+        .getElementById(
+            "oldPlayerPassword"
+        )
+        .value;
+
+    const newPassword=
+        document
+        .getElementById(
+            "newPlayerPassword"
+        )
+        .value;
+
+    const message=
+        document
+        .getElementById(
+            "passwordMessage"
+        );
+
+    const member=
+        data.members.find(
+            member=>member.id===memberId
+        );
+
+    if(!member){
+
+        message.innerHTML=
+            `<div class="notice error">
+                ❌ Membre introuvable.
+            </div>`;
+
+        return;
+
+    }
+
+    if(
+        String(member.password)
+        !==String(oldPassword)
+    ){
+
+        message.innerHTML=
+            `<div class="notice error">
+                ❌ Ancien mot de passe incorrect.
+            </div>`;
+
+        return;
+
+    }
+
+    if(!validPlayerPassword(newPassword)){
+
+        message.innerHTML=
+            `<div class="notice error">
+                ❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres.
+            </div>`;
+
+        return;
+
+    }
+
+    member.password=newPassword;
+
+    saveData();
+
+    document
+        .getElementById(
+            "oldPlayerPassword"
+        )
+        .value="";
+
+    document
+        .getElementById(
+            "newPlayerPassword"
+        )
+        .value="";
+
+    message.innerHTML=
+        `<div class="notice success">
+            ✅ Ton mot de passe a été changé.
+        </div>`;
+
+};
+
+
+/* =====================================================
+   ADMIN : MOT DE PASSE JOUEUR
+===================================================== */
+
+window.adminChangePlayerPassword=function(){
+
+    if(!adminConnected)return;
+
+    const id=
+        document
+        .getElementById(
+            "adminPasswordMember"
+        )
+        .value;
+
+    const newPassword=
+        document
+        .getElementById(
+            "adminNewPassword"
+        )
+        .value;
+
+    const message=
+        document
+        .getElementById(
+            "adminPasswordMessage"
+        );
+
+    const member=
+        data.members.find(
+            member=>member.id===id
+        );
+
+    if(!member)return;
+
+    if(!validPlayerPassword(newPassword)){
+
+        message.innerHTML=
+            `<div class="notice error">
+                ❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres.
+            </div>`;
+
+        return;
+
+    }
+
+    member.password=newPassword;
+
+    saveData();
+
+    document
+        .getElementById(
+            "adminNewPassword"
+        )
+        .value="";
+
+    message.innerHTML=
+        `<div class="notice success">
+            ✅ Mot de passe modifié pour
+            ${escapeHTML(member.name)}.
+        </div>`;
+
+};
+
+
+/* =====================================================
+   CAISSE
+===================================================== */
+
+window.adminCashChange=function(direction){
+
+    if(!adminConnected)return;
+
+    const amount=
+        Number(
+            document
+            .getElementById(
+                "adminCashAmount"
+            )
+            .value
+        );
+
+    const reason=
+        document
+        .getElementById(
+            "adminCashReason"
+        )
+        .value
+        .trim()
+        ||
+        "Gestion caisse";
+
+    if(!amount||amount<=0){
+
+        alert("Montant invalide.");
+
+        return;
+
+    }
+
+    const newCash=
+        Number(data.cash||0)
+        +
+        amount*direction;
+
+    if(newCash<0){
+
+        alert(
+            "La caisse ne peut pas être négative."
+        );
+
+        return;
+
+    }
+
+    data.cash=newCash;
+
+    data.cashHistory.unshift({
+
+        id:makeId(),
+
+        date:new Date().toISOString(),
+
+        amount:amount*direction,
+
+        reason:reason
+
+    });
+
+    saveData();
+
+    renderAll();
+
+    document
+        .getElementById(
+            "adminCashAmount"
+        )
+        .value="";
+
+    document
+        .getElementById(
+            "adminCashReason"
+        )
+        .value="";
+
+};
+
+
+/* =====================================================
+   HISTORIQUE CAISSE
+===================================================== */
+
+function renderCashHistory(){
+
+    const container=
+        document.getElementById(
+            "cashPublicHistory"
+        );
+
+    if(!data)return;
+
+    if(!data.cashHistory.length){
+
+        container.innerHTML=
+            "<p>Aucun mouvement.</p>";
+
+        return;
+
+    }
+
+    container.innerHTML=
+        data.cashHistory
+        .slice(0,30)
+        .map(
+            item=>`
+
+                <div class="history-item">
+
+                    ${
+                        Number(item.amount)>=0
+                        ?
+                        `<span style="color:#43d58d">
+                            +${formatNumber(
+                                item.amount
+                            )} FC
+                        </span>`
+                        :
+                        `<span style="color:#ff7373">
+                            ${formatNumber(
+                                item.amount
+                            )} FC
+                        </span>`
+                    }
+
+                    — ${escapeHTML(
+                        item.reason
+                    )}
+
+                </div>
+
+            `
+        )
+        .join("");
 
 }
 
 
 /* =====================================================
-   NAVIGATION
+   RÉINITIALISATION
 ===================================================== */
 
-function showSection(id,button){
+window.resetLocalData=function(){
 
-document.querySelectorAll(".section")
-.forEach(s=>s.classList.remove("active"));
+    if(!adminConnected)return;
 
-document.getElementById(id)
-.classList.add("active");
+    const password=
+        prompt(
+            "🔐 Mot de passe administrateur requis pour réinitialiser les données :"
+        );
 
-document.querySelectorAll("nav button")
-.forEach(b=>b.classList.remove("active"));
+    if(password===null){
 
-button.classList.add("active");
+        return;
 
-}
+    }
+
+    if(password!==ADMIN_PASSWORD){
+
+        alert(
+            "❌ Mot de passe incorrect. Réinitialisation annulée."
+        );
+
+        return;
+
+    }
+
+    const confirmation=
+        confirm(
+            "⚠️ Réinitialiser toutes les données locales ?"
+        );
+
+    if(!confirmation)return;
+
+    data=JSON.parse(
+        JSON.stringify(INITIAL_DATA)
+    );
+
+    saveData();
+
+    renderAll();
+
+    alert(
+        "✅ Les données ont été réinitialisées."
+    );
+
+};
 
 
 /* =====================================================
-   DÉMARRAGE
+   LANCEMENT
 ===================================================== */
 
-renderAll();
+loadData();
 
 </script>
 
