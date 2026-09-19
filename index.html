@@ -106,6 +106,18 @@ input,select{
     outline:none;
 }
 
+textarea{
+    width:100%;
+    padding:12px;
+    margin:6px 0;
+    border-radius:10px;
+    border:1px solid #2b5e88;
+    background:#071426;
+    color:white;
+    outline:none;
+    min-height:90px;
+}
+
 button.action{
     border:0;
     border-radius:10px;
@@ -246,6 +258,77 @@ footer{
     background:#301923;
 }
 
+.shop-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:15px;
+}
+
+.shop-item{
+    background:linear-gradient(145deg,#0d2745,#091a2e);
+    border:1px solid #245d89;
+    border-radius:18px;
+    padding:17px;
+    box-shadow:0 4px 12px #0004;
+}
+
+.shop-item h3{
+    margin:0 0 8px;
+    font-size:19px;
+}
+
+.shop-price{
+    color:#55bdff;
+    font-size:23px;
+    font-weight:bold;
+    margin:8px 0;
+}
+
+.shop-duration{
+    color:#ffc45c;
+    font-size:14px;
+    margin:6px 0;
+}
+
+.shop-description{
+    opacity:.8;
+    font-size:14px;
+    margin:8px 0 12px;
+}
+
+.shop-admin-item{
+    background:#091a2e;
+    border:1px solid #245d89;
+    border-radius:14px;
+    padding:13px;
+    margin:10px 0;
+}
+
+.shop-admin-item strong{
+    font-size:17px;
+}
+
+.shop-number{
+    color:#55bdff;
+    font-weight:bold;
+}
+
+.purchase-item{
+    padding:12px;
+    border-bottom:1px solid #1b3d5b;
+}
+
+.purchase-price{
+    color:#ff7373;
+    font-weight:bold;
+}
+
+hr{
+    border:0;
+    border-top:1px solid #21425f;
+    margin:18px 0;
+}
+
 @media(max-width:600px){
     main{padding:10px}
     header h1{font-size:23px}
@@ -267,6 +350,7 @@ footer{
     <button onclick="showSection('classement')">🏆 Classement</button>
     <button onclick="showSection('historique')">📜 Historique</button>
     <button onclick="showSection('vente')">💸 Vente de points</button>
+    <button onclick="showSection('boutique')">🛒 Boutique</button>
     <button onclick="showSection('caisse')">💰 Caisse</button>
     <button onclick="showSection('admin')">🔐 Administration</button>
 </nav>
@@ -362,6 +446,32 @@ footer{
         <input id="newPlayerPassword" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Nouveau mot de passe — 4 chiffres maximum">
         <button class="action" onclick="changeOwnPassword()">🔑 Changer mon mot de passe</button>
         <div id="passwordMessage"></div>
+    </div>
+</section>
+
+<section id="boutique" class="hidden">
+    <div class="card">
+        <h2>🛒 BOUTIQUE — ACHATS</h2>
+        <div class="notice">
+            ⭐ Achète des fonctions et objets avec tes points.
+            <br>
+            🔐 Ton mot de passe est nécessaire pour effectuer un achat.
+        </div>
+        <label>👤 Ton nom</label>
+        <select id="shopMemberSelect"></select>
+
+        <label>🔐 Ton mot de passe</label>
+        <input id="shopPassword" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Mot de passe">
+    </div>
+
+    <div class="card">
+        <h2>🛍️ Achats disponibles</h2>
+        <div id="shopContainer" class="shop-grid"></div>
+    </div>
+
+    <div class="card">
+        <h2>📜 Historique des achats</h2>
+        <div id="purchaseHistoryContainer"></div>
     </div>
 </section>
 
@@ -470,6 +580,20 @@ footer{
             <button class="action red" onclick="deleteMember()">🗑️ Supprimer</button>
         </div>
 
+        <div class="card">
+            <h2>🛒 Gestion de la boutique</h2>
+            <div class="notice">🔐 Chaque ajout, modification ou suppression demandera le mot de passe administrateur.</div>
+            <h3>➕ Ajouter un achat</h3>
+            <input id="newShopName" placeholder="Nom de l'achat">
+            <input id="newShopPrice" type="number" min="0" placeholder="Prix en points">
+            <input id="newShopDuration" placeholder="Durée facultative : 10 min">
+            <input id="newShopDescription" placeholder="Description facultative">
+            <button class="action green" onclick="addShopItem()">➕ Ajouter l'achat</button>
+            <hr>
+            <h3>📦 Gestion des achats</h3>
+            <div id="adminShopContainer"></div>
+        </div>
+
         <div class="card danger-zone">
             <h3>⚠️ Réinitialiser la BDD</h3>
             <p class="small-info">Cette action remet la base de données Firebase à son état initial.</p>
@@ -480,25 +604,24 @@ footer{
 
 </main>
 
-<footer>ORGANISATION D'ÉLITE</footer>
+<footer>
+    ORGANISATION D'ÉLITE
+</footer>
 
-<!-- FIREBASE SDK MODULAIRE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Vos clés de configuration Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyAxj9DNftbCAlXsPFIDUVaiQ-JivtzEl0g",
-  authDomain: "orgabd-6dd05.firebaseapp.com",
-  projectId: "orgabd-6dd05",
-  storageBucket: "orgabd-6dd05.firebasestorage.app",
-  messagingSenderId: "766319546842",
-  appId: "1:766319546842:web:a4d15fdcf86bc00be530e3",
-  measurementId: "G-D6SXK709S6"
+    apiKey: "AIzaSyAxj9DNftbCAlXsPFIDUVaiQ-JivtzEl0g",
+    authDomain: "orgabd-6dd05.firebaseapp.com",
+    projectId: "orgabd-6dd05",
+    storageBucket: "orgabd-6dd05.firebasestorage.app",
+    messagingSenderId: "766319546842",
+    appId: "1:766319546842:web:a4d15fdcf86bc00be530e3",
+    measurementId: "G-D6SXK709S6"
 };
 
-// Initialisation
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const docRef = doc(db, "organisation", "mainData");
@@ -506,89 +629,131 @@ const docRef = doc(db, "organisation", "mainData");
 const ADMIN_PASSWORD = "1234Elite";
 const DEFAULT_PLAYER_PASSWORD = "1234";
 
+const INITIAL_SHOP_ITEMS = [
+    { id:"shop1", name:"🔄 Seconde chance", price:3000, duration:"", description:"Obtenir une seconde chance." },
+    { id:"shop2", name:"✖️ Multiplication", price:10000, duration:"", description:"Achat de multiplication." },
+    { id:"shop3", name:"🎯 Tentative", price:2000, duration:"", description:"Obtenir une tentative supplémentaire." },
+    { id:"shop4", name:"🧊 Gel de points", price:10000, duration:"", description:"Gel de points." },
+    { id:"shop5", name:"⏳ Temps mort", price:500, duration:"", description:"Temps mort." },
+    { id:"shop6", name:"💰 Détournement", price:20000, duration:"", description:"Détournement." },
+    { id:"shop7", name:"🛡️ Bouclier", price:25000, duration:"", description:"Protection." },
+    { id:"shop8", name:"👻 Présence", price:3000, duration:"", description:"Présence." },
+    { id:"shop9", name:"⚔️ Contre-attaque", price:20000, duration:"", description:"Contre-attaque." },
+    { id:"shop10", name:"🌑 Mode Dark", price:20000, duration:"10 min", description:"Mode Dark temporaire." },
+    { id:"shop11", name:"♟️ Coup forcé", price:5000, duration:"", description:"Coup forcé." },
+    { id:"shop12", name:"🔄 Inversion", price:15000, duration:"", description:"Inversion." },
+    { id:"shop13", name:"👤 Achat de membre virtuel", price:15000, duration:"", description:"Créer un membre virtuel." },
+    { id:"shop14", name:"🗑️ Suppression du membre virtuel", price:20000, duration:"", description:"Supprimer un membre virtuel." },
+    { id:"shop15", name:"🚫 Bloc bonus", price:10000, duration:"", description:"Bloquer un bonus." },
+    { id:"shop16", name:"❌ Annulation d’attaque", price:20000, duration:"", description:"Annuler une attaque." },
+    { id:"shop17", name:"📋 Copie bonus", price:15000, duration:"", description:"Copier un bonus." },
+    { id:"shop18", name:"🔐 Coffre fermé", price:15000, duration:"", description:"Coffre fermé." },
+    { id:"shop19", name:"☠️ Venin", price:5000, duration:"10 min", description:"Venin temporaire." },
+    { id:"shop20", name:"🎯 Cible", price:5000, duration:"", description:"Désigner une cible." },
+    { id:"shop21", name:"↩️ Retrait annulé", price:10000, duration:"", description:"Annuler un retrait." },
+    { id:"shop22", name:"🔀 Substitution", price:5000, duration:"", description:"Substitution." },
+    { id:"shop23", name:"💡 Révélation", price:5000, duration:"", description:"Révélation." },
+    { id:"shop24", name:"🚫 Annule bonus", price:10000, duration:"", description:"Annuler un bonus." },
+    { id:"shop25", name:"☠️👑 Coups suprêmes", price:30000, duration:"", description:"Coups suprêmes." }
+];
+
 const INITIAL_DATA = {
     step: 250,
     cash: 0,
     members: [
-        { id: "ken", name: "ken", points: 8375, rank: "A", present: false, password: "1234" },
-        { id: "chris", name: "Chris", points: 10625, rank: "F", present: false, password: "1234" },
-        { id: "ya-chris", name: "ya Chris", points: 24375, rank: "B", present: false, password: "1234" },
-        { id: "mana", name: "Mana", points: 17205, rank: "F", present: false, password: "1234" },
-        { id: "mani", name: "Mani", points: 17750, rank: "E", present: false, password: "1234" },
-        { id: "ephraim", name: "ephraim", points: 16275, rank: "D", present: false, password: "1234" },
-        { id: "persis", name: "Persis", points: 5300, rank: "F", present: false, password: "1234" },
-        { id: "olivier", name: "Olivier", points: 1875, rank: "E", present: false, password: "1234" }
+        { id:"mani", name:"Mani", points:194375, rank:"E", present:false, password:"1234" },
+        { id:"ya-chris", name:"ya Chris", points:54500, rank:"B", present:false, password:"1234" },
+        { id:"mana", name:"Mana", points:49205, rank:"F", present:false, password:"1234" },
+        { id:"olivier", name:"Olivier", points:34990, rank:"E", present:false, password:"1234" },
+        { id:"ephraim", name:"ephraim", points:31290, rank:"D", present:false, password:"1234" },
+        { id:"chris", name:"Chris", points:20625, rank:"F", present:false, password:"1234" },
+        { id:"ken", name:"ken", points:9005, rank:"A", present:false, password:"1234" },
+        { id:"persis", name:"Persis", points:5425, rank:"F", present:false, password:"1234" }
     ],
     history: [],
-    cashHistory: []
+    cashHistory: [],
+    shopItems: INITIAL_SHOP_ITEMS,
+    purchaseHistory: []
 };
 
 let data = null;
 let adminConnected = false;
 
-// ÉCOUTE EN TEMPS RÉEL
-onSnapshot(docRef, (snapshot) => {
-    if (snapshot.exists()) {
-        data = snapshot.data();
-    } else {
-        // Premier lancement : création du document avec données initiales
-        data = JSON.parse(JSON.stringify(INITIAL_DATA));
-        saveData();
-    }
-    
-    if (!Array.isArray(data.members)) data.members = [];
-    if (!Array.isArray(data.history)) data.history = [];
-    if (!Array.isArray(data.cashHistory)) data.cashHistory = [];
-    if (typeof data.step !== "number") data.step = 250;
-    if (typeof data.cash !== "number") data.cash = 0;
+function formatNumber(number) {
+    return Number(number || 0).toLocaleString("fr-FR");
+}
 
-    const statusNotice = document.getElementById("statusNotice");
-    if(statusNotice) {
-        statusNotice.className = "notice success";
-        statusNotice.textContent = "🟢 Synchronisé en temps réel avec Firebase Cloud";
-    }
+function makeId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
 
-    renderAll();
-}, (error) => {
-    console.error("Erreur Firebase:", error);
-    const statusNotice = document.getElementById("statusNotice");
-    if(statusNotice) {
-        statusNotice.className = "notice error";
-        statusNotice.textContent = "❌ Connexion à Firebase échouée (vérifiez vos règles Firestore)";
-    }
-});
+function escapeHTML(text) {
+    return String(text ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function validPlayerPassword(password) {
+    return /^[0-9]{1,4}$/.test(password);
+}
+
+window.showSection = function(id) {
+    document.querySelectorAll("main > section").forEach(section => section.classList.add("hidden"));
+    const section = document.getElementById(id);
+    if (section) section.classList.remove("hidden");
+};
+
+function initFirebase() {
+    onSnapshot(docRef, snapshot => {
+        if (snapshot.exists()) {
+            data = snapshot.data();
+            if (!Array.isArray(data.members)) data.members = [];
+            if (!Array.isArray(data.history)) data.history = [];
+            if (!Array.isArray(data.cashHistory)) data.cashHistory = [];
+            if (typeof data.step !== "number") data.step = 250;
+            if (typeof data.cash !== "number") data.cash = 0;
+            if (!Array.isArray(data.shopItems)) data.shopItems = JSON.parse(JSON.stringify(INITIAL_SHOP_ITEMS));
+            if (!Array.isArray(data.purchaseHistory)) data.purchaseHistory = [];
+
+            const statusNotice = document.getElementById("statusNotice");
+            if (statusNotice) {
+                statusNotice.className = "notice success";
+                statusNotice.textContent = "🟢 Synchronisé en temps réel avec Firebase Cloud";
+            }
+            renderAll();
+        } else {
+            console.warn("Le document 'mainData' n'existe pas encore. Initialisation...");
+            data = JSON.parse(JSON.stringify(INITIAL_DATA));
+            saveData();
+        }
+    }, error => {
+        console.error("Erreur Firebase:", error);
+        const statusNotice = document.getElementById("statusNotice");
+        if (statusNotice) {
+            statusNotice.className = "notice error";
+            statusNotice.textContent = "❌ Connexion à Firebase échouée (vérifiez vos règles Firestore)";
+        }
+    });
+}
 
 async function saveData() {
     if (!data) return;
     try {
         await setDoc(docRef, data);
     } catch (e) {
-        console.error("Erreur de sauvegarde Cloud: ", e);
+        console.error("Erreur de sauvegarde Cloud:", e);
+        alert("❌ Erreur de sauvegarde Firebase.");
     }
 }
 
-// UTILITAIRES
-function formatNumber(number) { return Number(number||0).toLocaleString("fr-FR"); }
-function makeId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
-function escapeHTML(text) {
-    return String(text)
-        .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;").replaceAll("'","&#039;");
-}
-function validPlayerPassword(password) { return /^[0-9]{1,4}$/.test(password); }
-
-// NAVIGATION
-window.showSection = function(id) {
-    document.querySelectorAll("main > section").forEach(section => section.classList.add("hidden"));
-    document.getElementById(id).classList.remove("hidden");
-};
-
-// RENDU GLOBAL
 function renderAll() {
     if (!data) return;
 
     document.getElementById("totalMembers").textContent = data.members.length;
-    document.getElementById("totalPoints").textContent = formatNumber(data.members.reduce((sum, member) => sum + Number(member.points||0), 0));
+    document.getElementById("totalPoints").textContent = formatNumber(data.members.reduce((sum, member) => sum + Number(member.points || 0), 0));
     document.getElementById("totalPresent").textContent = data.members.filter(member => member.present).length;
     document.getElementById("cashValue").textContent = formatNumber(data.cash);
     document.getElementById("cashBalance").textContent = formatNumber(data.cash);
@@ -600,16 +765,20 @@ function renderAll() {
     renderHistory();
     renderCashHistory();
     fillSelects();
+    renderShop();
+    renderAdminShop();
+    renderPurchaseHistory();
 }
 
-// RENDU MEMBRES
 window.renderMembers = function() {
     if (!data) return;
     const container = document.getElementById("membersContainer");
-    const search = document.getElementById("searchMember").value.toLowerCase();
-    const members = data.members.filter(member => member.name.toLowerCase().includes(search));
+    const searchInput = document.getElementById("searchMember");
+    const search = searchInput ? searchInput.value.toLowerCase() : "";
 
+    const members = data.members.filter(member => member.name.toLowerCase().includes(search));
     container.innerHTML = "";
+
     members.forEach(member => {
         const div = document.createElement("div");
         div.className = "member";
@@ -627,6 +796,7 @@ function renderAdminMembers() {
     const container = document.getElementById("adminMembersContainer");
     if (!container || !data) return;
     container.innerHTML = "";
+
     data.members.forEach(member => {
         const div = document.createElement("div");
         div.className = "member";
@@ -644,17 +814,24 @@ function renderAdminMembers() {
 }
 
 window.individualChange = function(id, direction) {
-    if (!adminConnected) { alert("🔐 Accès réservé à l'administrateur."); return; }
+    if (!adminConnected) {
+        alert("🔐 Accès réservé à l'administrateur.");
+        return;
+    }
     changeMemberPoints(id, Number(data.step) * direction, "Gestion rapide");
 };
 
 function changeMemberPoints(id, amount, reason) {
     const member = data.members.find(m => m.id === id);
-    if (!member) { alert("❌ Membre introuvable."); return; }
-
-    const newPoints = Number(member.points||0) + Number(amount);
-    if (newPoints < 0) { alert("❌ Les points ne peuvent pas être négatifs."); return; }
-
+    if (!member) {
+        alert("❌ Membre introuvable.");
+        return;
+    }
+    const newPoints = Number(member.points || 0) + Number(amount);
+    if (newPoints < 0) {
+        alert("❌ Les points ne peuvent pas être négatifs.");
+        return;
+    }
     member.points = newPoints;
     data.history.unshift({
         id: makeId(),
@@ -665,14 +842,14 @@ function changeMemberPoints(id, amount, reason) {
         reason: reason,
         text: `${member.name} : ${amount >= 0 ? "+" : ""}${formatNumber(amount)} points (${reason})`
     });
-
     saveData();
 }
 
 function renderRanking() {
     const body = document.getElementById("rankingBody");
-    if (!data) return;
-    const sorted = [...data.members].sort((a,b) => Number(b.points) - Number(a.points));
+    if (!data || !body) return;
+
+    const sorted = [...data.members].sort((a, b) => Number(b.points) - Number(a.points));
     body.innerHTML = sorted.map((member, index) => `
         <tr>
             <td>${index + 1}</td>
@@ -685,11 +862,15 @@ function renderRanking() {
 
 function renderHistory() {
     const container = document.getElementById("historyContainer");
-    if (!data) return;
-    if (!data.history.length) { container.innerHTML = "<p>Aucun historique.</p>"; return; }
+    if (!data || !container) return;
+
+    if (!data.history.length) {
+        container.innerHTML = "<p>Aucun historique.</p>";
+        return;
+    }
     container.innerHTML = data.history.slice(0, 100).map(item => `
         <div class="history-item">
-            <strong>${escapeHTML(item.text||"")}</strong><br>
+            <strong>${escapeHTML(item.text || "")}</strong><br>
             <small>${new Date(item.date).toLocaleString("fr-FR")}</small>
         </div>
     `).join("");
@@ -697,28 +878,41 @@ function renderHistory() {
 
 function fillSelects() {
     if (!data) return;
-    const ids = ["presenceMember","manualMember","rankMember","deleteMember","adminPasswordMember","passwordMemberSelect","sellerSelect","receiverSelect"];
+    const ids = [
+        "presenceMember", "manualMember", "rankMember", "deleteMember",
+        "adminPasswordMember", "passwordMemberSelect", "sellerSelect",
+        "receiverSelect", "shopMemberSelect"
+    ];
+
     ids.forEach(id => {
         const select = document.getElementById(id);
         if (!select) return;
         const old = select.value;
         select.innerHTML = data.members.map(member => `<option value="${member.id}">${escapeHTML(member.name)}</option>`).join("");
-        if ([...select.options].some(o => o.value === old)) select.value = old;
+        if ([...select.options].some(o => o.value === old)) {
+            select.value = old;
+        }
     });
 }
 
-// ADMIN FUNCTIONS
 window.loginAdmin = function() {
     const name = document.getElementById("adminName").value.trim();
     const password = document.getElementById("adminPassword").value;
     const message = document.getElementById("loginMessage");
 
-    if (!name) { message.innerHTML = `<div class="notice error">❌ Entre ton nom.</div>`; return; }
-    if (password !== ADMIN_PASSWORD) { message.innerHTML = `<div class="notice error">❌ Mot de passe incorrect.</div>`; return; }
+    if (!name) {
+        message.innerHTML = `<div class="notice error">❌ Entre ton nom.</div>`;
+        return;
+    }
+    if (password !== ADMIN_PASSWORD) {
+        message.innerHTML = `<div class="notice error">❌ Mot de passe incorrect.</div>`;
+        return;
+    }
 
     adminConnected = true;
     document.getElementById("loginBox").classList.add("hidden");
     document.getElementById("adminPanel").classList.remove("hidden");
+    renderAdminShop();
 };
 
 window.logoutAdmin = function() {
@@ -730,7 +924,10 @@ window.logoutAdmin = function() {
 window.changeStep = function() {
     if (!adminConnected) return;
     const value = Number(document.getElementById("newStep").value);
-    if (!value || value <= 0) { alert("Entre un pas valide."); return; }
+    if (!value || value <= 0) {
+        alert("Entre un pas valide.");
+        return;
+    }
     data.step = value;
     saveData();
     document.getElementById("newStep").value = "";
@@ -741,7 +938,11 @@ window.manualChange = function(direction) {
     const id = document.getElementById("manualMember").value;
     const amount = Number(document.getElementById("manualAmount").value);
     const reason = document.getElementById("manualReason").value.trim() || "Modification manuelle";
-    if (!amount || amount <= 0) { alert("Entre un nombre de points valide."); return; }
+
+    if (!amount || amount <= 0) {
+        alert("Entre un nombre de points valide.");
+        return;
+    }
     changeMemberPoints(id, amount * direction, reason);
 };
 
@@ -754,8 +955,12 @@ window.changeRank = function() {
 
     member.rank = rank;
     data.history.unshift({
-        id: makeId(), date: new Date().toISOString(), type: "rank",
-        member: member.name, amount: 0, reason: "Changement de rang",
+        id: makeId(),
+        date: new Date().toISOString(),
+        type: "rank",
+        member: member.name,
+        amount: 0,
+        reason: "Changement de rang",
         text: `${member.name} : rang ${rank}`
     });
     saveData();
@@ -767,13 +972,20 @@ window.markPresence = function() {
     const points = Number(document.getElementById("presencePoints").value);
     const member = data.members.find(m => m.id === id);
     if (!member) return;
-    if (!points || points < 0) { alert("Points invalides."); return; }
 
+    if (!points || points < 0) {
+        alert("Points invalides.");
+        return;
+    }
     member.present = true;
     member.points = Number(member.points) + points;
     data.history.unshift({
-        id: makeId(), date: new Date().toISOString(), type: "presence",
-        member: member.name, amount: points, reason: "Présence",
+        id: makeId(),
+        date: new Date().toISOString(),
+        type: "presence",
+        member: member.name,
+        amount: points,
+        reason: "Présence",
         text: `${member.name} présent : +${formatNumber(points)} points`
     });
     saveData();
@@ -786,16 +998,34 @@ window.addMember = function() {
     const rank = document.getElementById("newMemberRank").value;
     const password = document.getElementById("newMemberPassword").value || DEFAULT_PLAYER_PASSWORD;
 
-    if (!name) { alert("Entre un nom."); return; }
-    if (!validPlayerPassword(password)) { alert("❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres."); return; }
+    if (!name) {
+        alert("Entre un nom.");
+        return;
+    }
+    if (!validPlayerPassword(password)) {
+        alert("❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres.");
+        return;
+    }
 
-    data.members.push({ id: makeId(), name, points, rank, present: false, password });
-    data.history.unshift({
-        id: makeId(), date: new Date().toISOString(), type: "member",
-        member: name, amount: 0, reason: "Nouveau membre", text: `Nouveau membre : ${name}`
+    data.members.push({
+        id: makeId(),
+        name: name,
+        points: points,
+        rank: rank,
+        present: false,
+        password: password
     });
-
+    data.history.unshift({
+        id: makeId(),
+        date: new Date().toISOString(),
+        type: "member",
+        member: name,
+        amount: 0,
+        reason: "Nouveau membre",
+        text: `Nouveau membre : ${name}`
+    });
     saveData();
+
     document.getElementById("newMemberName").value = "";
     document.getElementById("newMemberPoints").value = "0";
     document.getElementById("newMemberPassword").value = "";
@@ -806,12 +1036,18 @@ window.deleteMember = function() {
     const id = document.getElementById("deleteMember").value;
     const member = data.members.find(m => m.id === id);
     if (!member) return;
+
     if (!confirm(`Supprimer ${member.name} ?`)) return;
 
     data.members = data.members.filter(m => m.id !== id);
     data.history.unshift({
-        id: makeId(), date: new Date().toISOString(), type: "member",
-        member: member.name, amount: 0, reason: "Suppression", text: `Membre supprimé : ${member.name}`
+        id: makeId(),
+        date: new Date().toISOString(),
+        type: "member",
+        member: member.name,
+        amount: 0,
+        reason: "Suppression",
+        text: `Membre supprimé : ${member.name}`
     });
     saveData();
 };
@@ -824,22 +1060,42 @@ window.transferPoints = function() {
     const message = document.getElementById("transferMessage");
     message.innerHTML = "";
 
-    if (sellerId === receiverId) { message.innerHTML = `<div class="notice error">❌ Choisis un autre destinataire.</div>`; return; }
-    if (!amount || amount <= 0) { message.innerHTML = `<div class="notice error">❌ Nombre de points invalide.</div>`; return; }
+    if (sellerId === receiverId) {
+        message.innerHTML = `<div class="notice error">❌ Choisis un autre destinataire.</div>`;
+        return;
+    }
+    if (!amount || amount <= 0) {
+        message.innerHTML = `<div class="notice error">❌ Nombre de points invalide.</div>`;
+        return;
+    }
 
     const seller = data.members.find(m => m.id === sellerId);
     const receiver = data.members.find(m => m.id === receiverId);
 
-    if (!seller || !receiver) { message.innerHTML = `<div class="notice error">❌ Membre introuvable.</div>`; return; }
-    if (String(seller.password) !== String(password)) { message.innerHTML = `<div class="notice error">❌ Mot de passe incorrect.</div>`; return; }
-    if (Number(seller.points) < amount) { message.innerHTML = `<div class="notice error">❌ Tu n'as pas assez de points.</div>`; return; }
+    if (!seller || !receiver) {
+        message.innerHTML = `<div class="notice error">❌ Membre introuvable.</div>`;
+        return;
+    }
+    if (String(seller.password) !== String(password)) {
+        message.innerHTML = `<div class="notice error">❌ Mot de passe incorrect.</div>`;
+        return;
+    }
+    if (Number(seller.points) < amount) {
+        message.innerHTML = `<div class="notice error">❌ Tu n'as pas assez de points.</div>`;
+        return;
+    }
 
     seller.points = Number(seller.points) - amount;
     receiver.points = Number(receiver.points) + amount;
 
     data.history.unshift({
-        id: makeId(), date: new Date().toISOString(), type: "transfer",
-        member: seller.name, receiver: receiver.name, amount, reason: "Vente de points",
+        id: makeId(),
+        date: new Date().toISOString(),
+        type: "transfer",
+        member: seller.name,
+        receiver: receiver.name,
+        amount: amount,
+        reason: "Vente de points",
         text: `${seller.name} → ${receiver.name} : ${formatNumber(amount)} points`
     });
 
@@ -856,12 +1112,22 @@ window.changeOwnPassword = function() {
     const message = document.getElementById("passwordMessage");
 
     const member = data.members.find(m => m.id === memberId);
-    if (!member) { message.innerHTML = `<div class="notice error">❌ Membre introuvable.</div>`; return; }
-    if (String(member.password) !== String(oldPassword)) { message.innerHTML = `<div class="notice error">❌ Ancien mot de passe incorrect.</div>`; return; }
-    if (!validPlayerPassword(newPassword)) { message.innerHTML = `<div class="notice error">❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres.</div>`; return; }
+    if (!member) {
+        message.innerHTML = `<div class="notice error">❌ Membre introuvable.</div>`;
+        return;
+    }
+    if (String(member.password) !== String(oldPassword)) {
+        message.innerHTML = `<div class="notice error">❌ Ancien mot de passe incorrect.</div>`;
+        return;
+    }
+    if (!validPlayerPassword(newPassword)) {
+        message.innerHTML = `<div class="notice error">❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres.</div>`;
+        return;
+    }
 
     member.password = newPassword;
     saveData();
+
     document.getElementById("oldPlayerPassword").value = "";
     document.getElementById("newPlayerPassword").value = "";
     message.innerHTML = `<div class="notice success">✅ Ton mot de passe a été changé.</div>`;
@@ -875,10 +1141,15 @@ window.adminChangePlayerPassword = function() {
 
     const member = data.members.find(m => m.id === id);
     if (!member) return;
-    if (!validPlayerPassword(newPassword)) { message.innerHTML = `<div class="notice error">❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres.</div>`; return; }
+
+    if (!validPlayerPassword(newPassword)) {
+        message.innerHTML = `<div class="notice error">❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres.</div>`;
+        return;
+    }
 
     member.password = newPassword;
     saveData();
+
     document.getElementById("adminNewPassword").value = "";
     message.innerHTML = `<div class="notice success">✅ Mot de passe modifié pour ${escapeHTML(member.name)}.</div>`;
 };
@@ -887,13 +1158,25 @@ window.adminCashChange = function(direction) {
     if (!adminConnected) return;
     const amount = Number(document.getElementById("adminCashAmount").value);
     const reason = document.getElementById("adminCashReason").value.trim() || "Gestion caisse";
-    if (!amount || amount <= 0) { alert("Montant invalide."); return; }
 
-    const newCash = Number(data.cash||0) + amount * direction;
-    if (newCash < 0) { alert("La caisse ne peut pas être négative."); return; }
+    if (!amount || amount <= 0) {
+        alert("Montant invalide.");
+        return;
+    }
+
+    const newCash = Number(data.cash || 0) + (amount * direction);
+    if (newCash < 0) {
+        alert("La caisse ne peut pas être négative.");
+        return;
+    }
 
     data.cash = newCash;
-    data.cashHistory.unshift({ id: makeId(), date: new Date().toISOString(), amount: amount * direction, reason });
+    data.cashHistory.unshift({
+        id: makeId(),
+        date: new Date().toISOString(),
+        amount: amount * direction,
+        reason: reason
+    });
 
     saveData();
     document.getElementById("adminCashAmount").value = "";
@@ -902,12 +1185,219 @@ window.adminCashChange = function(direction) {
 
 function renderCashHistory() {
     const container = document.getElementById("cashPublicHistory");
-    if (!data) return;
-    if (!data.cashHistory.length) { container.innerHTML = "<p>Aucun mouvement.</p>"; return; }
+    if (!data || !container) return;
+
+    if (!data.cashHistory.length) {
+        container.innerHTML = "<p>Aucun mouvement.</p>";
+        return;
+    }
+
     container.innerHTML = data.cashHistory.slice(0, 30).map(item => `
         <div class="history-item">
-            ${Number(item.amount) >= 0 ? `<span style="color:#43d58d">+${formatNumber(item.amount)} FC</span>` : `<span style="color:#ff7373">${formatNumber(item.amount)} FC</span>`}
+            ${Number(item.amount) >= 0 
+                ? `<span style="color:#43d58d">+${formatNumber(item.amount)} FC</span>` 
+                : `<span style="color:#ff7373">${formatNumber(item.amount)} FC</span>`}
             — ${escapeHTML(item.reason)}
+        </div>
+    `).join("");
+}
+
+function renderShop() {
+    const container = document.getElementById("shopContainer");
+    if (!container || !data) return;
+    container.innerHTML = "";
+
+    if (!data.shopItems.length) {
+        container.innerHTML = `<div class="notice">🛒 Aucun achat disponible.</div>`;
+        return;
+    }
+
+    data.shopItems.forEach((item) => {
+        const div = document.createElement("div");
+        div.className = "shop-item";
+        div.innerHTML = `
+            <h3>${escapeHTML(item.name)}</h3>
+            <div class="shop-price">⭐ ${formatNumber(item.price)} points</div>
+            ${item.duration ? `<div class="shop-duration">⏱️ Durée : ${escapeHTML(item.duration)}</div>` : ""}
+            ${item.description ? `<div class="shop-description">${escapeHTML(item.description)}</div>` : ""}
+            <button class="action orange" onclick="buyShopItem('${item.id}')">🛒 Acheter</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+window.buyShopItem = async function(itemId) {
+    const memberId = document.getElementById("shopMemberSelect").value;
+    const password = document.getElementById("shopPassword").value;
+
+    if (!memberId) { alert("👤 Choisis ton nom."); return; }
+    if (!password) { alert("🔐 Entre ton mot de passe."); return; }
+
+    const member = data.members.find(m => m.id === memberId);
+    const item = data.shopItems.find(i => i.id === itemId);
+
+    if (!member || !item) { alert("❌ Achat introuvable."); return; }
+    if (String(member.password) !== String(password)) { alert("❌ Mot de passe incorrect."); return; }
+
+    const price = Number(item.price) || 0;
+    if (Number(member.points) < price) {
+        alert(`❌ Tu n'as pas assez de points.\n\nPrix : ${formatNumber(price)} points\nTes points : ${formatNumber(member.points)}`);
+        return;
+    }
+
+    const confirmation = confirm(`🛒 CONFIRMATION DE L'ACHAT\n\n${item.name}\nPrix : ${formatNumber(price)} points\n\nPoints restants : ${formatNumber(Number(member.points) - price)}\n\nConfirmer ?`);
+    if (!confirmation) return;
+
+    member.points = Number(member.points) - price;
+    data.purchaseHistory.unshift({
+        id: makeId(),
+        date: new Date().toISOString(),
+        memberId: member.id,
+        memberName: member.name,
+        itemId: item.id,
+        itemName: item.name,
+        price: price,
+        duration: item.duration || ""
+    });
+
+    data.history.unshift({
+        id: makeId(),
+        date: new Date().toISOString(),
+        type: "purchase",
+        member: member.name,
+        amount: -price,
+        reason: "Achat boutique",
+        text: `${member.name} a acheté ${item.name} pour ${formatNumber(price)} points`
+    });
+
+    document.getElementById("shopPassword").value = "";
+    await saveData();
+    alert(`✅ ACHAT RÉUSSI !\n\n${item.name}\n-${formatNumber(price)} points\n\nNouveau solde : ${formatNumber(member.points)} points`);
+};
+
+function verifyShopAdmin() {
+    if (!adminConnected) {
+        alert("🔐 Connecte-toi d'abord à l'administration.");
+        return false;
+    }
+    const password = prompt("🔐 Mot de passe administrateur requis :");
+    if (password !== ADMIN_PASSWORD) {
+        alert("❌ Mot de passe administrateur incorrect.");
+        return false;
+    }
+    return true;
+}
+
+window.addShopItem = async function() {
+    if (!verifyShopAdmin()) return;
+    const name = document.getElementById("newShopName").value.trim();
+    const price = Number(document.getElementById("newShopPrice").value);
+    const duration = document.getElementById("newShopDuration").value.trim();
+    const description = document.getElementById("newShopDescription").value.trim();
+
+    if (!name) { alert("❌ Entre le nom de l'achat."); return; }
+    if (!Number.isFinite(price) || price < 0) { alert("❌ Entre un prix valide."); return; }
+
+    data.shopItems.push({
+        id: makeId(),
+        name: name,
+        price: price,
+        duration: duration,
+        description: description
+    });
+
+    await saveData();
+    document.getElementById("newShopName").value = "";
+    document.getElementById("newShopPrice").value = "";
+    document.getElementById("newShopDuration").value = "";
+    document.getElementById("newShopDescription").value = "";
+    alert("✅ Nouvel achat ajouté à la boutique.");
+};
+
+function renderAdminShop() {
+    const container = document.getElementById("adminShopContainer");
+    if (!container) return;
+
+    if (!adminConnected) {
+        container.innerHTML = `<div class="notice">🔒 Connecte-toi pour gérer les achats.</div>`;
+        return;
+    }
+
+    container.innerHTML = "";
+    data.shopItems.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "shop-admin-item";
+        div.innerHTML = `
+            <div class="shop-number">#${index + 1}</div>
+            <strong>${escapeHTML(item.name)}</strong>
+            <p>💰 <strong>${formatNumber(item.price)}</strong> points</p>
+            ${item.duration ? `<p>⏱️ Durée : ${escapeHTML(item.duration)}</p>` : ""}
+            ${item.description ? `<p class="small-info">${escapeHTML(item.description)}</p>` : ""}
+            <button class="action" onclick="editShopItem('${item.id}')">✏️ Modifier</button>
+            <button class="action red" onclick="deleteShopItem('${item.id}')">🗑️ Supprimer</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+window.editShopItem = async function(id) {
+    if (!verifyShopAdmin()) return;
+    const item = data.shopItems.find(i => i.id === id);
+    if (!item) return;
+
+    const newName = prompt("🛒 Nom de l'achat :", item.name);
+    if (newName === null) return;
+
+    const newPriceText = prompt("💰 Nouveau prix en points :", item.price);
+    if (newPriceText === null) return;
+    const newPrice = Number(newPriceText);
+
+    if (!Number.isFinite(newPrice) || newPrice < 0) {
+        alert("❌ Prix invalide.");
+        return;
+    }
+
+    const newDuration = prompt("⏱️ Durée :", item.duration || "");
+    if (newDuration === null) return;
+
+    const newDescription = prompt("📝 Description :", item.description || "");
+    if (newDescription === null) return;
+
+    item.name = newName.trim();
+    item.price = newPrice;
+    item.duration = newDuration.trim();
+    item.description = newDescription.trim();
+
+    await saveData();
+    alert("✅ Achat modifié avec succès.");
+};
+
+window.deleteShopItem = async function(id) {
+    if (!verifyShopAdmin()) return;
+    const item = data.shopItems.find(i => i.id === id);
+    if (!item) return;
+
+    if (!confirm(`🗑️ Supprimer « ${item.name} » de la boutique ?`)) return;
+
+    data.shopItems = data.shopItems.filter(i => i.id !== id);
+    await saveData();
+    alert("✅ Achat supprimé.");
+};
+
+function renderPurchaseHistory() {
+    const container = document.getElementById("purchaseHistoryContainer");
+    if (!container || !data) return;
+
+    if (!data.purchaseHistory.length) {
+        container.innerHTML = "<p>Aucun achat effectué.</p>";
+        return;
+    }
+
+    container.innerHTML = data.purchaseHistory.slice(0, 100).map(purchase => `
+        <div class="purchase-item">
+            🛒 <strong>${escapeHTML(purchase.memberName)}</strong> a acheté <strong>${escapeHTML(purchase.itemName)}</strong> pour <span class="purchase-price">-${formatNumber(purchase.price)} points</span>
+            ${purchase.duration ? `<br>⏱️ Durée : ${escapeHTML(purchase.duration)}` : ""}
+            <br><small>${new Date(purchase.date).toLocaleString("fr-FR")}</small>
         </div>
     `).join("");
 }
@@ -915,13 +1405,18 @@ function renderCashHistory() {
 window.resetCloudData = function() {
     if (!adminConnected) return;
     const password = prompt("🔐 Mot de passe administrateur requis pour réinitialiser les données :");
-    if (password !== ADMIN_PASSWORD) { alert("❌ Mot de passe incorrect."); return; }
+    if (password !== ADMIN_PASSWORD) {
+        alert("❌ Mot de passe incorrect.");
+        return;
+    }
     if (!confirm("⚠️ Réinitialiser toutes les données Firebase Cloud ?")) return;
 
     data = JSON.parse(JSON.stringify(INITIAL_DATA));
     saveData();
     alert("✅ La base de données Cloud a été réinitialisée.");
 };
+
+initFirebase();
 </script>
 
 </body>
