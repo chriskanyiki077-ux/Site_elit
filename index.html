@@ -595,6 +595,11 @@ hr{
         </div>
 
         <div class="card danger-zone">
+            <h3>📜 Gestion de l'historique</h3>
+            <p class="small-info">Effacer les historiques de la base de données.</p>
+            <button class="action red" onclick="clearGeneralHistory()">🗑️ Effacer l'historique général</button>
+            <button class="action red" onclick="clearPurchaseHistory()">🗑️ Effacer l'historique des achats</button>
+            <hr>
             <h3>⚠️ Réinitialiser la BDD</h3>
             <p class="small-info">Cette action remet la base de données Firebase à son état initial.</p>
             <button class="action red" onclick="resetCloudData()">♻️ Réinitialiser Firebase</button>
@@ -610,7 +615,7 @@ hr{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot, setDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAxj9DNftbCAlXsPFIDUVaiQ-JivtzEl0g",
@@ -624,6 +629,16 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+// Activer la persistance hors-ligne Firestore pour garder les données en cache local
+enableIndexedDbPersistence(db).catch((err) => {
+    if (err.code == 'failed-precondition') {
+        console.warn("La persistance a échoué car plusieurs onglets sont ouverts.");
+    } else if (err.code == 'unimplemented') {
+        console.warn("Le navigateur actuel ne supporte pas la persistance hors-ligne.");
+    }
+});
+
 const docRef = doc(db, "organisation", "mainData");
 
 const ADMIN_PASSWORD = "1234Elite";
@@ -720,21 +735,22 @@ function initFirebase() {
 
             const statusNotice = document.getElementById("statusNotice");
             if (statusNotice) {
+                const source = snapshot.metadata.fromCache ? " (Cache local)" : " (En direct)";
                 statusNotice.className = "notice success";
-                statusNotice.textContent = "🟢 Synchronisé en temps réel avec Firebase Cloud";
+                statusNotice.textContent = "🟢 Synchronisé avec Firebase" + source;
             }
             renderAll();
         } else {
-            console.warn("Le document 'mainData' n'existe pas encore. Initialisation...");
+            console.warn("Le document n'existe pas encore sur le Cloud. Chargement des données locales par défaut sans écrasement.");
             data = JSON.parse(JSON.stringify(INITIAL_DATA));
-            saveData();
+            renderAll();
         }
     }, error => {
         console.error("Erreur Firebase:", error);
         const statusNotice = document.getElementById("statusNotice");
         if (statusNotice) {
             statusNotice.className = "notice error";
-            statusNotice.textContent = "❌ Connexion à Firebase échouée (vérifiez vos règles Firestore)";
+            statusNotice.textContent = "❌ Erreur de connexion au serveur";
         }
     });
 }
@@ -1401,6 +1417,34 @@ function renderPurchaseHistory() {
         </div>
     `).join("");
 }
+
+window.clearGeneralHistory = function() {
+    if (!adminConnected) return;
+    const password = prompt("🔐 Mot de passe administrateur requis :");
+    if (password !== ADMIN_PASSWORD) {
+        alert("❌ Mot de passe incorrect.");
+        return;
+    }
+    if (!confirm("🗑️ Voulez-vous vraiment effacer tout l'historique général ?")) return;
+
+    data.history = [];
+    saveData();
+    alert("✅ L'historique général a été effacé.");
+};
+
+window.clearPurchaseHistory = function() {
+    if (!adminConnected) return;
+    const password = prompt("🔐 Mot de passe administrateur requis :");
+    if (password !== ADMIN_PASSWORD) {
+        alert("❌ Mot de passe incorrect.");
+        return;
+    }
+    if (!confirm("🗑️ Voulez-vous vraiment effacer l'historique des achats ?")) return;
+
+    data.purchaseHistory = [];
+    saveData();
+    alert("✅ L'historique des achats a été effacé.");
+};
 
 window.resetCloudData = function() {
     if (!adminConnected) return;
