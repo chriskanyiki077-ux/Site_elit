@@ -194,6 +194,11 @@ button.action:hover{
     background:#a82d35;
 }
 
+.table-responsive{
+    width:100%;
+    overflow-x:auto;
+}
+
 table{
     width:100%;
     border-collapse:collapse;
@@ -202,7 +207,7 @@ table{
 th,td{
     padding:10px;
     border-bottom:1px solid #21425f;
-    text-align:left;
+    text-align:center;
 }
 
 th{
@@ -323,10 +328,76 @@ footer{
     font-weight:bold;
 }
 
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #0d213b;
+    border: 1px solid #1c4b75;
+    border-radius: 18px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.admin-session-bar {
+    background: #091e38;
+    border: 1px solid #1c5280;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.admin-session-bar input {
+    flex: 1;
+    min-width: 200px;
+    margin: 0;
+}
+
+.checkbox-custom {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+}
+
 hr{
     border:0;
     border-top:1px solid #21425f;
     margin:18px 0;
+}
+
+.month-selector-box{
+    background:linear-gradient(145deg,#0b2948,#091a2e);
+    border:1px solid #236493;
+    border-radius:14px;
+    padding:14px;
+    margin-bottom:15px;
+}
+
+.month-selector-box label{
+    display:block;
+    font-weight:bold;
+    margin-bottom:5px;
+}
+
+.month-selector-box select{
+    margin:0;
+    font-size:17px;
+    font-weight:bold;
 }
 
 @media(max-width:600px){
@@ -381,7 +452,11 @@ hr{
         </div>
         <div class="stat">
             <strong id="cashValue">0</strong>
-            FC
+            FC (Actuel)
+        </div>
+        <div class="stat">
+            <strong id="targetCashValue">0</strong>
+            FC (Objectif)
         </div>
     </div>
 </section>
@@ -455,13 +530,14 @@ hr{
         <div class="notice">
             ⭐ Achète des fonctions et objets avec tes points.
             <br>
-            🔐 Ton mot de passe est nécessaire pour effectuer un achat.
+            🔐 Ton mot de passe est nécessaire pour effectuer un achat et voir ton historique.
         </div>
+
         <label>👤 Ton nom</label>
-        <select id="shopMemberSelect"></select>
+        <select id="shopMemberSelect" onchange="renderPurchaseHistory()"></select>
 
         <label>🔐 Ton mot de passe</label>
-        <input id="shopPassword" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Mot de passe">
+        <input id="shopPassword" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Mot de passe" oninput="renderPurchaseHistory()">
     </div>
 
     <div class="card">
@@ -470,152 +546,522 @@ hr{
     </div>
 
     <div class="card">
-        <h2>📜 Historique des achats</h2>
+        <h2>📜 Mon historique d'achats</h2>
         <div id="purchaseHistoryContainer"></div>
     </div>
 </section>
 
 <section id="caisse" class="hidden">
+
     <div class="card">
-        <h2>💰 Caisse</h2>
-        <div class="notice">🔐 La caisse est gérée uniquement par l'administrateur.</div>
-        <h3>Solde : <span id="cashBalance">0</span> FC</h3>
+        <h2>💰 Caisse & Pointage</h2>
+        <div class="notice">
+            🔐 Toutes les modifications de la caisse se déverrouillent en autorisant la session.
+        </div>
+
+        <h3>
+            Solde actuel :
+            <span id="cashBalance" style="color:#58b9ff;">0</span> FC
+        </h3>
+
+        <h3>
+            Objectif à atteindre :
+            <span id="targetCashBalance" style="color:#ffc45c;">0</span> FC
+        </h3>
+    </div>
+
+    <div class="card">
+        <h3>⚡ Modification & Ajustement de la Caisse</h3>
+
+        <p>
+            Pas actuel de la caisse :
+            <strong id="cashStepDisplay">5000</strong> FC
+        </p>
+
+        <label>Ajuster le Solde :</label>
+
+        <div class="quick" style="max-width:300px; margin-bottom:15px;">
+            <button class="plus" onclick="quickCashChange(1)">➕</button>
+            <button class="minus" onclick="quickCashChange(-1)">➖</button>
+        </div>
+
+        <label>Ajuster l'Objectif Cible :</label>
+
+        <div class="quick" style="max-width:300px; margin-bottom:15px;">
+            <button class="plus" onclick="quickTargetCashChange(1)">➕</button>
+            <button class="minus" onclick="quickTargetCashChange(-1)">➖</button>
+        </div>
+
+        <hr>
+
+        <h4>✏️ Transaction Manuelle Directe Caisse</h4>
+
+        <input id="adminCashAmount" type="number" placeholder="Montant (FC)">
+        <input id="adminCashReason" placeholder="Motif de la transaction">
+
+        <button class="action green" onclick="adminCashChange(1)">➕ Ajouter</button>
+        <button class="action red" onclick="adminCashChange(-1)">➖ Retirer</button>
+
+        <hr>
+
+        <h4>⚙️ Configuration des Valeurs</h4>
+
+        <label>
+            Montant de cotisation / Jour — Mois sélectionné :
+            <strong id="adminDailyFeeDisplay">500</strong> FC
+        </label>
+
+        <input id="newDailyFee" type="number" min="0" placeholder="Nouveau montant par jour (FC)">
+        <button class="action green" onclick="changeDailyFee()">Modifier montant par jour</button>
+
+        <label style="margin-top:10px; display:block;">
+            Pas de caisse :
+            <strong id="adminCashStepDisplay">5000</strong> FC
+        </label>
+
+        <input id="newCashStep" type="number" min="1" placeholder="Nouveau pas de caisse (FC)">
+        <button class="action" onclick="changeCashStep()">Modifier le pas</button>
+
+        <label style="margin-top:10px; display:block;">
+            Définir Objectif Cible :
+        </label>
+
+        <input id="targetCashInput" type="number" min="0" placeholder="Montant cible à atteindre (FC)">
+        <button class="action green" onclick="setTargetCash()">Fixer l'objectif</button>
+    </div>
+
+    <div class="card">
+        <h3>📅 Tableau de Pointage des Cotisations</h3>
+
+        <div class="month-selector-box">
+            <label>📅 Mois sélectionné pour tout le tableau :</label>
+
+            <select id="currentMonthSelect" onchange="changeCurrentMonth(this.value)">
+                <option value="Janvier">Janvier</option>
+                <option value="Février">Février</option>
+                <option value="Mars">Mars</option>
+                <option value="Avril">Avril</option>
+                <option value="Mai">Mai</option>
+                <option value="Juin">Juin</option>
+                <option value="Juillet">Juillet</option>
+                <option value="Août">Août</option>
+                <option value="Septembre">Septembre</option>
+                <option value="Octobre">Octobre</option>
+                <option value="Novembre">Novembre</option>
+                <option value="Décembre">Décembre</option>
+            </select>
+
+            <div id="monthInfo" class="small-info" style="margin-top:8px;"></div>
+        </div>
+
+        <div class="admin-session-bar" style="justify-content: space-between;">
+
+            <div>
+                <strong>Montant fixe par Jour :</strong>
+
+                <span id="dailyFeeDisplay"
+                      style="color:#58b9ff; font-weight:bold; font-size:18px;">
+                    500
+                </span>
+                FC
+            </div>
+
+            <div>
+                <button class="action green" onclick="addDayColumn()">
+                    ➕ Ajouter un Jour
+                </button>
+
+                <button class="action red" onclick="removeDayColumn()">
+                    ➖ Supprimer le dernier Jour
+                </button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr id="attendanceTableHeader">
+                        <th>Nom du Membre</th>
+                    </tr>
+                </thead>
+
+                <tbody id="attendanceTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>📊 Total Versé par Chaque Membre</h3>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Membre</th>
+                        <th>Total Versé — Mois sélectionné</th>
+                    </tr>
+                </thead>
+
+                <tbody id="memberContributionsBody"></tbody>
+            </table>
+        </div>
+
+        <hr>
+
+        <h3>📜 Historique des mouvements de la Caisse</h3>
+
         <div id="cashPublicHistory"></div>
     </div>
+
 </section>
 
 <section id="admin" class="hidden">
+
+    <div class="admin-session-bar">
+
+        <label for="globalAdminPassword">
+            <strong>🔑 Session Admin Directe :</strong>
+        </label>
+
+        <input
+            id="globalAdminPassword"
+            type="password"
+            placeholder="Saisir le mot de passe Admin pour activer..."
+        />
+
+        <button class="action green" onclick="unlockAdminSession()">
+            Déverrouiller Session
+        </button>
+
+        <button class="action red" onclick="logoutAdmin()">
+            🔒 Verrouiller
+        </button>
+
+    </div>
+
     <div id="loginBox" class="card">
+
         <h2>🔐 Administration</h2>
+
         <p>Cette partie est réservée à l'administrateur.</p>
+
         <input id="adminName" placeholder="Nom de l'administrateur">
-        <input id="adminPassword" type="password" placeholder="Mot de passe administrateur">
-        <button class="action" onclick="loginAdmin()">🔐 Se connecter</button>
+
+        <input
+            id="adminPassword"
+            type="password"
+            placeholder="Mot de passe administrateur"
+        >
+
+        <button class="action" onclick="loginAdmin()">
+            🔐 Se connecter
+        </button>
+
         <div id="loginMessage"></div>
+
     </div>
 
     <div id="adminPanel" class="hidden">
+
         <div class="card">
+
             <h2>⚙️ Administration</h2>
-            <div class="notice success">✅ Administrateur connecté</div>
-            <button class="action red" onclick="logoutAdmin()">🚪 Déconnexion</button>
+
+            <div class="notice success">
+                ✅ Session Administrateur active
+            </div>
+
+            <button class="action red" onclick="logoutAdmin()">
+                🚪 Déconnexion
+            </button>
+
         </div>
 
         <div class="card">
+
             <h3>⚡ Gestion rapide des points</h3>
-            <p>Pas actuel : <strong id="stepDisplay">250</strong> points</p>
-            <input id="newStep" type="number" min="1" placeholder="Nouveau pas">
-            <button class="action" onclick="changeStep()">Modifier le pas</button>
+
+            <p>
+                Pas actuel :
+                <strong id="stepDisplay">250</strong> points
+            </p>
+
+            <input
+                id="newStep"
+                type="number"
+                min="1"
+                placeholder="Nouveau pas"
+            >
+
+            <button class="action" onclick="changeStep()">
+                Modifier le pas
+            </button>
+
             <hr>
+
             <div id="adminMembersContainer"></div>
+
         </div>
 
         <div class="card">
+
             <h3>🟢 Présence</h3>
+
             <select id="presenceMember"></select>
-            <input id="presencePoints" type="number" value="250">
-            <button class="action green" onclick="markPresence()">🟢 Présent</button>
+
+            <input
+                id="presencePoints"
+                type="number"
+                value="250"
+            >
+
+            <button class="action green" onclick="markPresence()">
+                🟢 Présent
+            </button>
+
         </div>
 
         <div class="card">
+
             <h3>✏️ Modification des points</h3>
+
             <select id="manualMember"></select>
-            <input id="manualAmount" type="number" placeholder="Nombre de points">
-            <input id="manualReason" placeholder="Motif">
-            <button class="action green" onclick="manualChange(1)">➕ Ajouter</button>
-            <button class="action red" onclick="manualChange(-1)">➖ Retirer</button>
+
+            <input
+                id="manualAmount"
+                type="number"
+                placeholder="Nombre de points"
+            >
+
+            <input
+                id="manualReason"
+                placeholder="Motif"
+            >
+
+            <button class="action green" onclick="manualChange(1)">
+                ➕ Ajouter
+            </button>
+
+            <button class="action red" onclick="manualChange(-1)">
+                ➖ Retirer
+            </button>
+
         </div>
 
         <div class="card">
+
             <h3>🎖️ Rang</h3>
+
             <select id="rankMember"></select>
+
             <select id="rankValue">
-                <option value="F">F</option>
-                <option value="E">E</option>
                 <option value="D">D</option>
                 <option value="C">C</option>
                 <option value="B">B</option>
                 <option value="A">A</option>
                 <option value="S">S</option>
             </select>
-            <button class="action" onclick="changeRank()">🎖️ Modifier</button>
+
+            <button class="action" onclick="changeRank()">
+                🎖️ Modifier
+            </button>
+
         </div>
 
         <div class="card">
-            <h3>💰 Caisse</h3>
-            <input id="adminCashAmount" type="number" placeholder="Montant">
-            <input id="adminCashReason" placeholder="Motif">
-            <button class="action green" onclick="adminCashChange(1)">➕ Ajouter</button>
-            <button class="action red" onclick="adminCashChange(-1)">➖ Retirer</button>
-        </div>
 
-        <div class="card">
             <h3>👤 Ajouter un membre</h3>
+
             <input id="newMemberName" placeholder="Nom">
-            <input id="newMemberPoints" type="number" value="0" placeholder="Points">
+
+            <input
+                id="newMemberPoints"
+                type="number"
+                value="0"
+                placeholder="Points"
+            >
+
             <select id="newMemberRank">
-                <option value="F">F</option>
-                <option value="E">E</option>
                 <option value="D">D</option>
                 <option value="C">C</option>
                 <option value="B">B</option>
                 <option value="A">A</option>
                 <option value="S">S</option>
             </select>
-            <input id="newMemberPassword" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Mot de passe — 4 chiffres maximum">
-            <button class="action green" onclick="addMember()">➕ Ajouter</button>
+
+            <input
+                id="newMemberPassword"
+                type="password"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="4"
+                placeholder="Mot de passe — 4 chiffres maximum"
+            >
+
+            <button class="action green" onclick="addMember()">
+                ➕ Ajouter
+            </button>
+
         </div>
 
         <div class="card">
+
             <h3>🔑 Mot de passe d'un membre</h3>
+
             <select id="adminPasswordMember"></select>
-            <input id="adminNewPassword" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Nouveau mot de passe — 4 chiffres maximum">
-            <button class="action" onclick="adminChangePlayerPassword()">🔑 Modifier le mot de passe</button>
+
+            <input
+                id="adminNewPassword"
+                type="password"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="4"
+                placeholder="Nouveau mot de passe — 4 chiffres maximum"
+            >
+
+            <button class="action" onclick="adminChangePlayerPassword()">
+                🔑 Modifier le mot de passe
+            </button>
+
             <div id="adminPasswordMessage"></div>
+
         </div>
 
         <div class="card">
+
             <h3>🗑️ Supprimer un membre</h3>
+
             <select id="deleteMember"></select>
-            <button class="action red" onclick="deleteMember()">🗑️ Supprimer</button>
+
+            <button class="action red" onclick="deleteMember()">
+                🗑️ Supprimer
+            </button>
+
         </div>
 
         <div class="card">
+
             <h2>🛒 Gestion de la boutique</h2>
-            <div class="notice">🔐 Chaque ajout, modification ou suppression demandera le mot de passe administrateur.</div>
+
+            <div class="notice">
+                🔐 Accessible directement une fois la session déverrouillée.
+            </div>
+
             <h3>➕ Ajouter un achat</h3>
-            <input id="newShopName" placeholder="Nom de l'achat">
-            <input id="newShopPrice" type="number" min="0" placeholder="Prix en points">
-            <input id="newShopDuration" placeholder="Durée facultative : 10 min">
-            <input id="newShopDescription" placeholder="Description facultative">
-            <button class="action green" onclick="addShopItem()">➕ Ajouter l'achat</button>
+
+            <input
+                id="newShopName"
+                placeholder="Nom de l'achat"
+            >
+
+            <input
+                id="newShopPrice"
+                type="number"
+                min="0"
+                placeholder="Prix en points"
+            >
+
+            <input
+                id="newShopDuration"
+                placeholder="Durée facultative : 10 min"
+            >
+
+            <input
+                id="newShopDescription"
+                placeholder="Description facultative"
+            >
+
+            <button class="action green" onclick="addShopItem()">
+                ➕ Ajouter l'achat
+            </button>
+
             <hr>
+
             <h3>📦 Gestion des achats</h3>
+
             <div id="adminShopContainer"></div>
+
         </div>
 
         <div class="card danger-zone">
-            <h3>📜 Gestion de l'historique</h3>
-            <p class="small-info">Effacer les historiques de la base de données.</p>
-            <button class="action red" onclick="clearGeneralHistory()">🗑️ Effacer l'historique général</button>
-            <button class="action red" onclick="clearPurchaseHistory()">🗑️ Effacer l'historique des achats</button>
+
+            <h3>📜 Gestion des historiques</h3>
+
+            <p class="small-info">
+                Effacer les historiques de la base de données.
+            </p>
+
+            <button class="action red" onclick="clearGeneralHistory()">
+                🗑️ Effacer l'historique général
+            </button>
+
+            <button class="action red" onclick="clearPurchaseHistory()">
+                🗑️ Effacer l'historique des achats
+            </button>
+
+            <button class="action red" onclick="clearCashHistory()">
+                🗑️ Effacer l'historique de la caisse
+            </button>
+
             <hr>
+
             <h3>⚠️ Réinitialiser la BDD</h3>
-            <p class="small-info">Cette action remet la base de données Firebase à son état initial.</p>
-            <button class="action red" onclick="resetCloudData()">♻️ Réinitialiser Firebase</button>
+
+            <p class="small-info">
+                Cette action remet la base de données Firebase à son état initial.
+            </p>
+
+            <button class="action red" onclick="resetCloudData()">
+                ♻️ Réinitialiser Firebase
+            </button>
+
         </div>
+
     </div>
+
 </section>
 
 </main>
+
+<div id="memberHistoryModal" class="modal-overlay hidden">
+
+    <div class="modal-content">
+
+        <h2 id="modalMemberName">📜 Historique</h2>
+
+        <div id="modalHistoryContent"></div>
+
+        <hr>
+
+        <button
+            class="action red"
+            onclick="closeMemberHistoryModal()"
+        >
+            Fermer
+        </button>
+
+    </div>
+
+</div>
 
 <footer>
     ORGANISATION D'ÉLITE
 </footer>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, doc, onSnapshot, setDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+import {
+    getFirestore,
+    doc,
+    onSnapshot,
+    setDoc,
+    enableIndexedDbPersistence
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
 
 const firebaseConfig = {
     apiKey: "AIzaSyAxj9DNftbCAlXsPFIDUVaiQ-JivtzEl0g",
@@ -627,840 +1073,4473 @@ const firebaseConfig = {
     measurementId: "G-D6SXK709S6"
 };
 
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Activer la persistance hors-ligne Firestore pour garder les données en cache local
 enableIndexedDbPersistence(db).catch((err) => {
-    if (err.code == 'failed-precondition') {
-        console.warn("La persistance a échoué car plusieurs onglets sont ouverts.");
-    } else if (err.code == 'unimplemented') {
-        console.warn("Le navigateur actuel ne supporte pas la persistance hors-ligne.");
+
+    if (err.code == "failed-precondition") {
+        console.warn(
+            "La persistance a échoué car plusieurs onglets sont ouverts."
+        );
     }
+
+    else if (err.code == "unimplemented") {
+        console.warn(
+            "Le navigateur actuel ne supporte pas la persistance hors-ligne."
+        );
+    }
+
 });
 
-const docRef = doc(db, "organisation", "mainData");
+
+const docRef = doc(
+    db,
+    "organisation",
+    "mainData"
+);
+
 
 const ADMIN_PASSWORD = "1234Elite";
 const DEFAULT_PLAYER_PASSWORD = "1234";
 
-const INITIAL_SHOP_ITEMS = [
-    { id:"shop1", name:"🔄 Seconde chance", price:3000, duration:"", description:"Obtenir une seconde chance." },
-    { id:"shop2", name:"✖️ Multiplication", price:10000, duration:"", description:"Achat de multiplication." },
-    { id:"shop3", name:"🎯 Tentative", price:2000, duration:"", description:"Obtenir une tentative supplémentaire." },
-    { id:"shop4", name:"🧊 Gel de points", price:10000, duration:"", description:"Gel de points." },
-    { id:"shop5", name:"⏳ Temps mort", price:500, duration:"", description:"Temps mort." },
-    { id:"shop6", name:"💰 Détournement", price:20000, duration:"", description:"Détournement." },
-    { id:"shop7", name:"🛡️ Bouclier", price:25000, duration:"", description:"Protection." },
-    { id:"shop8", name:"👻 Présence", price:3000, duration:"", description:"Présence." },
-    { id:"shop9", name:"⚔️ Contre-attaque", price:20000, duration:"", description:"Contre-attaque." },
-    { id:"shop10", name:"🌑 Mode Dark", price:20000, duration:"10 min", description:"Mode Dark temporaire." },
-    { id:"shop11", name:"♟️ Coup forcé", price:5000, duration:"", description:"Coup forcé." },
-    { id:"shop12", name:"🔄 Inversion", price:15000, duration:"", description:"Inversion." },
-    { id:"shop13", name:"👤 Achat de membre virtuel", price:15000, duration:"", description:"Créer un membre virtuel." },
-    { id:"shop14", name:"🗑️ Suppression du membre virtuel", price:20000, duration:"", description:"Supprimer un membre virtuel." },
-    { id:"shop15", name:"🚫 Bloc bonus", price:10000, duration:"", description:"Bloquer un bonus." },
-    { id:"shop16", name:"❌ Annulation d’attaque", price:20000, duration:"", description:"Annuler une attaque." },
-    { id:"shop17", name:"📋 Copie bonus", price:15000, duration:"", description:"Copier un bonus." },
-    { id:"shop18", name:"🔐 Coffre fermé", price:15000, duration:"", description:"Coffre fermé." },
-    { id:"shop19", name:"☠️ Venin", price:5000, duration:"10 min", description:"Venin temporaire." },
-    { id:"shop20", name:"🎯 Cible", price:5000, duration:"", description:"Désigner une cible." },
-    { id:"shop21", name:"↩️ Retrait annulé", price:10000, duration:"", description:"Annuler un retrait." },
-    { id:"shop22", name:"🔀 Substitution", price:5000, duration:"", description:"Substitution." },
-    { id:"shop23", name:"💡 Révélation", price:5000, duration:"", description:"Révélation." },
-    { id:"shop24", name:"🚫 Annule bonus", price:10000, duration:"", description:"Annuler un bonus." },
-    { id:"shop25", name:"☠️👑 Coups suprêmes", price:30000, duration:"", description:"Coups suprêmes." }
+
+const MONTHS = [
+    "Janvier",
+    "Février",
+    "Mars",
+    "Avril",
+    "Mai",
+    "Juin",
+    "Juillet",
+    "Août",
+    "Septembre",
+    "Octobre",
+    "Novembre",
+    "Décembre"
 ];
 
+
+const INITIAL_SHOP_ITEMS = [
+
+    {
+        id:"shop1",
+        name:"🔄 Seconde chance",
+        price:3000,
+        duration:"",
+        description:"Obtenir une seconde chance."
+    },
+
+    {
+        id:"shop2",
+        name:"✖️ Multiplication",
+        price:10000,
+        duration:"",
+        description:"Achat de multiplication."
+    },
+
+    {
+        id:"shop3",
+        name:"🎯 Tentative",
+        price:2000,
+        duration:"",
+        description:"Obtenir une tentative supplémentaire."
+    },
+
+    {
+        id:"shop4",
+        name:"🧊 Gel de points",
+        price:10000,
+        duration:"",
+        description:"Gel de points."
+    },
+
+    {
+        id:"shop5",
+        name:"⏳ Temps mort",
+        price:500,
+        duration:"",
+        description:"Temps mort."
+    },
+
+    {
+        id:"shop6",
+        name:"💰 Détournement",
+        price:20000,
+        duration:"",
+        description:"Détournement."
+    },
+
+    {
+        id:"shop7",
+        name:"🛡️ Bouclier",
+        price:25000,
+        duration:"",
+        description:"Protection."
+    },
+
+    {
+        id:"shop8",
+        name:"👻 Présence",
+        price:3000,
+        duration:"",
+        description:"Présence."
+    },
+
+    {
+        id:"shop9",
+        name:"⚔️ Contre-attaque",
+        price:20000,
+        duration:"",
+        description:"Contre-attaque."
+    },
+
+    {
+        id:"shop10",
+        name:"🌑 Mode Dark",
+        price:20000,
+        duration:"10 min",
+        description:"Mode Dark temporaire."
+    },
+
+    {
+        id:"shop11",
+        name:"♟️ Coup forcé",
+        price:5000,
+        duration:"",
+        description:"Coup forcé."
+    },
+
+    {
+        id:"shop12",
+        name:"🔄 Inversion",
+        price:15000,
+        duration:"",
+        description:"Inversion."
+    },
+
+    {
+        id:"shop13",
+        name:"👤 Achat de membre virtuel",
+        price:15000,
+        duration:"",
+        description:"Créer un membre virtuel."
+    },
+
+    {
+        id:"shop14",
+        name:"🗑️ Suppression du membre virtuel",
+        price:20000,
+        duration:"",
+        description:"Supprimer un membre virtuel."
+    },
+
+    {
+        id:"shop15",
+        name:"🚫 Bloc bonus",
+        price:10000,
+        duration:"",
+        description:"Bloquer un bonus."
+    },
+
+    {
+        id:"shop16",
+        name:"❌ Annulation d’attaque",
+        price:20000,
+        duration:"",
+        description:"Annuler une attaque."
+    },
+
+    {
+        id:"shop17",
+        name:"📋 Copie bonus",
+        price:15000,
+        duration:"",
+        description:"Copier un bonus."
+    },
+
+    {
+        id:"shop18",
+        name:"🔐 Coffre fermé",
+        price:15000,
+        duration:"",
+        description:"Coffre fermé."
+    },
+
+    {
+        id:"shop19",
+        name:"☠️ Venin",
+        price:5000,
+        duration:"10 min",
+        description:"Venin temporaire."
+    },
+
+    {
+        id:"shop20",
+        name:"🎯 Cible",
+        price:5000,
+        duration:"",
+        description:"Désigner une cible."
+    },
+
+    {
+        id:"shop21",
+        name:"↩️ Retrait annulé",
+        price:10000,
+        duration:"",
+        description:"Annuler un retrait."
+    },
+
+    {
+        id:"shop22",
+        name:"🔀 Substitution",
+        price:5000,
+        duration:"",
+        description:"Substitution."
+    },
+
+    {
+        id:"shop23",
+        name:"💡 Révélation",
+        price:5000,
+        duration:"",
+        description:"Révélation."
+    },
+
+    {
+        id:"shop24",
+        name:"🚫 Annule bonus",
+        price:10000,
+        duration:"",
+        description:"Annuler un bonus."
+    },
+
+    {
+        id:"shop25",
+        name:"☠️👑 Coups suprêmes",
+        price:30000,
+        duration:"",
+        description:"Coups suprêmes."
+    }
+
+];
+
+
+function createEmptyMonths() {
+
+    const months = {};
+
+    MONTHS.forEach(month => {
+
+        months[month] = {
+            daysCount: 0,
+            dailyFee: 500,
+            attendance: {}
+        };
+
+    });
+
+    return months;
+}
+
+
+const INITIAL_MONTHS = createEmptyMonths();
+
+INITIAL_MONTHS["Septembre"].daysCount = 2;
+
+
 const INITIAL_DATA = {
+
     step: 250,
+
+    cashStep: 5000,
+
     cash: 0,
+
+    targetCash: 100000,
+
+    currentMonth: "Septembre",
+
+    months: INITIAL_MONTHS,
+
     members: [
-        { id:"mani", name:"Mani", points:194375, rank:"E", present:false, password:"1234" },
-        { id:"ya-chris", name:"ya Chris", points:54500, rank:"B", present:false, password:"1234" },
-        { id:"mana", name:"Mana", points:49205, rank:"F", present:false, password:"1234" },
-        { id:"olivier", name:"Olivier", points:34990, rank:"E", present:false, password:"1234" },
-        { id:"ephraim", name:"ephraim", points:31290, rank:"D", present:false, password:"1234" },
-        { id:"chris", name:"Chris", points:20625, rank:"F", present:false, password:"1234" },
-        { id:"ken", name:"ken", points:9005, rank:"A", present:false, password:"1234" },
-        { id:"persis", name:"Persis", points:5425, rank:"F", present:false, password:"1234" }
+
+        {
+            id:"mani",
+            name:"Mani",
+            points:194375,
+            rank:"D",
+            present:false,
+            password:"1234"
+        },
+
+        {
+            id:"ya-chris",
+            name:"ya Chris",
+            points:54500,
+            rank:"B",
+            present:false,
+            password:"1234"
+        },
+
+        {
+            id:"mana",
+            name:"Mana",
+            points:49205,
+            rank:"D",
+            present:false,
+            password:"1234"
+        },
+
+        {
+            id:"olivier",
+            name:"Olivier",
+            points:34990,
+            rank:"D",
+            present:false,
+            password:"1234"
+        },
+
+        {
+            id:"ephraim",
+            name:"ephraim",
+            points:31290,
+            rank:"D",
+            present:false,
+            password:"1234"
+        },
+
+        {
+            id:"chris",
+            name:"Chris",
+            points:20625,
+            rank:"D",
+            present:false,
+            password:"1234"
+        },
+
+        {
+            id:"ken",
+            name:"ken",
+            points:9005,
+            rank:"A",
+            present:false,
+            password:"1234"
+        },
+
+        {
+            id:"persis",
+            name:"Persis",
+            points:5425,
+            rank:"D",
+            present:false,
+            password:"1234"
+        }
+
     ],
+
     history: [],
+
     cashHistory: [],
-    shopItems: INITIAL_SHOP_ITEMS,
+
+    shopItems: JSON.parse(JSON.stringify(INITIAL_SHOP_ITEMS)),
+
     purchaseHistory: []
+
 };
+
 
 let data = null;
 let adminConnected = false;
 
+
 function formatNumber(number) {
+
     return Number(number || 0).toLocaleString("fr-FR");
+
 }
+
 
 function makeId() {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2);
+
+    return Date.now().toString(36)
+        + Math.random().toString(36).slice(2);
+
 }
+
 
 function escapeHTML(text) {
+
     return String(text ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
 }
+
 
 function validPlayerPassword(password) {
+
     return /^[0-9]{1,4}$/.test(password);
+
 }
 
-window.showSection = function(id) {
-    document.querySelectorAll("main > section").forEach(section => section.classList.add("hidden"));
-    const section = document.getElementById(id);
-    if (section) section.classList.remove("hidden");
+
+/* =========================
+   MOIS
+========================= */
+
+function ensureMonthsStructure() {
+
+    if (!data.months || typeof data.months !== "object") {
+
+        data.months = createEmptyMonths();
+
+    }
+
+    MONTHS.forEach(month => {
+
+        if (!data.months[month]) {
+
+            data.months[month] = {
+                daysCount: 0,
+                dailyFee: 500,
+                attendance: {}
+            };
+
+        }
+
+        if (
+            typeof data.months[month].daysCount !== "number" ||
+            data.months[month].daysCount < 0
+        ) {
+
+            data.months[month].daysCount = 0;
+
+        }
+
+        data.months[month].daysCount =
+            Math.floor(data.months[month].daysCount);
+
+        if (
+            typeof data.months[month].dailyFee !== "number" ||
+            data.months[month].dailyFee < 0
+        ) {
+
+            data.months[month].dailyFee = 500;
+
+        }
+
+        data.months[month].dailyFee =
+            Math.max(
+                0,
+                Number(data.months[month].dailyFee || 0)
+            );
+
+        if (
+            !data.months[month].attendance ||
+            typeof data.months[month].attendance !== "object"
+        ) {
+
+            data.months[month].attendance = {};
+
+        }
+
+    });
+
+
+    if (!MONTHS.includes(data.currentMonth)) {
+
+        data.currentMonth = "Septembre";
+
+    }
+
+}
+
+
+function getCurrentMonthData() {
+
+    ensureMonthsStructure();
+
+    return data.months[data.currentMonth];
+
+}
+
+
+function getMemberAttendance(memberId) {
+
+    const monthData = getCurrentMonthData();
+
+    if (!monthData.attendance[memberId]) {
+
+        monthData.attendance[memberId] =
+            new Array(monthData.daysCount).fill(false);
+
+    }
+
+    while (
+        monthData.attendance[memberId].length <
+        monthData.daysCount
+    ) {
+
+        monthData.attendance[memberId].push(false);
+
+    }
+
+    if (
+        monthData.attendance[memberId].length >
+        monthData.daysCount
+    ) {
+
+        monthData.attendance[memberId] =
+            monthData.attendance[memberId].slice(
+                0,
+                monthData.daysCount
+            );
+
+    }
+
+    return monthData.attendance[memberId];
+
+}
+
+
+window.changeCurrentMonth = function(month) {
+
+    if (!MONTHS.includes(month)) return;
+
+    if (!verifyAdminAuth()) {
+
+        const select = document.getElementById("currentMonthSelect");
+
+        if (select) {
+            select.value = data.currentMonth;
+        }
+
+        return;
+
+    }
+
+    data.currentMonth = month;
+
+    ensureMonthsStructure();
+
+    const monthData = getCurrentMonthData();
+
+    data.members.forEach(member => {
+
+        if (!monthData.attendance[member.id]) {
+
+            monthData.attendance[member.id] =
+                new Array(monthData.daysCount).fill(false);
+
+        }
+
+        while (
+            monthData.attendance[member.id].length <
+            monthData.daysCount
+        ) {
+
+            monthData.attendance[member.id].push(false);
+
+        }
+
+    });
+
+    saveData();
+
+    renderAll();
+
 };
 
-function initFirebase() {
-    onSnapshot(docRef, snapshot => {
-        if (snapshot.exists()) {
-            data = snapshot.data();
-            if (!Array.isArray(data.members)) data.members = [];
-            if (!Array.isArray(data.history)) data.history = [];
-            if (!Array.isArray(data.cashHistory)) data.cashHistory = [];
-            if (typeof data.step !== "number") data.step = 250;
-            if (typeof data.cash !== "number") data.cash = 0;
-            if (!Array.isArray(data.shopItems)) data.shopItems = JSON.parse(JSON.stringify(INITIAL_SHOP_ITEMS));
-            if (!Array.isArray(data.purchaseHistory)) data.purchaseHistory = [];
 
-            const statusNotice = document.getElementById("statusNotice");
-            if (statusNotice) {
-                const source = snapshot.metadata.fromCache ? " (Cache local)" : " (En direct)";
-                statusNotice.className = "notice success";
-                statusNotice.textContent = "🟢 Synchronisé avec Firebase" + source;
-            }
-            renderAll();
-        } else {
-            console.warn("Le document n'existe pas encore sur le Cloud. Chargement des données locales par défaut sans écrasement.");
-            data = JSON.parse(JSON.stringify(INITIAL_DATA));
-            renderAll();
+function migrateOldAttendanceData() {
+
+    if (!data) return;
+
+    /*
+       Cette fonction récupère l'ancien système :
+
+       data.daysCount
+       member.month
+       member.attendance
+
+       et le transforme en :
+
+       data.months.Septembre
+    */
+
+    const hasOldDays =
+        typeof data.daysCount === "number";
+
+    const hasOldAttendance =
+        data.members.some(
+            member =>
+                Array.isArray(member.attendance) ||
+                member.month
+        );
+
+    if (!data.months || typeof data.months !== "object") {
+
+        data.months = createEmptyMonths();
+
+        if (hasOldDays) {
+
+            data.months["Septembre"].daysCount =
+                Math.max(0, Math.floor(data.daysCount));
+
         }
-    }, error => {
-        console.error("Erreur Firebase:", error);
-        const statusNotice = document.getElementById("statusNotice");
-        if (statusNotice) {
-            statusNotice.className = "notice error";
-            statusNotice.textContent = "❌ Erreur de connexion au serveur";
-        }
+
+        data.members.forEach(member => {
+
+            const oldAttendance =
+                Array.isArray(member.attendance)
+                    ? member.attendance
+                    : [];
+
+            data.months["Septembre"].attendance[member.id] =
+                oldAttendance.slice(
+                    0,
+                    data.months["Septembre"].daysCount
+                );
+
+        });
+
+    }
+
+    ensureMonthsStructure();
+
+    /*
+       On supprime l'ancien format après migration.
+    */
+
+    delete data.daysCount;
+    delete data.dailyFee;
+
+    data.members.forEach(member => {
+
+        delete member.attendance;
+        delete member.month;
+
     });
+
 }
+
+
+/* =========================
+   ADMIN
+========================= */
+
+window.unlockAdminSession = function() {
+
+    const inputPass =
+        document.getElementById("globalAdminPassword").value;
+
+    if (inputPass === ADMIN_PASSWORD) {
+
+        adminConnected = true;
+
+        document
+            .getElementById("loginBox")
+            .classList.add("hidden");
+
+        document
+            .getElementById("adminPanel")
+            .classList.remove("hidden");
+
+        document
+            .getElementById("globalAdminPassword")
+            .value = "";
+
+        alert(
+            "✅ Session Administrateur déverrouillée avec succès !"
+        );
+
+        renderAdminShop();
+
+    } else {
+
+        alert(
+            "❌ Mot de passe administrateur incorrect."
+        );
+
+    }
+
+};
+
+
+function verifyAdminAuth() {
+
+    if (adminConnected) return true;
+
+    const directPass =
+        document.getElementById(
+            "globalAdminPassword"
+        )?.value;
+
+    if (directPass === ADMIN_PASSWORD) {
+
+        adminConnected = true;
+
+        return true;
+
+    }
+
+    const pwd = prompt(
+        "🔐 Mot de passe administrateur requis :"
+    );
+
+    if (pwd === ADMIN_PASSWORD) {
+
+        adminConnected = true;
+
+        return true;
+
+    }
+
+    alert(
+        "❌ Mot de passe administrateur incorrect."
+    );
+
+    return false;
+
+}
+
+
+window.showSection = function(id) {
+
+    document
+        .querySelectorAll("main > section")
+        .forEach(section =>
+            section.classList.add("hidden")
+        );
+
+    const section =
+        document.getElementById(id);
+
+    if (section) {
+
+        section.classList.remove("hidden");
+
+    }
+
+};
+
+
+/* =========================
+   FIREBASE
+========================= */
+
+function initFirebase() {
+
+    onSnapshot(
+        docRef,
+        snapshot => {
+
+            if (snapshot.exists()) {
+
+                data = snapshot.data();
+
+                if (!Array.isArray(data.members))
+                    data.members = [];
+
+                if (!Array.isArray(data.history))
+                    data.history = [];
+
+                if (!Array.isArray(data.cashHistory))
+                    data.cashHistory = [];
+
+                if (typeof data.step !== "number")
+                    data.step = 250;
+
+                if (typeof data.cashStep !== "number")
+                    data.cashStep = 5000;
+
+                if (typeof data.cash !== "number")
+                    data.cash = 0;
+
+                if (typeof data.targetCash !== "number")
+                    data.targetCash = 100000;
+
+                if (!Array.isArray(data.shopItems))
+                    data.shopItems =
+                        JSON.parse(
+                            JSON.stringify(INITIAL_SHOP_ITEMS)
+                        );
+
+                if (!Array.isArray(data.purchaseHistory))
+                    data.purchaseHistory = [];
+
+
+                data.cash =
+                    Math.max(
+                        0,
+                        Number(data.cash || 0)
+                    );
+
+                data.targetCash =
+                    Math.max(
+                        0,
+                        Number(data.targetCash || 0)
+                    );
+
+
+                const beforeMonths =
+                    !!data.months;
+
+                migrateOldAttendanceData();
+
+
+                /*
+                   Si le document Firebase est encore
+                   dans l'ancien format, on sauvegarde
+                   automatiquement le nouveau format.
+                */
+
+                if (!beforeMonths) {
+
+                    saveData();
+
+                }
+
+
+                data.members.forEach(member => {
+
+                    if (
+                        typeof member.points !== "number" ||
+                        member.points < 0
+                    ) {
+
+                        member.points =
+                            Math.max(
+                                0,
+                                Number(member.points || 0)
+                            );
+
+                    }
+
+                    if (!member.password) {
+
+                        member.password =
+                            DEFAULT_PLAYER_PASSWORD;
+
+                    }
+
+                    if (!member.rank) {
+
+                        member.rank = "D";
+
+                    }
+
+                    if (typeof member.present !== "boolean") {
+
+                        member.present = false;
+
+                    }
+
+                });
+
+
+                ensureMonthsStructure();
+
+
+                const statusNotice =
+                    document.getElementById(
+                        "statusNotice"
+                    );
+
+                if (statusNotice) {
+
+                    const source =
+                        snapshot.metadata.fromCache
+                            ? " (Cache local)"
+                            : " (En direct)";
+
+                    statusNotice.className =
+                        "notice success";
+
+                    statusNotice.textContent =
+                        "🟢 Synchronisé avec Firebase"
+                        + source;
+
+                }
+
+                renderAll();
+
+            }
+
+            else {
+
+                console.warn(
+                    "Le document n'existe pas encore sur le Cloud. Chargement des données locales par défaut."
+                );
+
+                data =
+                    JSON.parse(
+                        JSON.stringify(INITIAL_DATA)
+                    );
+
+                renderAll();
+
+                saveData();
+
+            }
+
+        },
+
+        error => {
+
+            console.error(
+                "Erreur Firebase:",
+                error
+            );
+
+            const statusNotice =
+                document.getElementById(
+                    "statusNotice"
+                );
+
+            if (statusNotice) {
+
+                statusNotice.className =
+                    "notice error";
+
+                statusNotice.textContent =
+                    "❌ Erreur de connexion au serveur";
+
+            }
+
+        }
+
+    );
+
+}
+
 
 async function saveData() {
+
     if (!data) return;
+
     try {
-        await setDoc(docRef, data);
-    } catch (e) {
-        console.error("Erreur de sauvegarde Cloud:", e);
-        alert("❌ Erreur de sauvegarde Firebase.");
+
+        await setDoc(
+            docRef,
+            data
+        );
+
     }
+
+    catch (e) {
+
+        console.error(
+            "Erreur de sauvegarde Cloud:",
+            e
+        );
+
+        alert(
+            "❌ Erreur de sauvegarde Firebase."
+        );
+
+    }
+
 }
 
+
+/* =========================
+   AFFICHAGE GLOBAL
+========================= */
+
 function renderAll() {
+
     if (!data) return;
 
-    document.getElementById("totalMembers").textContent = data.members.length;
-    document.getElementById("totalPoints").textContent = formatNumber(data.members.reduce((sum, member) => sum + Number(member.points || 0), 0));
-    document.getElementById("totalPresent").textContent = data.members.filter(member => member.present).length;
-    document.getElementById("cashValue").textContent = formatNumber(data.cash);
-    document.getElementById("cashBalance").textContent = formatNumber(data.cash);
-    document.getElementById("stepDisplay").textContent = formatNumber(data.step);
+    ensureMonthsStructure();
+
+    const monthData =
+        getCurrentMonthData();
+
+    const currentFee =
+        Math.max(
+            0,
+            Number(monthData.dailyFee || 0)
+        );
+
+
+    document.getElementById(
+        "totalMembers"
+    ).textContent =
+        data.members.length;
+
+
+    document.getElementById(
+        "totalPoints"
+    ).textContent =
+        formatNumber(
+            data.members.reduce(
+                (sum, member) =>
+                    sum +
+                    Number(member.points || 0),
+                0
+            )
+        );
+
+
+    document.getElementById(
+        "totalPresent"
+    ).textContent =
+        data.members.filter(
+            member => member.present
+        ).length;
+
+
+    document.getElementById(
+        "cashValue"
+    ).textContent =
+        formatNumber(data.cash);
+
+
+    document.getElementById(
+        "targetCashValue"
+    ).textContent =
+        formatNumber(data.targetCash);
+
+
+    document.getElementById(
+        "cashBalance"
+    ).textContent =
+        formatNumber(data.cash);
+
+
+    document.getElementById(
+        "targetCashBalance"
+    ).textContent =
+        formatNumber(data.targetCash);
+
+
+    document.getElementById(
+        "stepDisplay"
+    ).textContent =
+        formatNumber(data.step);
+
+
+    document.getElementById(
+        "cashStepDisplay"
+    ).textContent =
+        formatNumber(data.cashStep);
+
+
+    document.getElementById(
+        "adminCashStepDisplay"
+    ).textContent =
+        formatNumber(data.cashStep);
+
+
+    if (
+        document.getElementById(
+            "dailyFeeDisplay"
+        )
+    ) {
+
+        document.getElementById(
+            "dailyFeeDisplay"
+        ).textContent =
+            formatNumber(currentFee);
+
+    }
+
+
+    if (
+        document.getElementById(
+            "adminDailyFeeDisplay"
+        )
+    ) {
+
+        document.getElementById(
+            "adminDailyFeeDisplay"
+        ).textContent =
+            formatNumber(currentFee);
+
+    }
+
+
+    const monthSelect =
+        document.getElementById(
+            "currentMonthSelect"
+        );
+
+    if (monthSelect) {
+
+        monthSelect.value =
+            data.currentMonth;
+
+    }
+
+
+    const monthInfo =
+        document.getElementById(
+            "monthInfo"
+        );
+
+    if (monthInfo) {
+
+        const days =
+            monthData.daysCount;
+
+        monthInfo.textContent =
+            `📅 ${data.currentMonth} • ${days} jour(s) • ${formatNumber(currentFee)} FC par jour`;
+
+    }
+
 
     renderMembers();
     renderAdminMembers();
     renderRanking();
     renderHistory();
+    renderAttendanceTable();
     renderCashHistory();
+    renderMemberContributions();
     fillSelects();
     renderShop();
     renderAdminShop();
     renderPurchaseHistory();
+
 }
 
-window.renderMembers = function() {
+
+/* =========================
+   TABLEAU DES COTISATIONS
+========================= */
+
+function renderAttendanceTable() {
+
     if (!data) return;
-    const container = document.getElementById("membersContainer");
-    const searchInput = document.getElementById("searchMember");
-    const search = searchInput ? searchInput.value.toLowerCase() : "";
 
-    const members = data.members.filter(member => member.name.toLowerCase().includes(search));
-    container.innerHTML = "";
+    ensureMonthsStructure();
 
-    members.forEach(member => {
-        const div = document.createElement("div");
-        div.className = "member";
-        div.innerHTML = `
-            <h3>${escapeHTML(member.name)}</h3>
-            <span class="rank">Rang ${escapeHTML(member.rank)}</span>
-            ${member.present ? `<span class="rank">🟢 Présent</span>` : ""}
-            <div class="points">${formatNumber(member.points)} pts</div>
-        `;
-        container.appendChild(div);
-    });
-};
+    const monthData =
+        getCurrentMonthData();
 
-function renderAdminMembers() {
-    const container = document.getElementById("adminMembersContainer");
-    if (!container || !data) return;
-    container.innerHTML = "";
+    const headerRow =
+        document.getElementById(
+            "attendanceTableHeader"
+        );
+
+    const tbody =
+        document.getElementById(
+            "attendanceTableBody"
+        );
+
+    if (!headerRow || !tbody) return;
+
+
+    headerRow.innerHTML =
+        `<th>Nom du Membre</th>`;
+
+
+    for (
+        let i = 1;
+        i <= monthData.daysCount;
+        i++
+    ) {
+
+        const th =
+            document.createElement("th");
+
+        th.textContent =
+            `Jour ${i}`;
+
+        headerRow.appendChild(th);
+
+    }
+
+
+    tbody.innerHTML = "";
+
 
     data.members.forEach(member => {
-        const div = document.createElement("div");
-        div.className = "member";
-        div.innerHTML = `
-            <h3>${escapeHTML(member.name)}</h3>
-            <div class="small-info">Rang ${escapeHTML(member.rank)}</div>
-            <div class="points">${formatNumber(member.points)} pts</div>
-            <div class="quick">
-                <button class="plus" onclick="individualChange('${member.id}',1)">➕</button>
-                <button class="minus" onclick="individualChange('${member.id}',-1)">➖</button>
-            </div>
-        `;
-        container.appendChild(div);
+
+        const tr =
+            document.createElement("tr");
+
+        const attendance =
+            getMemberAttendance(
+                member.id
+            );
+
+
+        let html =
+            `<td>
+                <strong>${escapeHTML(member.name)}</strong>
+            </td>`;
+
+
+        for (
+            let dayIndex = 0;
+            dayIndex < monthData.daysCount;
+            dayIndex++
+        ) {
+
+            const isChecked =
+                attendance[dayIndex]
+                    ? "checked"
+                    : "";
+
+
+            html += `
+                <td>
+
+                    <input
+                        type="checkbox"
+                        class="checkbox-custom"
+                        ${isChecked}
+                        onclick="toggleAttendance('${member.id}', ${dayIndex}, this)"
+                    >
+
+                </td>
+            `;
+
+        }
+
+
+        tr.innerHTML = html;
+
+        tbody.appendChild(tr);
+
     });
+
 }
 
-window.individualChange = function(id, direction) {
-    if (!adminConnected) {
-        alert("🔐 Accès réservé à l'administrateur.");
+
+/* =========================
+   COCHER / DÉCOCHER COTISATION
+========================= */
+
+window.toggleAttendance = function(
+    memberId,
+    dayIndex,
+    checkboxElem
+) {
+
+    if (!data) return;
+
+    ensureMonthsStructure();
+
+    const member =
+        data.members.find(
+            m => m.id === memberId
+        );
+
+    if (!member) return;
+
+
+    const monthData =
+        getCurrentMonthData();
+
+    const attendance =
+        getMemberAttendance(memberId);
+
+
+    /*
+       Sécurité :
+       le jour doit réellement exister.
+    */
+
+    if (
+        dayIndex < 0 ||
+        dayIndex >= monthData.daysCount
+    ) {
+
+        checkboxElem.checked =
+            !checkboxElem.checked;
+
+        alert("❌ Jour invalide.");
+
         return;
+
     }
-    changeMemberPoints(id, Number(data.step) * direction, "Gestion rapide");
+
+
+    /*
+       Autorisation :
+       membre lui-même ou admin.
+    */
+
+    if (!adminConnected) {
+
+        const pwd = prompt(
+            `🔐 Entrez le mot de passe de ${member.name} (ou Administrateur) pour valider :`
+        );
+
+
+        if (pwd === ADMIN_PASSWORD) {
+
+            adminConnected = true;
+
+        }
+
+        else if (
+            pwd !== String(member.password)
+        ) {
+
+            alert(
+                "❌ Mot de passe incorrect."
+            );
+
+            checkboxElem.checked =
+                !checkboxElem.checked;
+
+            return;
+
+        }
+
+    }
+
+
+    const newState =
+        checkboxElem.checked;
+
+
+    const oldState =
+        !!attendance[dayIndex];
+
+
+    /*
+       Évite d'ajouter deux fois la même cotisation.
+    */
+
+    if (newState === oldState) {
+
+        return;
+
+    }
+
+
+    const fee =
+        Math.max(
+            0,
+            Number(monthData.dailyFee || 0)
+        );
+
+
+    attendance[dayIndex] =
+        newState;
+
+
+    if (newState) {
+
+        data.cash =
+            Number(data.cash || 0) +
+            fee;
+
+
+        data.cashHistory.unshift({
+
+            id: makeId(),
+
+            date:
+                new Date().toISOString(),
+
+            amount: fee,
+
+            memberId:
+                member.id,
+
+            memberName:
+                member.name,
+
+            month:
+                data.currentMonth,
+
+            day:
+                dayIndex + 1,
+
+            type:
+                "cotisation",
+
+            reason:
+                `Cotisation ${data.currentMonth} — Jour ${dayIndex + 1}`
+
+        });
+
+    }
+
+    else {
+
+        data.cash =
+            Math.max(
+                0,
+                Number(data.cash || 0) -
+                fee
+            );
+
+
+        data.cashHistory.unshift({
+
+            id: makeId(),
+
+            date:
+                new Date().toISOString(),
+
+            amount: -fee,
+
+            memberId:
+                member.id,
+
+            memberName:
+                member.name,
+
+            month:
+                data.currentMonth,
+
+            day:
+                dayIndex + 1,
+
+            type:
+                "annulation_cotisation",
+
+            reason:
+                `Annulation cotisation ${data.currentMonth} — Jour ${dayIndex + 1}`
+
+        });
+
+    }
+
+
+    data.cash =
+        Math.max(
+            0,
+            Number(data.cash || 0)
+        );
+
+
+    saveData();
+
+    renderCashHistory();
+    renderMemberContributions();
+
 };
 
-function changeMemberPoints(id, amount, reason) {
-    const member = data.members.find(m => m.id === id);
-    if (!member) {
-        alert("❌ Membre introuvable.");
-        return;
-    }
-    const newPoints = Number(member.points || 0) + Number(amount);
-    if (newPoints < 0) {
-        alert("❌ Les points ne peuvent pas être négatifs.");
-        return;
-    }
-    member.points = newPoints;
-    data.history.unshift({
-        id: makeId(),
-        date: new Date().toISOString(),
-        type: "points",
-        member: member.name,
-        amount: Number(amount),
-        reason: reason,
-        text: `${member.name} : ${amount >= 0 ? "+" : ""}${formatNumber(amount)} points (${reason})`
+
+/* =========================
+   AJOUTER UN JOUR
+========================= */
+
+window.addDayColumn = function() {
+
+    if (!verifyAdminAuth()) return;
+
+    ensureMonthsStructure();
+
+    const monthData =
+        getCurrentMonthData();
+
+
+    monthData.daysCount =
+        Math.max(
+            0,
+            Number(monthData.daysCount || 0)
+        ) + 1;
+
+
+    data.members.forEach(member => {
+
+        if (
+            !monthData.attendance[member.id]
+        ) {
+
+            monthData.attendance[member.id] =
+                [];
+
+        }
+
+        monthData.attendance[member.id]
+            .push(false);
+
     });
+
+
     saveData();
+
+};
+
+
+/* =========================
+   SUPPRIMER LE DERNIER JOUR
+========================= */
+
+window.removeDayColumn = function() {
+
+    if (!verifyAdminAuth()) return;
+
+    ensureMonthsStructure();
+
+    const monthData =
+        getCurrentMonthData();
+
+
+    if (monthData.daysCount <= 1) {
+
+        alert(
+            "Impossible de réduire sous 1 jour."
+        );
+
+        return;
+
+    }
+
+
+    const deletedDayIndex =
+        monthData.daysCount - 1;
+
+
+    const deletedDayNumber =
+        deletedDayIndex + 1;
+
+
+    const fee =
+        Math.max(
+            0,
+            Number(monthData.dailyFee || 0)
+        );
+
+
+    let removedTotal = 0;
+
+
+    /*
+       On regarde chaque membre.
+       Si la cotisation du dernier jour
+       était cochée, on la retire de la caisse.
+    */
+
+    data.members.forEach(member => {
+
+        const attendance =
+            getMemberAttendance(
+                member.id
+            );
+
+
+        const wasChecked =
+            !!attendance[
+                deletedDayIndex
+            ];
+
+
+        if (wasChecked) {
+
+            removedTotal += fee;
+
+
+            data.cashHistory.unshift({
+
+                id: makeId(),
+
+                date:
+                    new Date().toISOString(),
+
+                amount: -fee,
+
+                memberId:
+                    member.id,
+
+                memberName:
+                    member.name,
+
+                month:
+                    data.currentMonth,
+
+                day:
+                    deletedDayNumber,
+
+                type:
+                    "suppression_jour",
+
+                reason:
+                    `Suppression du Jour ${deletedDayNumber} — ${data.currentMonth}`
+
+            });
+
+        }
+
+
+        attendance.pop();
+
+    });
+
+
+    /*
+       La caisse ne descend jamais sous 0.
+    */
+
+    data.cash =
+        Math.max(
+            0,
+            Number(data.cash || 0) -
+            removedTotal
+        );
+
+
+    monthData.daysCount -= 1;
+
+
+    saveData();
+
+};
+
+
+/* =========================
+   MONTANT DE COTISATION DU MOIS
+========================= */
+
+window.changeDailyFee = function() {
+
+    if (!verifyAdminAuth()) return;
+
+    ensureMonthsStructure();
+
+    const input =
+        document.getElementById(
+            "newDailyFee"
+        );
+
+    const value =
+        Number(input.value);
+
+
+    if (
+        !Number.isFinite(value) ||
+        value < 0
+    ) {
+
+        alert(
+            "Entre un montant valide."
+        );
+
+        return;
+
+    }
+
+
+    const monthData =
+        getCurrentMonthData();
+
+
+    monthData.dailyFee =
+        Math.max(
+            0,
+            value
+        );
+
+
+    saveData();
+
+    input.value = "";
+
+};
+
+
+/* =========================
+   MEMBRES
+========================= */
+
+window.renderMembers = function() {
+
+    if (!data) return;
+
+    const container =
+        document.getElementById(
+            "membersContainer"
+        );
+
+    const searchInput =
+        document.getElementById(
+            "searchMember"
+        );
+
+    const search =
+        searchInput
+            ? searchInput.value.toLowerCase()
+            : "";
+
+
+    const members =
+        data.members.filter(
+            member =>
+                member.name
+                    .toLowerCase()
+                    .includes(search)
+        );
+
+
+    container.innerHTML = "";
+
+
+    members.forEach(member => {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "member";
+
+
+        div.innerHTML = `
+
+            <h3>
+                ${escapeHTML(member.name)}
+            </h3>
+
+            <span class="rank">
+                Rang ${escapeHTML(member.rank)}
+            </span>
+
+            ${
+                member.present
+                ?
+                `<span class="rank">🟢 Présent</span>`
+                :
+                ""
+            }
+
+            <div class="points">
+                ${formatNumber(member.points)} pts
+            </div>
+
+            <button
+                class="action"
+                onclick="showMemberHistory('${member.id}')"
+            >
+                📜 Historique individuel
+            </button>
+
+        `;
+
+
+        container.appendChild(div);
+
+    });
+
+};
+
+
+window.showMemberHistory = function(memberId) {
+
+    if (!data) return;
+
+    const member =
+        data.members.find(
+            m => m.id === memberId
+        );
+
+    if (!member) return;
+
+
+    document.getElementById(
+        "modalMemberName"
+    ).textContent =
+        `📜 Historique de ${member.name}`;
+
+
+    const modalContent =
+        document.getElementById(
+            "modalHistoryContent"
+        );
+
+
+    const generalHistory =
+        data.history.filter(
+            h => h.member === member.name
+        );
+
+
+    const purchases =
+        data.purchaseHistory.filter(
+            p => p.memberId === member.id
+        );
+
+
+    let html =
+        "<h4>⚡ Activités & Points</h4>";
+
+
+    if (generalHistory.length === 0) {
+
+        html +=
+            "<p class='small-info'>Aucune activité enregistrée.</p>";
+
+    }
+
+    else {
+
+        html +=
+            generalHistory
+                .slice(0,30)
+                .map(item => `
+
+                    <div class="history-item">
+
+                        <strong>
+                            ${escapeHTML(item.text || "")}
+                        </strong>
+
+                        <br>
+
+                        <small>
+                            ${new Date(item.date).toLocaleString("fr-FR")}
+                        </small>
+
+                    </div>
+
+                `)
+                .join("");
+
+    }
+
+
+    html +=
+        "<hr><h4>🛒 Achats en boutique</h4>";
+
+
+    if (purchases.length === 0) {
+
+        html +=
+            "<p class='small-info'>Aucun achat enregistré.</p>";
+
+    }
+
+    else {
+
+        html +=
+            purchases
+                .slice(0,30)
+                .map(item => `
+
+                    <div class="purchase-item">
+
+                        🛒
+                        <strong>
+                            ${escapeHTML(item.itemName)}
+                        </strong>
+
+                        (-${formatNumber(item.price)} pts)
+
+                        ${
+                            item.duration
+                            ?
+                            `<br><small>⏱️ ${escapeHTML(item.duration)}</small>`
+                            :
+                            ""
+                        }
+
+                        <br>
+
+                        <small>
+                            ${new Date(item.date).toLocaleString("fr-FR")}
+                        </small>
+
+                    </div>
+
+                `)
+                .join("");
+
+    }
+
+
+    modalContent.innerHTML =
+        html;
+
+
+    document
+        .getElementById(
+            "memberHistoryModal"
+        )
+        .classList.remove("hidden");
+
+};
+
+
+window.closeMemberHistoryModal = function() {
+
+    document
+        .getElementById(
+            "memberHistoryModal"
+        )
+        .classList.add("hidden");
+
+};
+
+
+/* =========================
+   ADMIN MEMBRES
+========================= */
+
+function renderAdminMembers() {
+
+    const container =
+        document.getElementById(
+            "adminMembersContainer"
+        );
+
+    if (!container || !data) return;
+
+    container.innerHTML = "";
+
+
+    data.members.forEach(member => {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "member";
+
+
+        div.innerHTML = `
+
+            <h3>
+                ${escapeHTML(member.name)}
+            </h3>
+
+            <div class="small-info">
+                Rang ${escapeHTML(member.rank)}
+            </div>
+
+            <div class="points">
+                ${formatNumber(member.points)} pts
+            </div>
+
+            <div class="quick">
+
+                <button
+                    class="plus"
+                    onclick="individualChange('${member.id}',1)"
+                >
+                    ➕
+                </button>
+
+                <button
+                    class="minus"
+                    onclick="individualChange('${member.id}',-1)"
+                >
+                    ➖
+                </button>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(div);
+
+    });
+
 }
+
+
+window.individualChange = function(
+    id,
+    direction
+) {
+
+    if (!verifyAdminAuth()) return;
+
+    changeMemberPoints(
+        id,
+        Number(data.step) * direction,
+        "Gestion rapide"
+    );
+
+};
+
+
+function changeMemberPoints(
+    id,
+    amount,
+    reason
+) {
+
+    const member =
+        data.members.find(
+            m => m.id === id
+        );
+
+
+    if (!member) {
+
+        alert(
+            "❌ Membre introuvable."
+        );
+
+        return;
+
+    }
+
+
+    const newPoints =
+        Number(member.points || 0) +
+        Number(amount);
+
+
+    if (newPoints < 0) {
+
+        alert(
+            "❌ Les points ne peuvent pas être négatifs."
+        );
+
+        return;
+
+    }
+
+
+    member.points =
+        newPoints;
+
+
+    data.history.unshift({
+
+        id:
+            makeId(),
+
+        date:
+            new Date().toISOString(),
+
+        type:
+            "points",
+
+        member:
+            member.name,
+
+        amount:
+            Number(amount),
+
+        reason:
+            reason,
+
+        text:
+            `${member.name} : ${amount >= 0 ? "+" : ""}${formatNumber(amount)} points (${reason})`
+
+    });
+
+
+    saveData();
+
+}
+
+
+/* =========================
+   CLASSEMENT
+========================= */
 
 function renderRanking() {
-    const body = document.getElementById("rankingBody");
+
+    const body =
+        document.getElementById(
+            "rankingBody"
+        );
+
     if (!data || !body) return;
 
-    const sorted = [...data.members].sort((a, b) => Number(b.points) - Number(a.points));
-    body.innerHTML = sorted.map((member, index) => `
-        <tr>
-            <td>${index + 1}</td>
-            <td>${escapeHTML(member.name)}</td>
-            <td>${escapeHTML(member.rank)}</td>
-            <td><strong>${formatNumber(member.points)}</strong></td>
-        </tr>
-    `).join("");
+
+    const sorted =
+        [...data.members]
+            .sort(
+                (a,b) =>
+                    Number(b.points) -
+                    Number(a.points)
+            );
+
+
+    body.innerHTML =
+        sorted.map(
+            (member,index) => `
+
+                <tr>
+
+                    <td>
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(member.name)}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(member.rank)}
+                    </td>
+
+                    <td>
+                        <strong>
+                            ${formatNumber(member.points)}
+                        </strong>
+                    </td>
+
+                </tr>
+
+            `
+        ).join("");
+
 }
+
+
+/* =========================
+   HISTORIQUE GENERAL
+========================= */
 
 function renderHistory() {
-    const container = document.getElementById("historyContainer");
+
+    const container =
+        document.getElementById(
+            "historyContainer"
+        );
+
     if (!data || !container) return;
+
 
     if (!data.history.length) {
-        container.innerHTML = "<p>Aucun historique.</p>";
+
+        container.innerHTML =
+            "<p>Aucun historique.</p>";
+
         return;
+
     }
-    container.innerHTML = data.history.slice(0, 100).map(item => `
-        <div class="history-item">
-            <strong>${escapeHTML(item.text || "")}</strong><br>
-            <small>${new Date(item.date).toLocaleString("fr-FR")}</small>
-        </div>
-    `).join("");
+
+
+    container.innerHTML =
+        data.history
+            .slice(0,100)
+            .map(item => `
+
+                <div class="history-item">
+
+                    <strong>
+                        ${escapeHTML(item.text || "")}
+                    </strong>
+
+                    <br>
+
+                    <small>
+                        ${new Date(item.date).toLocaleString("fr-FR")}
+                    </small>
+
+                </div>
+
+            `)
+            .join("");
+
 }
+
+
+/* =========================
+   SELECTS
+========================= */
 
 function fillSelects() {
+
     if (!data) return;
+
     const ids = [
-        "presenceMember", "manualMember", "rankMember", "deleteMember",
-        "adminPasswordMember", "passwordMemberSelect", "sellerSelect",
-        "receiverSelect", "shopMemberSelect"
+
+        "presenceMember",
+        "manualMember",
+        "rankMember",
+        "deleteMember",
+        "adminPasswordMember",
+        "passwordMemberSelect",
+        "sellerSelect",
+        "receiverSelect",
+        "shopMemberSelect"
+
     ];
 
+
     ids.forEach(id => {
-        const select = document.getElementById(id);
+
+        const select =
+            document.getElementById(id);
+
         if (!select) return;
-        const old = select.value;
-        select.innerHTML = data.members.map(member => `<option value="${member.id}">${escapeHTML(member.name)}</option>`).join("");
-        if ([...select.options].some(o => o.value === old)) {
-            select.value = old;
+
+
+        const old =
+            select.value;
+
+
+        select.innerHTML =
+            data.members
+                .map(
+                    member =>
+                        `<option value="${member.id}">
+                            ${escapeHTML(member.name)}
+                        </option>`
+                )
+                .join("");
+
+
+        if (
+            [...select.options]
+                .some(
+                    option =>
+                        option.value === old
+                )
+        ) {
+
+            select.value =
+                old;
+
         }
+
     });
+
 }
+
+
+/* =========================
+   ADMIN LOGIN
+========================= */
 
 window.loginAdmin = function() {
-    const name = document.getElementById("adminName").value.trim();
-    const password = document.getElementById("adminPassword").value;
-    const message = document.getElementById("loginMessage");
+
+    const name =
+        document.getElementById(
+            "adminName"
+        ).value.trim();
+
+
+    const password =
+        document.getElementById(
+            "adminPassword"
+        ).value;
+
+
+    const message =
+        document.getElementById(
+            "loginMessage"
+        );
+
 
     if (!name) {
-        message.innerHTML = `<div class="notice error">❌ Entre ton nom.</div>`;
+
+        message.innerHTML =
+            `<div class="notice error">
+                ❌ Entre ton nom.
+            </div>`;
+
         return;
+
     }
+
+
     if (password !== ADMIN_PASSWORD) {
-        message.innerHTML = `<div class="notice error">❌ Mot de passe incorrect.</div>`;
+
+        message.innerHTML =
+            `<div class="notice error">
+                ❌ Mot de passe incorrect.
+            </div>`;
+
         return;
+
     }
+
 
     adminConnected = true;
-    document.getElementById("loginBox").classList.add("hidden");
-    document.getElementById("adminPanel").classList.remove("hidden");
+
+
+    document
+        .getElementById(
+            "loginBox"
+        )
+        .classList.add("hidden");
+
+
+    document
+        .getElementById(
+            "adminPanel"
+        )
+        .classList.remove("hidden");
+
+
     renderAdminShop();
+
 };
+
 
 window.logoutAdmin = function() {
+
     adminConnected = false;
-    document.getElementById("loginBox").classList.remove("hidden");
-    document.getElementById("adminPanel").classList.add("hidden");
+
+
+    document
+        .getElementById(
+            "loginBox"
+        )
+        .classList.remove("hidden");
+
+
+    document
+        .getElementById(
+            "adminPanel"
+        )
+        .classList.add("hidden");
+
+
+    alert(
+        "🔒 Session Administrateur verrouillée."
+    );
+
 };
+
+
+/* =========================
+   CONFIGURATION POINTS
+========================= */
 
 window.changeStep = function() {
-    if (!adminConnected) return;
-    const value = Number(document.getElementById("newStep").value);
+
+    if (!verifyAdminAuth()) return;
+
+    const value =
+        Number(
+            document.getElementById(
+                "newStep"
+            ).value
+        );
+
+
     if (!value || value <= 0) {
-        alert("Entre un pas valide.");
+
+        alert(
+            "Entre un pas valide."
+        );
+
         return;
+
     }
-    data.step = value;
+
+
+    data.step =
+        value;
+
+
     saveData();
-    document.getElementById("newStep").value = "";
+
+
+    document.getElementById(
+        "newStep"
+    ).value = "";
+
 };
 
-window.manualChange = function(direction) {
-    if (!adminConnected) return;
-    const id = document.getElementById("manualMember").value;
-    const amount = Number(document.getElementById("manualAmount").value);
-    const reason = document.getElementById("manualReason").value.trim() || "Modification manuelle";
+
+window.changeCashStep = function() {
+
+    if (!verifyAdminAuth()) return;
+
+    const value =
+        Number(
+            document.getElementById(
+                "newCashStep"
+            ).value
+        );
+
+
+    if (!value || value <= 0) {
+
+        alert(
+            "Entre un pas valide pour la caisse."
+        );
+
+        return;
+
+    }
+
+
+    data.cashStep =
+        value;
+
+
+    saveData();
+
+
+    document.getElementById(
+        "newCashStep"
+    ).value = "";
+
+};
+
+
+window.setTargetCash = function() {
+
+    if (!verifyAdminAuth()) return;
+
+    const value =
+        Number(
+            document.getElementById(
+                "targetCashInput"
+            ).value
+        );
+
+
+    if (
+        !Number.isFinite(value) ||
+        value < 0
+    ) {
+
+        alert(
+            "Entre un objectif valide."
+        );
+
+        return;
+
+    }
+
+
+    data.targetCash =
+        value;
+
+
+    saveData();
+
+
+    document.getElementById(
+        "targetCashInput"
+    ).value = "";
+
+};
+
+
+/* =========================
+   CAISSE
+========================= */
+
+window.quickCashChange = function(
+    direction
+) {
+
+    if (!verifyAdminAuth()) return;
+
+
+    const amount =
+        Number(data.cashStep || 5000) *
+        direction;
+
+
+    const newCash =
+        Number(data.cash || 0) +
+        amount;
+
+
+    if (newCash < 0) {
+
+        alert(
+            "La caisse ne peut pas être négative."
+        );
+
+        return;
+
+    }
+
+
+    data.cash =
+        newCash;
+
+
+    data.cashHistory.unshift({
+
+        id:
+            makeId(),
+
+        date:
+            new Date().toISOString(),
+
+        amount:
+            amount,
+
+        reason:
+            "Modification rapide caisse"
+
+    });
+
+
+    saveData();
+
+};
+
+
+window.quickTargetCashChange = function(
+    direction
+) {
+
+    if (!verifyAdminAuth()) return;
+
+
+    const amount =
+        Number(data.cashStep || 5000) *
+        direction;
+
+
+    const newTarget =
+        Number(data.targetCash || 0) +
+        amount;
+
+
+    if (newTarget < 0) {
+
+        alert(
+            "L'objectif ne peut pas être négatif."
+        );
+
+        return;
+
+    }
+
+
+    data.targetCash =
+        newTarget;
+
+
+    saveData();
+
+};
+
+
+window.adminCashChange = function(
+    direction
+) {
+
+    if (!verifyAdminAuth()) return;
+
+
+    const amount =
+        Number(
+            document.getElementById(
+                "adminCashAmount"
+            ).value
+        );
+
+
+    const reason =
+        document.getElementById(
+            "adminCashReason"
+        ).value.trim()
+        ||
+        "Gestion caisse";
+
 
     if (!amount || amount <= 0) {
-        alert("Entre un nombre de points valide.");
+
+        alert(
+            "Montant invalide."
+        );
+
         return;
+
     }
-    changeMemberPoints(id, amount * direction, reason);
+
+
+    const newCash =
+        Number(data.cash || 0) +
+        amount * direction;
+
+
+    if (newCash < 0) {
+
+        alert(
+            "La caisse ne peut pas être négative."
+        );
+
+        return;
+
+    }
+
+
+    data.cash =
+        newCash;
+
+
+    data.cashHistory.unshift({
+
+        id:
+            makeId(),
+
+        date:
+            new Date().toISOString(),
+
+        amount:
+            amount * direction,
+
+        reason:
+            reason
+
+    });
+
+
+    saveData();
+
+
+    document.getElementById(
+        "adminCashAmount"
+    ).value = "";
+
+
+    document.getElementById(
+        "adminCashReason"
+    ).value = "";
+
 };
+
+
+/* =========================
+   MODIFICATION MANUELLE POINTS
+========================= */
+
+window.manualChange = function(
+    direction
+) {
+
+    if (!verifyAdminAuth()) return;
+
+
+    const id =
+        document.getElementById(
+            "manualMember"
+        ).value;
+
+
+    const amount =
+        Number(
+            document.getElementById(
+                "manualAmount"
+            ).value
+        );
+
+
+    const reason =
+        document.getElementById(
+            "manualReason"
+        ).value.trim()
+        ||
+        "Modification manuelle";
+
+
+    if (!amount || amount <= 0) {
+
+        alert(
+            "Entre un nombre de points valide."
+        );
+
+        return;
+
+    }
+
+
+    changeMemberPoints(
+        id,
+        amount * direction,
+        reason
+    );
+
+};
+
+
+/* =========================
+   RANG
+========================= */
 
 window.changeRank = function() {
-    if (!adminConnected) return;
-    const id = document.getElementById("rankMember").value;
-    const rank = document.getElementById("rankValue").value;
-    const member = data.members.find(m => m.id === id);
+
+    if (!verifyAdminAuth()) return;
+
+
+    const id =
+        document.getElementById(
+            "rankMember"
+        ).value;
+
+
+    const rank =
+        document.getElementById(
+            "rankValue"
+        ).value;
+
+
+    const member =
+        data.members.find(
+            m => m.id === id
+        );
+
+
     if (!member) return;
 
-    member.rank = rank;
+
+    member.rank =
+        rank;
+
+
     data.history.unshift({
-        id: makeId(),
-        date: new Date().toISOString(),
-        type: "rank",
-        member: member.name,
-        amount: 0,
-        reason: "Changement de rang",
-        text: `${member.name} : rang ${rank}`
+
+        id:
+            makeId(),
+
+        date:
+            new Date().toISOString(),
+
+        type:
+            "rank",
+
+        member:
+            member.name,
+
+        amount:
+            0,
+
+        reason:
+            "Changement de rang",
+
+        text:
+            `${member.name} : rang ${rank}`
+
     });
+
+
     saveData();
+
 };
+
+
+/* =========================
+   PRESENCE
+========================= */
 
 window.markPresence = function() {
-    if (!adminConnected) return;
-    const id = document.getElementById("presenceMember").value;
-    const points = Number(document.getElementById("presencePoints").value);
-    const member = data.members.find(m => m.id === id);
+
+    if (!verifyAdminAuth()) return;
+
+
+    const id =
+        document.getElementById(
+            "presenceMember"
+        ).value;
+
+
+    const points =
+        Number(
+            document.getElementById(
+                "presencePoints"
+            ).value
+        );
+
+
+    const member =
+        data.members.find(
+            m => m.id === id
+        );
+
+
     if (!member) return;
 
-    if (!points || points < 0) {
-        alert("Points invalides.");
+
+    if (!Number.isFinite(points) || points < 0) {
+
+        alert(
+            "Points invalides."
+        );
+
         return;
+
     }
-    member.present = true;
-    member.points = Number(member.points) + points;
+
+
+    member.present =
+        true;
+
+
+    member.points =
+        Number(member.points || 0) +
+        points;
+
+
     data.history.unshift({
-        id: makeId(),
-        date: new Date().toISOString(),
-        type: "presence",
-        member: member.name,
-        amount: points,
-        reason: "Présence",
-        text: `${member.name} présent : +${formatNumber(points)} points`
+
+        id:
+            makeId(),
+
+        date:
+            new Date().toISOString(),
+
+        type:
+            "presence",
+
+        member:
+            member.name,
+
+        amount:
+            points,
+
+        reason:
+            "Présence",
+
+        text:
+            `${member.name} présent : +${formatNumber(points)} points`
+
     });
+
+
     saveData();
+
 };
+
+
+/* =========================
+   AJOUT MEMBRE
+========================= */
 
 window.addMember = function() {
-    if (!adminConnected) return;
-    const name = document.getElementById("newMemberName").value.trim();
-    const points = Number(document.getElementById("newMemberPoints").value) || 0;
-    const rank = document.getElementById("newMemberRank").value;
-    const password = document.getElementById("newMemberPassword").value || DEFAULT_PLAYER_PASSWORD;
+
+    if (!verifyAdminAuth()) return;
+
+
+    const name =
+        document.getElementById(
+            "newMemberName"
+        ).value.trim();
+
+
+    const points =
+        Number(
+            document.getElementById(
+                "newMemberPoints"
+            ).value
+        ) || 0;
+
+
+    const rank =
+        document.getElementById(
+            "newMemberRank"
+        ).value;
+
+
+    const password =
+        document.getElementById(
+            "newMemberPassword"
+        ).value
+        ||
+        DEFAULT_PLAYER_PASSWORD;
+
 
     if (!name) {
-        alert("Entre un nom.");
+
+        alert(
+            "Entre un nom."
+        );
+
         return;
-    }
-    if (!validPlayerPassword(password)) {
-        alert("❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres.");
-        return;
+
     }
 
-    data.members.push({
-        id: makeId(),
-        name: name,
-        points: points,
-        rank: rank,
-        present: false,
-        password: password
+
+    if (points < 0) {
+
+        alert(
+            "Les points ne peuvent pas être négatifs."
+        );
+
+        return;
+
+    }
+
+
+    if (!validPlayerPassword(password)) {
+
+        alert(
+            "❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres."
+        );
+
+        return;
+
+    }
+
+
+    const newMember = {
+
+        id:
+            makeId(),
+
+        name:
+            name,
+
+        points:
+            points,
+
+        rank:
+            rank,
+
+        present:
+            false,
+
+        password:
+            password
+
+    };
+
+
+    data.members.push(
+        newMember
+    );
+
+
+    /*
+       On prépare aussi les données
+       de cotisation pour ce nouveau membre
+       dans TOUS les mois.
+    */
+
+    MONTHS.forEach(month => {
+
+        const monthData =
+            data.months[month];
+
+        monthData.attendance[
+            newMember.id
+        ] =
+            new Array(
+                monthData.daysCount
+            ).fill(false);
+
     });
+
+
     data.history.unshift({
-        id: makeId(),
-        date: new Date().toISOString(),
-        type: "member",
-        member: name,
-        amount: 0,
-        reason: "Nouveau membre",
-        text: `Nouveau membre : ${name}`
+
+        id:
+            makeId(),
+
+        date:
+            new Date().toISOString(),
+
+        type:
+            "member",
+
+        member:
+            name,
+
+        amount:
+            0,
+
+        reason:
+            "Nouveau membre",
+
+        text:
+            `Nouveau membre : ${name}`
+
     });
+
+
     saveData();
 
-    document.getElementById("newMemberName").value = "";
-    document.getElementById("newMemberPoints").value = "0";
-    document.getElementById("newMemberPassword").value = "";
+
+    document.getElementById(
+        "newMemberName"
+    ).value = "";
+
+
+    document.getElementById(
+        "newMemberPoints"
+    ).value = "0";
+
+
+    document.getElementById(
+        "newMemberPassword"
+    ).value = "";
+
 };
+
+
+/* =========================
+   SUPPRESSION MEMBRE
+========================= */
 
 window.deleteMember = function() {
-    if (!adminConnected) return;
-    const id = document.getElementById("deleteMember").value;
-    const member = data.members.find(m => m.id === id);
+
+    if (!verifyAdminAuth()) return;
+
+
+    const id =
+        document.getElementById(
+            "deleteMember"
+        ).value;
+
+
+    const member =
+        data.members.find(
+            m => m.id === id
+        );
+
+
     if (!member) return;
 
-    if (!confirm(`Supprimer ${member.name} ?`)) return;
 
-    data.members = data.members.filter(m => m.id !== id);
-    data.history.unshift({
-        id: makeId(),
-        date: new Date().toISOString(),
-        type: "member",
-        member: member.name,
-        amount: 0,
-        reason: "Suppression",
-        text: `Membre supprimé : ${member.name}`
+    if (
+        !confirm(
+            `Supprimer ${member.name} ?`
+        )
+    ) return;
+
+
+    data.members =
+        data.members.filter(
+            m => m.id !== id
+        );
+
+
+    /*
+       On supprime également
+       ses données de cotisation
+       dans tous les mois.
+    */
+
+    MONTHS.forEach(month => {
+
+        if (
+            data.months[month] &&
+            data.months[month].attendance
+        ) {
+
+            delete data.months[
+                month
+            ].attendance[id];
+
+        }
+
     });
+
+
+    data.history.unshift({
+
+        id:
+            makeId(),
+
+        date:
+            new Date().toISOString(),
+
+        type:
+            "member",
+
+        member:
+            member.name,
+
+        amount:
+            0,
+
+        reason:
+            "Suppression",
+
+        text:
+            `Membre supprimé : ${member.name}`
+
+    });
+
+
     saveData();
+
 };
+
+
+/* =========================
+   VENTE DE POINTS
+========================= */
 
 window.transferPoints = function() {
-    const sellerId = document.getElementById("sellerSelect").value;
-    const receiverId = document.getElementById("receiverSelect").value;
-    const password = document.getElementById("sellerPassword").value;
-    const amount = Number(document.getElementById("transferAmount").value);
-    const message = document.getElementById("transferMessage");
+
+    const sellerId =
+        document.getElementById(
+            "sellerSelect"
+        ).value;
+
+
+    const receiverId =
+        document.getElementById(
+            "receiverSelect"
+        ).value;
+
+
+    const password =
+        document.getElementById(
+            "sellerPassword"
+        ).value;
+
+
+    const amount =
+        Number(
+            document.getElementById(
+                "transferAmount"
+            ).value
+        );
+
+
+    const message =
+        document.getElementById(
+            "transferMessage"
+        );
+
+
     message.innerHTML = "";
 
+
     if (sellerId === receiverId) {
-        message.innerHTML = `<div class="notice error">❌ Choisis un autre destinataire.</div>`;
+
+        message.innerHTML =
+            `<div class="notice error">
+                ❌ Choisis un autre destinataire.
+            </div>`;
+
         return;
-    }
-    if (!amount || amount <= 0) {
-        message.innerHTML = `<div class="notice error">❌ Nombre de points invalide.</div>`;
-        return;
+
     }
 
-    const seller = data.members.find(m => m.id === sellerId);
-    const receiver = data.members.find(m => m.id === receiverId);
+
+    if (!amount || amount <= 0) {
+
+        message.innerHTML =
+            `<div class="notice error">
+                ❌ Nombre de points invalide.
+            </div>`;
+
+        return;
+
+    }
+
+
+    const seller =
+        data.members.find(
+            m => m.id === sellerId
+        );
+
+
+    const receiver =
+        data.members.find(
+            m => m.id === receiverId
+        );
+
 
     if (!seller || !receiver) {
-        message.innerHTML = `<div class="notice error">❌ Membre introuvable.</div>`;
+
+        message.innerHTML =
+            `<div class="notice error">
+                ❌ Membre introuvable.
+            </div>`;
+
         return;
-    }
-    if (String(seller.password) !== String(password)) {
-        message.innerHTML = `<div class="notice error">❌ Mot de passe incorrect.</div>`;
-        return;
-    }
-    if (Number(seller.points) < amount) {
-        message.innerHTML = `<div class="notice error">❌ Tu n'as pas assez de points.</div>`;
-        return;
+
     }
 
-    seller.points = Number(seller.points) - amount;
-    receiver.points = Number(receiver.points) + amount;
+
+    if (
+        String(seller.password) !==
+        String(password)
+    ) {
+
+        message.innerHTML =
+            `<div class="notice error">
+                ❌ Mot de passe incorrect.
+            </div>`;
+
+        return;
+
+    }
+
+
+    if (
+        Number(seller.points) <
+        amount
+    ) {
+
+        message.innerHTML =
+            `<div class="notice error">
+                ❌ Tu n'as pas assez de points.
+            </div>`;
+
+        return;
+
+    }
+
+
+    seller.points =
+        Number(seller.points) -
+        amount;
+
+
+    receiver.points =
+        Number(receiver.points) +
+        amount;
+
 
     data.history.unshift({
-        id: makeId(),
-        date: new Date().toISOString(),
-        type: "transfer",
-        member: seller.name,
-        receiver: receiver.name,
-        amount: amount,
-        reason: "Vente de points",
-        text: `${seller.name} → ${receiver.name} : ${formatNumber(amount)} points`
+
+        id:
+            makeId(),
+
+        date:
+            new Date().toISOString(),
+
+        type:
+            "transfer",
+
+        member:
+            seller.name,
+
+        receiver:
+            receiver.name,
+
+        amount:
+            amount,
+
+        reason:
+            "Vente de points",
+
+        text:
+            `${seller.name} → ${receiver.name} : ${formatNumber(amount)} points`
+
     });
 
+
     saveData();
-    document.getElementById("sellerPassword").value = "";
-    document.getElementById("transferAmount").value = "";
-    message.innerHTML = `<div class="notice success">✅ Vente effectuée.</div>`;
+
+
+    document.getElementById(
+        "sellerPassword"
+    ).value = "";
+
+
+    document.getElementById(
+        "transferAmount"
+    ).value = "";
+
+
+    message.innerHTML =
+        `<div class="notice success">
+            ✅ Vente effectuée.
+        </div>`;
+
 };
+
+
+/* =========================
+   CHANGER SON MOT DE PASSE
+========================= */
 
 window.changeOwnPassword = function() {
-    const memberId = document.getElementById("passwordMemberSelect").value;
-    const oldPassword = document.getElementById("oldPlayerPassword").value;
-    const newPassword = document.getElementById("newPlayerPassword").value;
-    const message = document.getElementById("passwordMessage");
 
-    const member = data.members.find(m => m.id === memberId);
+    const memberId =
+        document.getElementById(
+            "passwordMemberSelect"
+        ).value;
+
+
+    const oldPassword =
+        document.getElementById(
+            "oldPlayerPassword"
+        ).value;
+
+
+    const newPassword =
+        document.getElementById(
+            "newPlayerPassword"
+        ).value;
+
+
+    const message =
+        document.getElementById(
+            "passwordMessage"
+        );
+
+
+    const member =
+        data.members.find(
+            m => m.id === memberId
+        );
+
+
     if (!member) {
-        message.innerHTML = `<div class="notice error">❌ Membre introuvable.</div>`;
+
+        message.innerHTML =
+            `<div class="notice error">
+                ❌ Membre introuvable.
+            </div>`;
+
         return;
-    }
-    if (String(member.password) !== String(oldPassword)) {
-        message.innerHTML = `<div class="notice error">❌ Ancien mot de passe incorrect.</div>`;
-        return;
-    }
-    if (!validPlayerPassword(newPassword)) {
-        message.innerHTML = `<div class="notice error">❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres.</div>`;
-        return;
+
     }
 
-    member.password = newPassword;
+
+    if (
+        String(member.password) !==
+        String(oldPassword)
+    ) {
+
+        message.innerHTML =
+            `<div class="notice error">
+                ❌ Ancien mot de passe incorrect.
+            </div>`;
+
+        return;
+
+    }
+
+
+    if (!validPlayerPassword(newPassword)) {
+
+        message.innerHTML =
+            `<div class="notice error">
+                ❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres.
+            </div>`;
+
+        return;
+
+    }
+
+
+    member.password =
+        newPassword;
+
+
     saveData();
 
-    document.getElementById("oldPlayerPassword").value = "";
-    document.getElementById("newPlayerPassword").value = "";
-    message.innerHTML = `<div class="notice success">✅ Ton mot de passe a été changé.</div>`;
+
+    document.getElementById(
+        "oldPlayerPassword"
+    ).value = "";
+
+
+    document.getElementById(
+        "newPlayerPassword"
+    ).value = "";
+
+
+    message.innerHTML =
+        `<div class="notice success">
+            ✅ Ton mot de passe a été changé.
+        </div>`;
+
 };
+
+
+/* =========================
+   ADMIN MOT DE PASSE
+========================= */
 
 window.adminChangePlayerPassword = function() {
-    if (!adminConnected) return;
-    const id = document.getElementById("adminPasswordMember").value;
-    const newPassword = document.getElementById("adminNewPassword").value;
-    const message = document.getElementById("adminPasswordMessage");
 
-    const member = data.members.find(m => m.id === id);
+    if (!verifyAdminAuth()) return;
+
+
+    const id =
+        document.getElementById(
+            "adminPasswordMember"
+        ).value;
+
+
+    const newPassword =
+        document.getElementById(
+            "adminNewPassword"
+        ).value;
+
+
+    const message =
+        document.getElementById(
+            "adminPasswordMessage"
+        );
+
+
+    const member =
+        data.members.find(
+            m => m.id === id
+        );
+
+
     if (!member) return;
 
+
     if (!validPlayerPassword(newPassword)) {
-        message.innerHTML = `<div class="notice error">❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres.</div>`;
+
+        message.innerHTML =
+            `<div class="notice error">
+                ❌ Le mot de passe doit contenir uniquement 1 à 4 chiffres.
+            </div>`;
+
         return;
+
     }
 
-    member.password = newPassword;
+
+    member.password =
+        newPassword;
+
+
     saveData();
 
-    document.getElementById("adminNewPassword").value = "";
-    message.innerHTML = `<div class="notice success">✅ Mot de passe modifié pour ${escapeHTML(member.name)}.</div>`;
+
+    document.getElementById(
+        "adminNewPassword"
+    ).value = "";
+
+
+    message.innerHTML =
+        `<div class="notice success">
+            ✅ Mot de passe modifié pour ${escapeHTML(member.name)}.
+        </div>`;
+
 };
 
-window.adminCashChange = function(direction) {
-    if (!adminConnected) return;
-    const amount = Number(document.getElementById("adminCashAmount").value);
-    const reason = document.getElementById("adminCashReason").value.trim() || "Gestion caisse";
 
-    if (!amount || amount <= 0) {
-        alert("Montant invalide.");
-        return;
-    }
+/* =========================
+   CONTRIBUTIONS DU MOIS
+========================= */
 
-    const newCash = Number(data.cash || 0) + (amount * direction);
-    if (newCash < 0) {
-        alert("La caisse ne peut pas être négative.");
-        return;
-    }
+function renderMemberContributions() {
 
-    data.cash = newCash;
-    data.cashHistory.unshift({
-        id: makeId(),
-        date: new Date().toISOString(),
-        amount: amount * direction,
-        reason: reason
-    });
+    const tbody =
+        document.getElementById(
+            "memberContributionsBody"
+        );
 
-    saveData();
-    document.getElementById("adminCashAmount").value = "";
-    document.getElementById("adminCashReason").value = "";
-};
+
+    if (!data || !tbody) return;
+
+
+    const monthData =
+        getCurrentMonthData();
+
+
+    tbody.innerHTML =
+        data.members.map(member => {
+
+            const attendance =
+                getMemberAttendance(
+                    member.id
+                );
+
+
+            const fee =
+                Math.max(
+                    0,
+                    Number(
+                        monthData.dailyFee || 0
+                    )
+                );
+
+
+            let total = 0;
+
+
+            attendance.forEach(checked => {
+
+                if (checked) {
+
+                    total += fee;
+
+                }
+
+            });
+
+
+            total =
+                Math.max(
+                    0,
+                    total
+                );
+
+
+            return `
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            ${escapeHTML(member.name)}
+                        </strong>
+                    </td>
+
+                    <td>
+
+                        <span
+                            style="color:#55bdff; font-weight:bold;"
+                        >
+                            ${formatNumber(total)} FC
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }).join("");
+
+}
+
+
+/* =========================
+   HISTORIQUE CAISSE
+========================= */
 
 function renderCashHistory() {
-    const container = document.getElementById("cashPublicHistory");
+
+    const container =
+        document.getElementById(
+            "cashPublicHistory"
+        );
+
+
     if (!data || !container) return;
 
+
     if (!data.cashHistory.length) {
-        container.innerHTML = "<p>Aucun mouvement.</p>";
+
+        container.innerHTML =
+            "<p>Aucun mouvement.</p>";
+
         return;
+
     }
 
-    container.innerHTML = data.cashHistory.slice(0, 30).map(item => `
-        <div class="history-item">
-            ${Number(item.amount) >= 0 
-                ? `<span style="color:#43d58d">+${formatNumber(item.amount)} FC</span>` 
-                : `<span style="color:#ff7373">${formatNumber(item.amount)} FC</span>`}
-            — ${escapeHTML(item.reason)}
-        </div>
-    `).join("");
+
+    container.innerHTML =
+        data.cashHistory
+            .slice(0,50)
+            .map(item => {
+
+                let monthInfo = "";
+
+                if (
+                    item.type === "cotisation" ||
+                    item.type === "annulation_cotisation" ||
+                    item.type === "suppression_jour"
+                ) {
+
+                    monthInfo = `
+                        <br>
+                        <small>
+                            📅 ${escapeHTML(item.month || "")}
+                            ${
+                                item.day
+                                ?
+                                ` — Jour ${item.day}`
+                                :
+                                ""
+                            }
+                        </small>
+                    `;
+
+                }
+
+
+                return `
+
+                    <div class="history-item">
+
+                        ${
+                            Number(item.amount) >= 0
+
+                            ?
+
+                            `<span style="color:#43d58d">
+                                +${formatNumber(item.amount)} FC
+                            </span>`
+
+                            :
+
+                            `<span style="color:#ff7373">
+                                ${formatNumber(item.amount)} FC
+                            </span>`
+
+                        }
+
+                        — ${escapeHTML(item.reason || "")}
+
+                        ${
+                            item.memberName
+                            ?
+                            `<br><small>👤 ${escapeHTML(item.memberName)}</small>`
+                            :
+                            ""
+                        }
+
+                        ${monthInfo}
+
+                        <br>
+
+                        <small>
+                            ${new Date(item.date).toLocaleString("fr-FR")}
+                        </small>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+
 }
+
+
+/* =========================
+   BOUTIQUE
+========================= */
 
 function renderShop() {
-    const container = document.getElementById("shopContainer");
+
+    const container =
+        document.getElementById(
+            "shopContainer"
+        );
+
+
     if (!container || !data) return;
+
+
     container.innerHTML = "";
+
 
     if (!data.shopItems.length) {
-        container.innerHTML = `<div class="notice">🛒 Aucun achat disponible.</div>`;
+
+        container.innerHTML =
+            `<div class="notice">
+                🛒 Aucun achat disponible.
+            </div>`;
+
         return;
+
     }
 
-    data.shopItems.forEach((item) => {
-        const div = document.createElement("div");
-        div.className = "shop-item";
+
+    data.shopItems.forEach(item => {
+
+        const div =
+            document.createElement("div");
+
+
+        div.className =
+            "shop-item";
+
+
         div.innerHTML = `
-            <h3>${escapeHTML(item.name)}</h3>
-            <div class="shop-price">⭐ ${formatNumber(item.price)} points</div>
-            ${item.duration ? `<div class="shop-duration">⏱️ Durée : ${escapeHTML(item.duration)}</div>` : ""}
-            ${item.description ? `<div class="shop-description">${escapeHTML(item.description)}</div>` : ""}
-            <button class="action orange" onclick="buyShopItem('${item.id}')">🛒 Acheter</button>
+
+            <h3>
+                ${escapeHTML(item.name)}
+            </h3>
+
+            <div class="shop-price">
+                ⭐ ${formatNumber(item.price)} points
+            </div>
+
+            ${
+                item.duration
+                ?
+                `<div class="shop-duration">
+                    ⏱️ Durée : ${escapeHTML(item.duration)}
+                </div>`
+                :
+                ""
+            }
+
+            ${
+                item.description
+                ?
+                `<div class="shop-description">
+                    ${escapeHTML(item.description)}
+                </div>`
+                :
+                ""
+            }
+
+            <button
+                class="action orange"
+                onclick="buyShopItem('${item.id}')"
+            >
+                🛒 Acheter
+            </button>
+
         `;
+
+
         container.appendChild(div);
+
     });
+
 }
+
 
 window.buyShopItem = async function(itemId) {
-    const memberId = document.getElementById("shopMemberSelect").value;
-    const password = document.getElementById("shopPassword").value;
 
-    if (!memberId) { alert("👤 Choisis ton nom."); return; }
-    if (!password) { alert("🔐 Entre ton mot de passe."); return; }
+    const memberId =
+        document.getElementById(
+            "shopMemberSelect"
+        ).value;
 
-    const member = data.members.find(m => m.id === memberId);
-    const item = data.shopItems.find(i => i.id === itemId);
 
-    if (!member || !item) { alert("❌ Achat introuvable."); return; }
-    if (String(member.password) !== String(password)) { alert("❌ Mot de passe incorrect."); return; }
+    const password =
+        document.getElementById(
+            "shopPassword"
+        ).value;
 
-    const price = Number(item.price) || 0;
-    if (Number(member.points) < price) {
-        alert(`❌ Tu n'as pas assez de points.\n\nPrix : ${formatNumber(price)} points\nTes points : ${formatNumber(member.points)}`);
+
+    if (!memberId) {
+
+        alert(
+            "👤 Choisis ton nom."
+        );
+
         return;
+
     }
 
-    const confirmation = confirm(`🛒 CONFIRMATION DE L'ACHAT\n\n${item.name}\nPrix : ${formatNumber(price)} points\n\nPoints restants : ${formatNumber(Number(member.points) - price)}\n\nConfirmer ?`);
+
+    if (!password) {
+
+        alert(
+            "🔐 Entre ton mot de passe."
+        );
+
+        return;
+
+    }
+
+
+    const member =
+        data.members.find(
+            m => m.id === memberId
+        );
+
+
+    const item =
+        data.shopItems.find(
+            i => i.id === itemId
+        );
+
+
+    if (!member || !item) {
+
+        alert(
+            "❌ Achat introuvable."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        String(member.password) !==
+        String(password)
+    ) {
+
+        alert(
+            "❌ Mot de passe incorrect."
+        );
+
+        return;
+
+    }
+
+
+    const price =
+        Number(item.price) || 0;
+
+
+    if (
+        Number(member.points) <
+        price
+    ) {
+
+        alert(
+            `❌ Tu n'as pas assez de points.
+
+Prix : ${formatNumber(price)} points
+Tes points : ${formatNumber(member.points)}`
+        );
+
+        return;
+
+    }
+
+
+    const confirmation =
+        confirm(
+            `🛒 CONFIRMATION DE L'ACHAT
+
+${item.name}
+
+Prix : ${formatNumber(price)} points
+
+Points restants : ${formatNumber(Number(member.points) - price)}
+
+Confirmer ?`
+        );
+
+
     if (!confirmation) return;
 
-    member.points = Number(member.points) - price;
+
+    member.points =
+        Number(member.points) -
+        price;
+
+
     data.purchaseHistory.unshift({
-        id: makeId(),
-        date: new Date().toISOString(),
-        memberId: member.id,
-        memberName: member.name,
-        itemId: item.id,
-        itemName: item.name,
-        price: price,
-        duration: item.duration || ""
+
+        id:
+            makeId(),
+
+        date:
+            new Date().toISOString(),
+
+        memberId:
+            member.id,
+
+        memberName:
+            member.name,
+
+        itemId:
+            item.id,
+
+        itemName:
+            item.name,
+
+        price:
+            price,
+
+        duration:
+            item.duration || ""
+
     });
+
 
     data.history.unshift({
-        id: makeId(),
-        date: new Date().toISOString(),
-        type: "purchase",
-        member: member.name,
-        amount: -price,
-        reason: "Achat boutique",
-        text: `${member.name} a acheté ${item.name} pour ${formatNumber(price)} points`
+
+        id:
+            makeId(),
+
+        date:
+            new Date().toISOString(),
+
+        type:
+            "purchase",
+
+        member:
+            member.name,
+
+        amount:
+            -price,
+
+        reason:
+            "Achat boutique",
+
+        text:
+            `${member.name} a acheté ${item.name} pour ${formatNumber(price)} points`
+
     });
 
-    document.getElementById("shopPassword").value = "";
+
     await saveData();
-    alert(`✅ ACHAT RÉUSSI !\n\n${item.name}\n-${formatNumber(price)} points\n\nNouveau solde : ${formatNumber(member.points)} points`);
+
+
+    renderPurchaseHistory();
+
+
+    alert(
+        `✅ ACHAT RÉUSSI !
+
+${item.name}
+-${formatNumber(price)} points
+
+Nouveau solde : ${formatNumber(member.points)} points`
+    );
+
 };
+
 
 function verifyShopAdmin() {
-    if (!adminConnected) {
-        alert("🔐 Connecte-toi d'abord à l'administration.");
-        return false;
-    }
-    const password = prompt("🔐 Mot de passe administrateur requis :");
-    if (password !== ADMIN_PASSWORD) {
-        alert("❌ Mot de passe administrateur incorrect.");
-        return false;
-    }
-    return true;
+
+    return verifyAdminAuth();
+
 }
+
 
 window.addShopItem = async function() {
-    if (!verifyShopAdmin()) return;
-    const name = document.getElementById("newShopName").value.trim();
-    const price = Number(document.getElementById("newShopPrice").value);
-    const duration = document.getElementById("newShopDuration").value.trim();
-    const description = document.getElementById("newShopDescription").value.trim();
 
-    if (!name) { alert("❌ Entre le nom de l'achat."); return; }
-    if (!Number.isFinite(price) || price < 0) { alert("❌ Entre un prix valide."); return; }
+    if (!verifyShopAdmin()) return;
+
+
+    const name =
+        document.getElementById(
+            "newShopName"
+        ).value.trim();
+
+
+    const price =
+        Number(
+            document.getElementById(
+                "newShopPrice"
+            ).value
+        );
+
+
+    const duration =
+        document.getElementById(
+            "newShopDuration"
+        ).value.trim();
+
+
+    const description =
+        document.getElementById(
+            "newShopDescription"
+        ).value.trim();
+
+
+    if (!name) {
+
+        alert(
+            "❌ Entre le nom de l'achat."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !Number.isFinite(price) ||
+        price < 0
+    ) {
+
+        alert(
+            "❌ Entre un prix valide."
+        );
+
+        return;
+
+    }
+
 
     data.shopItems.push({
-        id: makeId(),
-        name: name,
-        price: price,
-        duration: duration,
-        description: description
+
+        id:
+            makeId(),
+
+        name:
+            name,
+
+        price:
+            price,
+
+        duration:
+            duration,
+
+        description:
+            description
+
     });
 
+
     await saveData();
-    document.getElementById("newShopName").value = "";
-    document.getElementById("newShopPrice").value = "";
-    document.getElementById("newShopDuration").value = "";
-    document.getElementById("newShopDescription").value = "";
-    alert("✅ Nouvel achat ajouté à la boutique.");
+
+
+    document.getElementById(
+        "newShopName"
+    ).value = "";
+
+
+    document.getElementById(
+        "newShopPrice"
+    ).value = "";
+
+
+    document.getElementById(
+        "newShopDuration"
+    ).value = "";
+
+
+    document.getElementById(
+        "newShopDescription"
+    ).value = "";
+
+
+    alert(
+        "✅ Nouvel achat ajouté à la boutique."
+    );
+
 };
+
 
 function renderAdminShop() {
-    const container = document.getElementById("adminShopContainer");
+
+    const container =
+        document.getElementById(
+            "adminShopContainer"
+        );
+
+
     if (!container) return;
 
+
     if (!adminConnected) {
-        container.innerHTML = `<div class="notice">🔒 Connecte-toi pour gérer les achats.</div>`;
+
+        container.innerHTML =
+            `<div class="notice">
+                🔒 Connecte-toi pour gérer les achats.
+            </div>`;
+
         return;
+
     }
+
 
     container.innerHTML = "";
-    data.shopItems.forEach((item, index) => {
-        const div = document.createElement("div");
-        div.className = "shop-admin-item";
-        div.innerHTML = `
-            <div class="shop-number">#${index + 1}</div>
-            <strong>${escapeHTML(item.name)}</strong>
-            <p>💰 <strong>${formatNumber(item.price)}</strong> points</p>
-            ${item.duration ? `<p>⏱️ Durée : ${escapeHTML(item.duration)}</p>` : ""}
-            ${item.description ? `<p class="small-info">${escapeHTML(item.description)}</p>` : ""}
-            <button class="action" onclick="editShopItem('${item.id}')">✏️ Modifier</button>
-            <button class="action red" onclick="deleteShopItem('${item.id}')">🗑️ Supprimer</button>
-        `;
-        container.appendChild(div);
-    });
+
+
+    data.shopItems.forEach(
+        (item,index) => {
+
+            const div =
+                document.createElement("div");
+
+
+            div.className =
+                "shop-admin-item";
+
+
+            div.innerHTML = `
+
+                <div class="shop-number">
+                    #${index + 1}
+                </div>
+
+                <strong>
+                    ${escapeHTML(item.name)}
+                </strong>
+
+                <p>
+                    💰
+                    <strong>
+                        ${formatNumber(item.price)}
+                    </strong>
+                    points
+                </p>
+
+                ${
+                    item.duration
+                    ?
+                    `<p>
+                        ⏱️ Durée :
+                        ${escapeHTML(item.duration)}
+                    </p>`
+                    :
+                    ""
+                }
+
+                ${
+                    item.description
+                    ?
+                    `<p class="small-info">
+                        ${escapeHTML(item.description)}
+                    </p>`
+                    :
+                    ""
+                }
+
+                <button
+                    class="action"
+                    onclick="editShopItem('${item.id}')"
+                >
+                    ✏️ Modifier
+                </button>
+
+                <button
+                    class="action red"
+                    onclick="deleteShopItem('${item.id}')"
+                >
+                    🗑️ Supprimer
+                </button>
+
+            `;
+
+
+            container.appendChild(div);
+
+        }
+    );
+
 }
+
 
 window.editShopItem = async function(id) {
+
     if (!verifyShopAdmin()) return;
-    const item = data.shopItems.find(i => i.id === id);
+
+
+    const item =
+        data.shopItems.find(
+            i => i.id === id
+        );
+
+
     if (!item) return;
 
-    const newName = prompt("🛒 Nom de l'achat :", item.name);
+
+    const newName =
+        prompt(
+            "🛒 Nom de l'achat :",
+            item.name
+        );
+
+
     if (newName === null) return;
 
-    const newPriceText = prompt("💰 Nouveau prix en points :", item.price);
-    if (newPriceText === null) return;
-    const newPrice = Number(newPriceText);
 
-    if (!Number.isFinite(newPrice) || newPrice < 0) {
-        alert("❌ Prix invalide.");
+    const newPriceText =
+        prompt(
+            "💰 Nouveau prix en points :",
+            item.price
+        );
+
+
+    if (newPriceText === null) return;
+
+
+    const newPrice =
+        Number(newPriceText);
+
+
+    if (
+        !Number.isFinite(newPrice) ||
+        newPrice < 0
+    ) {
+
+        alert(
+            "❌ Prix invalide."
+        );
+
         return;
+
     }
 
-    const newDuration = prompt("⏱️ Durée :", item.duration || "");
+
+    const newDuration =
+        prompt(
+            "⏱️ Durée :",
+            item.duration || ""
+        );
+
+
     if (newDuration === null) return;
 
-    const newDescription = prompt("📝 Description :", item.description || "");
+
+    const newDescription =
+        prompt(
+            "📝 Description :",
+            item.description || ""
+        );
+
+
     if (newDescription === null) return;
 
-    item.name = newName.trim();
-    item.price = newPrice;
-    item.duration = newDuration.trim();
-    item.description = newDescription.trim();
+
+    item.name =
+        newName.trim();
+
+
+    item.price =
+        newPrice;
+
+
+    item.duration =
+        newDuration.trim();
+
+
+    item.description =
+        newDescription.trim();
+
 
     await saveData();
-    alert("✅ Achat modifié avec succès.");
+
+
+    alert(
+        "✅ Achat modifié avec succès."
+    );
+
 };
+
 
 window.deleteShopItem = async function(id) {
+
     if (!verifyShopAdmin()) return;
-    const item = data.shopItems.find(i => i.id === id);
+
+
+    const item =
+        data.shopItems.find(
+            i => i.id === id
+        );
+
+
     if (!item) return;
 
-    if (!confirm(`🗑️ Supprimer « ${item.name} » de la boutique ?`)) return;
 
-    data.shopItems = data.shopItems.filter(i => i.id !== id);
+    if (
+        !confirm(
+            `🗑️ Supprimer « ${item.name} » de la boutique ?`
+        )
+    ) return;
+
+
+    data.shopItems =
+        data.shopItems.filter(
+            i => i.id !== id
+        );
+
+
     await saveData();
-    alert("✅ Achat supprimé.");
+
+
+    alert(
+        "✅ Achat supprimé."
+    );
+
 };
 
-function renderPurchaseHistory() {
-    const container = document.getElementById("purchaseHistoryContainer");
+
+window.renderPurchaseHistory = function() {
+
+    const container =
+        document.getElementById(
+            "purchaseHistoryContainer"
+        );
+
+
     if (!container || !data) return;
 
-    if (!data.purchaseHistory.length) {
-        container.innerHTML = "<p>Aucun achat effectué.</p>";
+
+    const memberId =
+        document.getElementById(
+            "shopMemberSelect"
+        )?.value;
+
+
+    const password =
+        document.getElementById(
+            "shopPassword"
+        )?.value;
+
+
+    if (!memberId) {
+
+        container.innerHTML =
+            "<p>Sélectionne ton nom ci-dessus.</p>";
+
         return;
+
     }
 
-    container.innerHTML = data.purchaseHistory.slice(0, 100).map(purchase => `
-        <div class="purchase-item">
-            🛒 <strong>${escapeHTML(purchase.memberName)}</strong> a acheté <strong>${escapeHTML(purchase.itemName)}</strong> pour <span class="purchase-price">-${formatNumber(purchase.price)} points</span>
-            ${purchase.duration ? `<br>⏱️ Durée : ${escapeHTML(purchase.duration)}` : ""}
-            <br><small>${new Date(purchase.date).toLocaleString("fr-FR")}</small>
-        </div>
-    `).join("");
-}
+
+    const member =
+        data.members.find(
+            m => m.id === memberId
+        );
+
+
+    if (
+        !member ||
+        String(member.password) !==
+        String(password)
+    ) {
+
+        container.innerHTML =
+            "<p style='color:#ff8888'>🔒 Entre ton mot de passe correct ci-dessus pour afficher ton propre historique d'achats.</p>";
+
+        return;
+
+    }
+
+
+    const userPurchases =
+        data.purchaseHistory.filter(
+            p => p.memberId === member.id
+        );
+
+
+    if (!userPurchases.length) {
+
+        container.innerHTML =
+            "<p>Tu n'as effectué aucun achat pour l'instant.</p>";
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        userPurchases
+            .slice(0,100)
+            .map(purchase => `
+
+                <div class="purchase-item">
+
+                    🛒
+                    <strong>
+                        ${escapeHTML(purchase.itemName)}
+                    </strong>
+
+                    pour
+
+                    <span class="purchase-price">
+                        -${formatNumber(purchase.price)} points
+                    </span>
+
+                    ${
+                        purchase.duration
+                        ?
+                        `<br>
+                        ⏱️ Durée :
+                        ${escapeHTML(purchase.duration)}`
+                        :
+                        ""
+                    }
+
+                    <br>
+
+                    <small>
+                        ${new Date(purchase.date).toLocaleString("fr-FR")}
+                    </small>
+
+                </div>
+
+            `)
+            .join("");
+
+};
+
+
+/* =========================
+   HISTORIQUES
+========================= */
 
 window.clearGeneralHistory = function() {
-    if (!adminConnected) return;
-    const password = prompt("🔐 Mot de passe administrateur requis :");
-    if (password !== ADMIN_PASSWORD) {
-        alert("❌ Mot de passe incorrect.");
-        return;
-    }
-    if (!confirm("🗑️ Voulez-vous vraiment effacer tout l'historique général ?")) return;
+
+    if (!verifyAdminAuth()) return;
+
+
+    if (
+        !confirm(
+            "🗑️ Voulez-vous vraiment effacer tout l'historique général ?"
+        )
+    ) return;
+
 
     data.history = [];
+
+
     saveData();
-    alert("✅ L'historique général a été effacé.");
+
+
+    alert(
+        "✅ L'historique général a été effacé."
+    );
+
 };
+
 
 window.clearPurchaseHistory = function() {
-    if (!adminConnected) return;
-    const password = prompt("🔐 Mot de passe administrateur requis :");
-    if (password !== ADMIN_PASSWORD) {
-        alert("❌ Mot de passe incorrect.");
-        return;
-    }
-    if (!confirm("🗑️ Voulez-vous vraiment effacer l'historique des achats ?")) return;
+
+    if (!verifyAdminAuth()) return;
+
+
+    if (
+        !confirm(
+            "🗑️ Voulez-vous vraiment effacer l'historique des achats ?"
+        )
+    ) return;
+
 
     data.purchaseHistory = [];
+
+
     saveData();
-    alert("✅ L'historique des achats a été effacé.");
+
+
+    alert(
+        "✅ L'historique des achats a été effacé."
+    );
+
 };
+
+
+window.clearCashHistory = function() {
+
+    if (!verifyAdminAuth()) return;
+
+
+    if (
+        !confirm(
+            "🗑️ Voulez-vous vraiment effacer tout l'historique de la caisse ?"
+        )
+    ) return;
+
+
+    data.cashHistory = [];
+
+
+    saveData();
+
+
+    alert(
+        "✅ L'historique de la caisse a été effacé."
+    );
+
+};
+
+
+/* =========================
+   RESET FIREBASE
+========================= */
 
 window.resetCloudData = function() {
-    if (!adminConnected) return;
-    const password = prompt("🔐 Mot de passe administrateur requis pour réinitialiser les données :");
-    if (password !== ADMIN_PASSWORD) {
-        alert("❌ Mot de passe incorrect.");
-        return;
-    }
-    if (!confirm("⚠️ Réinitialiser toutes les données Firebase Cloud ?")) return;
 
-    data = JSON.parse(JSON.stringify(INITIAL_DATA));
+    if (!verifyAdminAuth()) return;
+
+
+    if (
+        !confirm(
+            "⚠️ Réinitialiser toutes les données Firebase Cloud ?"
+        )
+    ) return;
+
+
+    data =
+        JSON.parse(
+            JSON.stringify(INITIAL_DATA)
+        );
+
+
     saveData();
-    alert("✅ La base de données Cloud a été réinitialisée.");
+
+
+    alert(
+        "✅ La base de données Cloud a été réinitialisée."
+    );
+
 };
 
+
+/* =========================
+   DÉMARRAGE
+========================= */
+
 initFirebase();
+
 </script>
 
 </body>
