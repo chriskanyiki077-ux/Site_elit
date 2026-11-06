@@ -538,8 +538,8 @@ body{padding-bottom:76px}
 .bottom-nav button span{font-size:21px;line-height:1.2}
 .bottom-nav button small{font-size:11px}
 .bottom-nav button.active{background:#103c65;color:#62c0ff}
-#loginGate{position:fixed;inset:0;z-index:2000;background:#061426;display:flex;align-items:center;justify-content:center;padding:20px}
-#loginGate .login-card{width:100%;max-width:420px;background:#0d213b;border:1px solid #2871a7;border-radius:20px;padding:24px;box-shadow:0 15px 40px #0009}
+#loginGate{position:fixed;inset:0;z-index:2000;background:#061426;display:flex;padding:20px;overflow-y:auto}
+#loginGate .login-card{margin:auto;width:100%;max-width:420px;background:#0d213b;border:1px solid #2871a7;border-radius:20px;padding:24px;box-shadow:0 15px 40px #0009}
 .token-pill{display:inline-block;background:#263a18;color:#caff80;border:1px solid #648d35;border-radius:20px;padding:5px 10px;font-weight:bold}
 .chat-message{max-width:88%;padding:10px 13px;margin:8px 0;border-radius:13px;background:#12385b;border:1px solid #245d89;overflow-wrap:anywhere}
 .chat-message.mine{margin-left:auto;background:#14523f;border-color:#267e5d}
@@ -598,7 +598,20 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
     <div id="loginSelectedInfo" class="notice" style="margin-top:8px">Choisis ton identité dans la liste.</div>
     <button class="action green" style="width:100%;margin-top:10px" onclick="loginByPhone()">Se connecter</button>
     <button class="action" style="width:100%;margin-top:8px" onclick="loginAsAdmin()">Accès administrateur</button>
-    <div id="loginFeedback" class="small-info" style="margin-top:10px">Les membres déjà connectés sur un autre appareil seront temporairement indisponibles.</div>
+    <button class="action" style="width:100%;margin-top:8px" onclick="toggleRegisterBox()">➕ Ajouter une nouvelle personne</button>
+    <div id="registerBox" class="hidden" style="margin-top:12px;border-top:1px solid #2871a7;padding-top:12px">
+        <label>👤 Ton nom</label>
+        <input id="regName" maxlength="40" placeholder="Ton nom complet">
+        <label>📱 Ton numéro de téléphone (9 chiffres)</label>
+        <input id="regPhone" type="tel" inputmode="numeric" maxlength="9" placeholder="Ex. 812345678">
+        <label>🔑 Ton mot de passe personnel (1 à 4 chiffres)</label>
+        <input id="regPassword" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="1234 par défaut">
+        <label>🏆 Mot de passe d'inscription Élite</label>
+        <input id="regCode" type="password" placeholder="Mot de passe d'inscription">
+        <button class="action green" style="width:100%;margin-top:10px" onclick="registerNewMember()">Créer mon profil et me connecter</button>
+        <div id="registerFeedback" class="small-info" style="margin-top:8px"></div>
+    </div>
+    <div id="loginFeedback" class="small-info" style="margin-top:10px">Un membre connecté reste réservé à son appareil : seul l'administrateur peut le déconnecter.</div>
   </div>
 </div>
 
@@ -744,6 +757,21 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
         <div id="transferMessage"></div>
     </div>
 
+    <div class="card" id="convertCard">
+        <h2>🔄 Conversion en tokens</h2>
+        <p class="small-info">Les taux sont fixés par l'administrateur. <strong id="convertRateText"></strong></p>
+        <label>👤 Ton nom</label>
+        <select id="convertMemberSelect"></select>
+        <label>🔐 Ton mot de passe</label>
+        <input id="convertPassword" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="4 chiffres maximum">
+        <label>⭐ Points à convertir</label>
+        <input id="convertPoints" type="number" min="1" step="1" placeholder="Nombre de points" oninput="previewConvert()">
+        <div id="convertPreview" class="small-info"></div>
+        <button class="action green" onclick="convertPointsToTokens()">🔄 Convertir mes points en tokens</button>
+        <div id="convertMessage"></div>
+        <p class="small-info" id="convertFcInfo"></p>
+    </div>
+
     <div class="card">
         <h2>🔑 Changer mon mot de passe</h2>
         <select id="passwordMemberSelect"></select>
@@ -849,6 +877,11 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
         <label>Montant de cotisation / Jour — Mois sélectionné : <strong id="adminDailyFeeDisplay">500</strong> FC</label>
         <input id="newDailyFee" type="number" min="0" placeholder="Nouveau montant par jour (FC)">
         <button class="action green" onclick="changeDailyFee()">Modifier montant par jour</button>
+
+        <label style="margin-top:10px; display:block;">Tokens reçus par cotisation cochée — Mois sélectionné : <strong id="adminDailyTokensDisplay">—</strong></label>
+        <input id="newDailyTokens" type="number" min="0" step="1" placeholder="Tokens donnés à chaque cotisation cochée">
+        <button class="action green" onclick="changeDailyTokens()">Modifier les tokens par cotisation</button>
+        <button class="action" onclick="resetDailyTokens()">Revenir à l'égalité FC = tokens</button>
 
         <label style="margin-top:10px; display:block;">Pas de caisse : <strong id="adminCashStepDisplay">5000</strong> FC</label>
         <input id="newCashStep" type="number" min="1" placeholder="Nouveau pas de caisse (FC)">
@@ -1003,18 +1036,34 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
 
         <div class="card">
             <h3>💎 Gestion des tokens</h3>
-            <p class="small-info">1 FC versé = 1 token. Les tokens sont distincts des points de classement.</p>
+            <p class="small-info"><span id="fcRateText">1 FC versé = 1 token.</span> Les tokens sont distincts des points de classement.</p>
             <select id="tokenMemberSelect"></select>
             <input id="tokenAmount" type="number" min="1" placeholder="Nombre de tokens">
             <input id="tokenReason" placeholder="Motif (ex. contribution, récompense)">
             <button class="action green" onclick="adminAdjustTokens(1)">➕ Ajouter des tokens</button>
             <button class="action red" onclick="adminAdjustTokens(-1)">➖ Retirer des tokens</button>
             <hr>
-            <label>Convertir un versement non pointé en tokens (1 FC = 1 token)</label>
+            <label>Convertir un versement non pointé en tokens (<span id="fcRateLabel">1 FC = 1 token</span>)</label>
             <select id="tokenContributionMember"></select>
             <input id="tokenContributionFC" type="number" min="1" placeholder="Montant versé en FC">
             <button class="action green" onclick="creditTokensFromFC()">Créditer les tokens</button>
             <div id="tokenAdminMessage"></div>
+            <hr>
+            <h4>🔄 Taux de conversion (administrateur)</h4>
+            <label>Points → tokens : <strong id="ratePointsDisplay"></strong></label>
+            <div class="form-two"><input id="ratePointsFrom" type="number" min="1" step="1" placeholder="Points"><input id="ratePointsTo" type="number" min="1" step="1" placeholder="= tokens obtenus"></div>
+            <label>Argent (FC) → tokens : <strong id="rateFcDisplay"></strong></label>
+            <div class="form-two"><input id="rateFcFrom" type="number" min="1" step="1" placeholder="FC"><input id="rateFcTo" type="number" min="1" step="1" placeholder="= tokens obtenus"></div>
+            <p class="small-info">Laisse un champ vide pour garder sa valeur actuelle.</p>
+            <button class="action green" onclick="saveRates()">Enregistrer les taux</button>
+        </div>
+
+        <div class="card">
+            <h3>🔓 Connexions des membres</h3>
+            <p class="small-info">Un membre connecté reste lié à son appareil. Libère-le ici si son appareil est perdu ou changé.</p>
+            <select id="releaseMemberSelect"></select>
+            <button class="action orange" onclick="adminReleaseSession()">🔓 Libérer la connexion</button>
+            <div id="releaseMessage"></div>
         </div>
 
         <div class="card">
@@ -1353,6 +1402,7 @@ window.addEventListener("beforeunload", e => { if (saveFailed || saveRunning) { 
 
 const ADMIN_PASSWORD = "1234Elite";
 const DEFAULT_PLAYER_PASSWORD = "1234";
+const REGISTRATION_PASSWORD = "1234567"; // mot de passe d'inscription des nouveaux membres
 
 const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 
@@ -1380,14 +1430,14 @@ const INITIAL_DATA = {
     currentMonth: "Septembre",
     months: INITIAL_MONTHS,
     members: [
-        { id:"ephraim", name:"Ephraim", phone:"999071483", tokens:0, points:219800, rank:"D", present:false, password:"1234" },
-        { id:"ken", name:"Kennedy", phone:"974854402", tokens:0, points:208505, rank:"A", present:false, password:"1234" },
-        { id:"mani", name:"Mani", phone:"857947671", tokens:0, points:134500, rank:"E", present:false, password:"1234" },
-        { id:"ya-chris", name:"Ya Chris", phone:"979792686", tokens:0, points:133625, rank:"B", present:false, password:"1234" },
-        { id:"olivier", name:"Olivier", phone:"961395751", tokens:0, points:107680, rank:"E", present:false, password:"1234" },
-        { id:"mana", name:"Mana", phone:"853633786", tokens:0, points:48455, rank:"F", present:false, password:"1234" },
-        { id:"chris", name:"Chris", phone:"995900882", tokens:0, points:18500, rank:"F", present:false, password:"1234" },
-        { id:"persis", name:"Persis", phone:"855565108", tokens:0, points:1675, rank:"F", present:false, password:"1234" }
+        { id:"mani", name:"Mani", phone:"857947671", tokens:0, points:194375, rank:"D", present:false, password:"1234" },
+        { id:"ya-chris", name:"Ya Chris", phone:"979792686", tokens:0, points:54500, rank:"B", present:false, password:"1234" },
+        { id:"mana", name:"Mana", phone:"", tokens:0, points:49205, rank:"D", present:false, password:"1234" },
+        { id:"olivier", name:"Olivier", phone:"961395751", tokens:0, points:34990, rank:"D", present:false, password:"1234" },
+        { id:"ephraim", name:"Ephraim", phone:"999071483", tokens:0, points:31290, rank:"D", present:false, password:"1234" },
+        { id:"chris", name:"Chris", phone:"995900882", tokens:0, points:20625, rank:"D", present:false, password:"1234" },
+        { id:"ken", name:"Kennedy", phone:"974854402", tokens:0, points:9005, rank:"A", present:false, password:"1234" },
+        { id:"persis", name:"Persis", phone:"", tokens:0, points:5425, rank:"D", present:false, password:"1234" }
     ],
     history: [],
     cashHistory: [],
@@ -1441,7 +1491,8 @@ function getLocalSessionKey() {
 }
 function isMemberSessionActive(member) {
     const session = data?.activeSessions?.[member.id];
-    return !!session && session.key !== getLocalSessionKey() && Date.now() - Number(session.lastSeen || 0) < 120000;
+    // Un membre connecté reste réservé à son appareil tant que l'administrateur ne le libère pas.
+    return !!session && session.key !== getLocalSessionKey();
 }
 function renderLoginChoices() {
     const select = document.getElementById("loginMemberSelect");
@@ -1464,9 +1515,17 @@ window.updateLoginSelection = function() {
 function startMemberHeartbeat() {
     if (memberHeartbeatInterval) clearInterval(memberHeartbeatInterval);
     if (!currentMemberId || !data) return;
+    let sessionMisses = 0;
     const touch = async () => {
         if (!getCurrentMember()) return;
         const id = currentMemberId;
+        const known = data.activeSessions?.[id];
+        if (!known || known.key !== getLocalSessionKey()) {
+            // Deux constats consécutifs avant de déconnecter (évite un faux positif si une mise à jour arrive en retard).
+            if (++sessionMisses >= 2) forceLocalLogout("🔓 Ta connexion a été libérée par l'administrateur. Reconnecte-toi.");
+            return; // on n'écrit rien : une session libérée ne doit pas être reprise par le heartbeat
+        }
+        sessionMisses = 0;
         const session = {key:getLocalSessionKey(), lastSeen:Date.now()};
         if (!data.activeSessions) data.activeSessions = {};
         data.activeSessions[id] = session;
@@ -1489,6 +1548,7 @@ function releaseMemberSession() {
 
 function showTab(tab, skipRender) {
     activeTab = tab;
+    navTrack();
     const groups = {
         home: ["accueil"],
         profile: ["profil","vente"],
@@ -1508,7 +1568,24 @@ function showTab(tab, skipRender) {
 
 window.showTab = showTab;
 
-window.loginByPhone = function() {
+async function claimSession(id) {
+    const mine = getLocalSessionKey();
+    await runTransaction(db, async tx => {
+        const snap = await tx.get(docRef);
+        const ses = snap.exists() ? snap.data().activeSessions?.[id] : null;
+        if (ses && ses.key !== mine) throw new Error("busy");
+        tx.update(docRef, new FieldPath("activeSessions", id), {key: mine, lastSeen: Date.now()});
+    });
+}
+function enterAsMember(member) {
+    currentMemberId = member.id;
+    if (!data.activeSessions) data.activeSessions = {};
+    data.activeSessions[member.id] = {key:getLocalSessionKey(), lastSeen:Date.now()};
+    try { localStorage.setItem("elite_member_id", member.id); } catch(e) {}
+    document.getElementById("loginGate").classList.add("hidden");
+    startMemberHeartbeat(); showTab("home"); renderAll();
+}
+window.loginByPhone = async function() {
     const feedback = document.getElementById("loginFeedback");
     if (!data) { feedback.textContent = "Chargement des membres depuis Firebase."; return; }
     const id = document.getElementById("loginMemberSelect")?.value;
@@ -1516,14 +1593,58 @@ window.loginByPhone = function() {
     if (!member) { feedback.textContent = "Sélectionne un membre dans la liste."; return; }
     if (normalizePhone(member.phone).length !== 9) { feedback.textContent = "Ce membre n'a pas encore de numéro enregistré."; return; }
     if (isMemberSessionActive(member)) { feedback.textContent = "Ce membre est déjà connecté sur un autre appareil."; renderLoginChoices(); return; }
-    currentMemberId = member.id;
-    if (!data.activeSessions) data.activeSessions = {};
-    data.activeSessions[member.id] = {key:getLocalSessionKey(), lastSeen:Date.now()};
-    try { localStorage.setItem("elite_member_id", member.id); } catch(e) {}
-    document.getElementById("loginGate").classList.add("hidden");
+    feedback.textContent = "Connexion en cours…";
+    try { await claimSession(member.id); }
+    catch (e) {
+        if (e && e.message === "busy") { feedback.textContent = "Ce membre est déjà connecté sur un autre appareil."; renderLoginChoices(); }
+        else { console.error(e); feedback.textContent = "Connexion impossible : vérifie ta connexion internet."; }
+        return;
+    }
     feedback.textContent = "Connexion réussie.";
-    startMemberHeartbeat(); showTab("home"); renderAll();
+    enterAsMember(member);
 };
+
+window.toggleRegisterBox = function() { document.getElementById("registerBox")?.classList.toggle("hidden"); };
+window.registerNewMember = async function() {
+    const fb = document.getElementById("registerFeedback");
+    const say = t => { if (fb) fb.textContent = t; };
+    if (!data) { say("Chargement des membres depuis Firebase."); return; }
+    const name = document.getElementById("regName").value.trim().replace(/\s+/g, " ");
+    const phone = document.getElementById("regPhone").value.replace(/\s+/g, "");
+    const password = document.getElementById("regPassword").value || DEFAULT_PLAYER_PASSWORD;
+    const code = document.getElementById("regCode").value;
+    if (name.length < 2 || name.length > 40) { say("❌ Écris ton nom (2 à 40 caractères)."); return; }
+    if (data.members.some(m => String(m.name).trim().toLocaleLowerCase("fr") === name.toLocaleLowerCase("fr"))) { say("❌ Un membre porte déjà ce nom."); return; }
+    if (!/^\d{9}$/.test(phone)) { say("❌ Le numéro doit contenir exactement 9 chiffres."); return; }
+    if (phoneAlreadyUsed(phone)) { say("❌ Ce numéro est déjà attribué à un autre membre."); return; }
+    if (!validPlayerPassword(password)) { say("❌ Ton mot de passe personnel doit contenir 1 à 4 chiffres."); return; }
+    if (code !== REGISTRATION_PASSWORD) { say("❌ Mot de passe d'inscription incorrect."); return; }
+    say("Création du profil…");
+    const member = { id: makeId(), name, phone, points: 0, tokens: 0, rank: "D", present: false, password };
+    data.members.push(member);
+    if (!await saveData()) {
+        data.members = data.members.filter(m => m !== member);
+        say("❌ Inscription impossible : vérifie ta connexion internet.");
+        return;
+    }
+    try { await claimSession(member.id); } catch (e) { console.warn("Session non enregistrée:", e); }
+    ["regName", "regPhone", "regPassword", "regCode"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+    document.getElementById("registerBox")?.classList.add("hidden");
+    document.getElementById("loginFeedback").textContent = "Bienvenue " + name + " !";
+    enterAsMember(member);
+};
+
+function forceLocalLogout(message) {
+    if (memberHeartbeatInterval) clearInterval(memberHeartbeatInterval);
+    memberHeartbeatInterval = null;
+    currentMemberId = null;
+    adminConnected = false;
+    try { localStorage.removeItem("elite_member_id"); } catch(e) {}
+    document.getElementById("loginGate")?.classList.remove("hidden");
+    const fb = document.getElementById("loginFeedback");
+    if (fb) fb.textContent = message;
+    renderLoginChoices();
+}
 
 window.loginAsAdmin = function() {
     const password = prompt("Mot de passe administrateur :");
@@ -1541,6 +1662,11 @@ window.loginAsAdmin = function() {
 };
 
 window.logoutMember = function() {
+    if (currentMemberId) {
+        const pwd = prompt("🔐 Mot de passe administrateur requis pour se déconnecter :");
+        if (pwd === null) return;
+        if (pwd !== ADMIN_PASSWORD) { alert("❌ Mot de passe administrateur incorrect."); return; }
+    }
     releaseMemberSession();
     currentMemberId = null;
     adminConnected = false;
@@ -1671,8 +1797,7 @@ function initFirebase() {
 
             const knownPhones = {
                 "ephraim":"999071483", "ken":"974854402", "chris":"995900882",
-                "ya-chris":"979792686", "mani":"857947671", "olivier":"961395751",
-                "mana":"853633786", "persis":"855565108"
+                "ya-chris":"979792686", "mani":"857947671", "olivier":"961395751"
             };
             data.members.forEach(member => {
                 if (!member.password) member.password = DEFAULT_PLAYER_PASSWORD;
@@ -1685,35 +1810,6 @@ function initFirebase() {
                 if (member.id === "ephraim") member.name = "Ephraim";
                 if (member.id === "ya-chris") member.name = "Ya Chris";
             });
-            // Application unique du classement initial communiqué : les données des autres
-            // sections sont conservées et cette migration ne se répète pas aux ouvertures suivantes.
-            if (data.initialRankingV1Applied !== true) {
-                const initialRoster = [
-                    { id:"ephraim", name:"Ephraim", phone:"999071483", points:219800, rank:"D" },
-                    { id:"ken", name:"Kennedy", phone:"974854402", points:208505, rank:"A" },
-                    { id:"mani", name:"Mani", phone:"857947671", points:134500, rank:"E" },
-                    { id:"ya-chris", name:"Ya Chris", phone:"979792686", points:133625, rank:"B" },
-                    { id:"olivier", name:"Olivier", phone:"961395751", points:107680, rank:"E" },
-                    { id:"mana", name:"Mana", phone:"853633786", points:48455, rank:"F" },
-                    { id:"chris", name:"Chris", phone:"995900882", points:18500, rank:"F" },
-                    { id:"persis", name:"Persis", phone:"855565108", points:1675, rank:"F" }
-                ];
-                initialRoster.forEach(def => {
-                    let member = data.members.find(m => m.id === def.id);
-                    if (!member) {
-                        member = { ...def, tokens:0, present:false, password:DEFAULT_PLAYER_PASSWORD };
-                        data.members.push(member);
-                    }
-                    member.name = def.name;
-                    member.phone = def.phone;
-                    member.points = def.points;
-                    member.rank = def.rank;
-                    member.tokens = 0;
-                });
-                data.tokenHistory = [];
-                data.initialRankingV1Applied = true;
-                saveData();
-            }
             // Initialisation unique des trois clubs officiels. Le marqueur évite de les recréer
             // si l'administrateur décide plus tard de supprimer un club ou même tous les clubs.
             let clubsNeedSave = false;
@@ -1773,7 +1869,7 @@ function initFirebase() {
                     const savedId = localStorage.getItem("elite_member_id");
                     const savedMember = data.members.find(m => m.id === savedId);
                     const savedSession = savedId ? data.activeSessions?.[savedId] : null;
-                    const freeSession = !savedSession || savedSession.key === getLocalSessionKey() || Date.now()-Number(savedSession.lastSeen||0)>=120000;
+                    const freeSession = !!savedSession && savedSession.key === getLocalSessionKey();
                     if (savedMember && normalizePhone(savedMember.phone).length===9 && freeSession) {
                         currentMemberId=savedId;
                         data.activeSessions[savedId]={key:getLocalSessionKey(),lastSeen:Date.now()};
@@ -1842,6 +1938,7 @@ function renderAll() {
     renderProfile();
     renderChat();
     renderChatContacts();
+    renderExtras();
     showTab(activeTab, true);
 }
 
@@ -2753,7 +2850,10 @@ window.toggleAttendance = function(memberId, dayIndex, checkboxElem) {
     if (newState === oldState) return;
 
     const fee = Math.max(0, Number(monthData.dailyFee || 0));
-    if (!newState && Number(member.tokens || 0) < fee) {
+    const tokenGain = getFeeTokens(monthData);
+    const givenBefore = monthData.tokensGiven?.[member.id]?.[String(dayIndex)];
+    const tokenBack = (givenBefore === undefined || givenBefore === null) ? fee : Number(givenBefore);
+    if (!newState && Number(member.tokens || 0) < tokenBack) {
         alert("Impossible d'annuler cette cotisation : le membre a déjà utilisé une partie des tokens correspondants.");
         checkboxElem.checked = true;
         return;
@@ -2761,8 +2861,11 @@ window.toggleAttendance = function(memberId, dayIndex, checkboxElem) {
     attendance[dayIndex] = newState;
 
     if (newState) {
-        member.tokens = Number(member.tokens || 0) + fee;
-        data.tokenHistory.unshift({id:makeId(),date:new Date().toISOString(),memberId:member.id,memberName:member.name,amount:fee,reason:`Cotisation ${data.currentMonth} — Jour ${dayIndex+1} (1 FC = 1 token)`});
+        member.tokens = Number(member.tokens || 0) + tokenGain;
+        if (!monthData.tokensGiven) monthData.tokensGiven = {};
+        if (!monthData.tokensGiven[member.id]) monthData.tokensGiven[member.id] = {};
+        monthData.tokensGiven[member.id][String(dayIndex)] = tokenGain;
+        data.tokenHistory.unshift({id:makeId(),date:new Date().toISOString(),memberId:member.id,memberName:member.name,amount:tokenGain,reason:`Cotisation ${data.currentMonth} — Jour ${dayIndex+1} (${formatNumber(fee)} FC → ${formatNumber(tokenGain)} tokens)`});
         data.cash = Number(data.cash || 0) + fee;
         data.cashHistory.unshift({
             id: makeId(),
@@ -2776,8 +2879,9 @@ window.toggleAttendance = function(memberId, dayIndex, checkboxElem) {
             reason: `Cotisation ${data.currentMonth} — Jour ${dayIndex + 1}`
         });
     } else {
-        member.tokens = Number(member.tokens || 0) - fee;
-        data.tokenHistory.unshift({id:makeId(),date:new Date().toISOString(),memberId:member.id,memberName:member.name,amount:-fee,reason:`Annulation cotisation ${data.currentMonth} — Jour ${dayIndex+1}`});
+        member.tokens = Number(member.tokens || 0) - tokenBack;
+        if (monthData.tokensGiven?.[member.id]) delete monthData.tokensGiven[member.id][String(dayIndex)];
+        data.tokenHistory.unshift({id:makeId(),date:new Date().toISOString(),memberId:member.id,memberName:member.name,amount:-tokenBack,reason:`Annulation cotisation ${data.currentMonth} — Jour ${dayIndex+1}`});
         data.cash = Math.max(0, Number(data.cash || 0) - fee);
         data.cashHistory.unshift({
             id: makeId(),
@@ -2828,6 +2932,7 @@ window.removeDayColumn = function() {
             removedTotal += fee;
         }
         attendance.pop();
+        if (monthData.tokensGiven?.[member.id]) delete monthData.tokensGiven[member.id][String(deletedDayIndex)];
     });
 
     data.cash = Math.max(0, Number(data.cash || 0) - removedTotal);
@@ -2980,9 +3085,133 @@ function renderHistory() {
     `).join("");
 }
 
+
+/* ---------- Réglages : tokens par cotisation et taux de conversion ---------- */
+function getFeeTokens(monthData) {
+    const v = monthData?.dailyTokens;
+    if (v === undefined || v === null || !Number.isFinite(Number(v)) || Number(v) < 0) return Math.max(0, Number(monthData?.dailyFee || 0));
+    return Math.floor(Number(v));
+}
+function getRates() {
+    const r = data?.rates || {}, p = r.points || {}, f = r.fc || {};
+    const pos = (v, d) => (Number.isInteger(Number(v)) && Number(v) > 0) ? Number(v) : d;
+    return { points: { points: pos(p.points, 100), tokens: pos(p.tokens, 50) }, fc: { fc: pos(f.fc, 1), tokens: pos(f.tokens, 1) } };
+}
+window.changeDailyTokens = function() {
+    if (!verifyAdminAuth()) return;
+    const input = document.getElementById("newDailyTokens");
+    const value = Number(input.value);
+    if (input.value.trim() === "" || !Number.isInteger(value) || value < 0) { alert("❌ Entre un nombre entier de tokens (0 ou plus)."); return; }
+    getCurrentMonthData().dailyTokens = value;
+    saveData();
+    input.value = "";
+    alert(`✅ Chaque cotisation cochée en ${data.currentMonth} donnera ${formatNumber(value)} tokens.`);
+};
+window.resetDailyTokens = function() {
+    if (!verifyAdminAuth()) return;
+    delete getCurrentMonthData().dailyTokens;
+    saveData();
+    alert("✅ Les tokens reçus par cotisation sont de nouveau égaux au montant en FC.");
+};
+window.saveRates = function() {
+    if (!verifyAdminAuth()) return;
+    const cur = getRates();
+    const val = (id, fallback) => { const t = document.getElementById(id).value.trim(); return t === "" ? fallback : Number(t); };
+    const pf = val("ratePointsFrom", cur.points.points), pt = val("ratePointsTo", cur.points.tokens);
+    const ff = val("rateFcFrom", cur.fc.fc), ft = val("rateFcTo", cur.fc.tokens);
+    if (![pf, pt, ff, ft].every(v => Number.isInteger(v) && v > 0)) { alert("❌ Les valeurs doivent être des nombres entiers positifs."); return; }
+    data.rates = { points: { points: pf, tokens: pt }, fc: { fc: ff, tokens: ft } };
+    saveData();
+    ["ratePointsFrom", "ratePointsTo", "rateFcFrom", "rateFcTo"].forEach(id => { document.getElementById(id).value = ""; });
+    alert("✅ Taux enregistrés.");
+};
+window.previewConvert = function() {
+    const out = document.getElementById("convertPreview");
+    if (!out || !data) return;
+    const amount = Number(document.getElementById("convertPoints").value);
+    const rate = getRates().points;
+    if (!Number.isInteger(amount) || amount <= 0) { out.textContent = ""; return; }
+    const tokens = Math.floor(amount * rate.tokens / rate.points);
+    out.textContent = tokens >= 1 ? `≈ ${formatNumber(tokens)} tokens (${formatNumber(Math.ceil(tokens * rate.points / rate.tokens))} points utilisés)` : `Minimum ${formatNumber(Math.ceil(rate.points / rate.tokens))} points pour obtenir 1 token.`;
+};
+window.convertPointsToTokens = function() {
+    const memberId = document.getElementById("convertMemberSelect").value;
+    const password = document.getElementById("convertPassword").value;
+    const amount = Number(document.getElementById("convertPoints").value);
+    const message = document.getElementById("convertMessage");
+    const fail = t => { message.innerHTML = `<div class="notice error">❌ ${t}</div>`; };
+    message.innerHTML = "";
+    const member = data.members.find(m => m.id === memberId);
+    if (!member) return fail("Membre introuvable.");
+    if (currentMemberId && memberId !== currentMemberId) return fail("Tu peux convertir uniquement les points de ton propre profil.");
+    if (String(member.password) !== String(password)) return fail("Mot de passe incorrect.");
+    if (!Number.isInteger(amount) || amount <= 0) return fail("Entre un nombre entier de points valide.");
+    if (Number(member.points || 0) < amount) return fail("Tu n'as pas assez de points.");
+    const rate = getRates().points;
+    const tokens = Math.floor(amount * rate.tokens / rate.points);
+    if (tokens < 1) return fail(`Minimum ${formatNumber(Math.ceil(rate.points / rate.tokens))} points pour obtenir 1 token.`);
+    const used = Math.ceil(tokens * rate.points / rate.tokens);
+    member.points = Number(member.points || 0) - used;
+    member.tokens = Number(member.tokens || 0) + tokens;
+    const now = new Date().toISOString();
+    data.history.unshift({ id: makeId(), date: now, type: "conversion", member: member.name, amount: used, reason: "Conversion de points en tokens", text: `${member.name} : ${formatNumber(used)} points → ${formatNumber(tokens)} tokens` });
+    data.tokenHistory.unshift({ id: makeId(), date: now, memberId: member.id, memberName: member.name, amount: tokens, reason: `Conversion de ${formatNumber(used)} points en tokens` });
+    saveData();
+    document.getElementById("convertPassword").value = "";
+    document.getElementById("convertPoints").value = "";
+    document.getElementById("convertPreview").textContent = "";
+    message.innerHTML = `<div class="notice success">✅ ${formatNumber(used)} points convertis en ${formatNumber(tokens)} tokens.</div>`;
+    renderProfile(); renderTokenHistory();
+};
+window.adminReleaseSession = async function() {
+    if (!verifyAdminAuth()) return;
+    const id = document.getElementById("releaseMemberSelect").value;
+    const msg = document.getElementById("releaseMessage");
+    try {
+        if (id === "__all__") {
+            if (!confirm("Libérer la connexion de TOUS les membres ?")) return;
+            await updateDoc(docRef, { activeSessions: {} });
+            data.activeSessions = {};
+        } else {
+            await updateDoc(docRef, new FieldPath("activeSessions", id), deleteField());
+            if (data.activeSessions) delete data.activeSessions[id];
+        }
+        msg.innerHTML = `<div class="notice success">✅ Connexion libérée.</div>`;
+        renderLoginChoices(); renderExtras();
+    } catch (e) {
+        console.error(e);
+        msg.innerHTML = `<div class="notice error">❌ Impossible de libérer la connexion (vérifie internet).</div>`;
+    }
+};
+function renderExtras() {
+    if (!data) return;
+    const set = (id, text) => { const el = document.getElementById(id); if (el && el.textContent !== text) el.textContent = text; };
+    const rates = getRates();
+    let monthData = null;
+    try { monthData = getCurrentMonthData(); } catch (e) {}
+    if (monthData) {
+        const custom = monthData.dailyTokens !== undefined && monthData.dailyTokens !== null;
+        set("adminDailyTokensDisplay", `${formatNumber(getFeeTokens(monthData))} tokens${custom ? "" : " (= montant en FC)"}`);
+    }
+    const pText = `${formatNumber(rates.points.points)} points = ${formatNumber(rates.points.tokens)} tokens`;
+    const fText = `${formatNumber(rates.fc.fc)} FC = ${formatNumber(rates.fc.tokens)} tokens`;
+    set("ratePointsDisplay", pText); set("rateFcDisplay", fText);
+    set("convertRateText", "Taux actuel : " + pText + ".");
+    set("convertFcInfo", `💵 Argent → tokens (${fText}) : remets ton versement à l'administrateur, qui crédite tes tokens.`);
+    set("fcRateText", fText + " versé.");
+    set("fcRateLabel", fText);
+    const cs = document.getElementById("convertMemberSelect");
+    if (cs && currentMemberId && cs.value !== currentMemberId && [...cs.options].some(o => o.value === currentMemberId)) cs.value = currentMemberId;
+    const rs = document.getElementById("releaseMemberSelect");
+    if (rs) {
+        const html = '<option value="__all__">— Tous les membres —</option>' + data.members.map(m => `<option value="${escapeHTML(String(m.id))}">${escapeHTML(m.name)}${data.activeSessions?.[m.id] ? " · connecté" : ""}</option>`).join("");
+        if (rs._html !== html) { const old = rs.value; rs._html = html; rs.innerHTML = html; if ([...rs.options].some(o => o.value === old)) rs.value = old; }
+    }
+}
+
 function fillSelects() {
     if (!data) return;
-    const ids = ["presenceMember", "manualMember", "rankMember", "deleteMember", "adminPasswordMember", "passwordMemberSelect", "sellerSelect", "receiverSelect", "shopMemberSelect", "tokenMemberSelect", "tokenContributionMember", "phoneMemberSelect"];
+    const ids = ["presenceMember", "manualMember", "rankMember", "deleteMember", "adminPasswordMember", "passwordMemberSelect", "sellerSelect", "convertMemberSelect", "receiverSelect", "shopMemberSelect", "tokenMemberSelect", "tokenContributionMember", "phoneMemberSelect"];
     ids.forEach(id => {
         const select = document.getElementById(id);
         if (!select) return;
@@ -3124,14 +3353,17 @@ window.creditTokensFromFC = function() {
     const member = data.members.find(m => m.id === document.getElementById("tokenContributionMember").value);
     const amount = Number(document.getElementById("tokenContributionFC").value);
     if (!member || !Number.isInteger(amount) || amount <= 0) return;
-    member.tokens = Number(member.tokens || 0) + amount;
-    data.tokenHistory.unshift({id:makeId(),date:new Date().toISOString(),memberId:member.id,memberName:member.name,amount,reason:"Contribution en FC (1 FC = 1 token)"});
+    const rate = getRates().fc;
+    const tokens = Math.floor(amount * rate.tokens / rate.fc);
+    if (tokens < 1) { alert(`❌ Montant trop faible : il faut au minimum ${formatNumber(Math.ceil(rate.fc / rate.tokens))} FC pour obtenir 1 token.`); return; }
+    member.tokens = Number(member.tokens || 0) + tokens;
+    data.tokenHistory.unshift({id:makeId(),date:new Date().toISOString(),memberId:member.id,memberName:member.name,amount:tokens,reason:`Contribution en FC (${formatNumber(rate.fc)} FC = ${formatNumber(rate.tokens)} tokens)`});
     data.cashHistory.unshift({id:makeId(),date:new Date().toISOString(),amount,reason:"Contribution convertie en tokens — "+member.name});
     data.cash = Number(data.cash || 0) + amount;
     saveData();
     document.getElementById("tokenContributionFC").value = "";
     renderTokenHistory(); renderProfile();
-    document.getElementById("tokenAdminMessage").innerHTML = `<div class="notice success">${formatNumber(amount)} FC convertis en ${formatNumber(amount)} tokens pour ${escapeHTML(member.name)}.</div>`;
+    document.getElementById("tokenAdminMessage").innerHTML = `<div class="notice success">${formatNumber(amount)} FC convertis en ${formatNumber(tokens)} tokens pour ${escapeHTML(member.name)}.</div>`;
 };
 
 window.loginAdmin = function() {
@@ -3492,6 +3724,83 @@ window.resetCloudData = () => {
 };
 
 
+
+
+/* ========================================================
+   BOUTON RETOUR DU TÉLÉPHONE : on remonte dans l'application
+   (modale -> page précédente -> accueil) au lieu de la quitter.
+   À l'accueil, un 2e appui rapide quitte vraiment l'application.
+======================================================== */
+let navLast = null, navReady = false, navApplying = false, exitArmed = false, exitTimer = null;
+function navSnap() {
+    return { tab: activeTab, view: data?.nova?.currentView || "home", club: data?.nova?.activeClubId || null, comp: data?.nova?.currentCompetitionId || null };
+}
+function navTrack() {
+    if (!navReady || navApplying) return;
+    const snap = navSnap(), str = JSON.stringify(snap);
+    if (str === navLast) return;
+    navLast = str;
+    try { history.pushState({ nav: snap }, ""); } catch (e) {}
+}
+function showToast(text) {
+    let t = document.getElementById("navToast");
+    if (!t) {
+        t = document.createElement("div");
+        t.id = "navToast";
+        t.style.cssText = "position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#0d213bee;color:#fff;border:1px solid #2871a7;padding:10px 16px;border-radius:14px;z-index:3000;font-size:14px;max-width:85%;text-align:center;box-shadow:0 6px 20px #0008;transition:opacity .25s;opacity:0;pointer-events:none";
+        document.body.appendChild(t);
+    }
+    t.textContent = text; t.style.opacity = "1";
+    clearTimeout(t._h); t._h = setTimeout(() => { t.style.opacity = "0"; }, 2200);
+}
+function restoreCurrentNav() { try { history.pushState({ nav: navLast ? JSON.parse(navLast) : navSnap() }, ""); } catch (e) {} }
+function applyNav(n) {
+    navApplying = true;
+    try {
+        if (data?.nova) {
+            data.nova.currentView = n.view; data.nova.activeClubId = n.club; data.nova.currentCompetitionId = n.comp;
+            data.nova.quizMode = false; data.nova.managerMode = false;
+        }
+        if (competitionTimerInterval) { clearInterval(competitionTimerInterval); competitionTimerInterval = null; }
+        activeTab = n.tab;
+        renderAll();
+    } finally {
+        navApplying = false;
+        navLast = JSON.stringify(navSnap());
+    }
+}
+window.addEventListener("popstate", e => {
+    const st = e.state;
+    const gate = document.getElementById("loginGate");
+    const gateVisible = !!gate && !gate.classList.contains("hidden");
+    const modals = [...document.querySelectorAll(".modal-overlay:not(.hidden)")];
+    if (modals.length && !gateVisible) { modals.forEach(m => m.classList.add("hidden")); restoreCurrentNav(); return; }
+    if (data?.nova?.quizMode && !gateVisible) { restoreCurrentNav(); showToast("Quiz en cours : termine-le avant de revenir en arrière."); return; }
+    if (st && st.guard) {
+        if (exitArmed) { exitArmed = false; clearTimeout(exitTimer); history.back(); return; }
+        exitArmed = true;
+        showToast("Appuie encore sur retour pour quitter l'application");
+        clearTimeout(exitTimer); exitTimer = setTimeout(() => { exitArmed = false; }, 2200);
+        restoreCurrentNav();
+        return;
+    }
+    if (st && st.nav) {
+        if (gateVisible) { navLast = JSON.stringify(st.nav); return; }
+        applyNav(st.nav);
+    }
+});
+try { history.replaceState({ guard: true }, ""); } catch (e) {}
+document.addEventListener("pointerdown", () => {
+    if (navReady) return;
+    navReady = true;
+    navLast = JSON.stringify(navSnap());
+    try { history.pushState({ nav: navSnap() }, ""); } catch (e) {}
+}, { once: true, capture: true });
+["novaGoToHome", "novaOpenClubSpace", "novaBackToClub", "novaOpenCompetition"].forEach(name => {
+    const original = window[name];
+    if (typeof original !== "function") return;
+    window[name] = function(...args) { const r = original.apply(this, args); navTrack(); return r; };
+});
 
 initFirebase();
 
