@@ -811,7 +811,7 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
                 <p class="small-info">Seul le maître officiel de ce club peut créer une compétition. Elle sera visible uniquement dans ce club.</p>
                 <input id="competitionName" placeholder="Nom du concours ou de la compétition">
                 <div class="form-two"><input id="competitionFee" type="number" min="0" step="1" placeholder="Participation de base (tokens)"><input id="competitionPrize" type="number" min="0" step="1" placeholder="Récompense (tokens)"></div>
-                <label>⏱️ Temps par question (secondes)</label><input id="competitionQuestionSeconds" type="number" min="1" max="300" value="5" placeholder="Ex. 5 secondes">
+                <label>⏱️ Temps par question (secondes)</label><input id="competitionQuestionSeconds" type="number" min="1" max="300" value="30" placeholder="Ex. 30 secondes">
                 <button class="action green" onclick="novaCreateCompetition()">＋ Créer la compétition</button>
             </div>
             <div class="card-inner"><h3>Compétitions de ce club</h3><div id="clubCompetitionsList"></div></div>
@@ -1002,6 +1002,7 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
             <input id="manualReason" placeholder="Motif">
             <button class="action green" onclick="manualChange(1)">➕ Ajouter</button>
             <button class="action red" onclick="manualChange(-1)">➖ Retirer</button>
+            <button class="action" onclick="manualDivide()">÷ Diviser les points</button>
         </div>
 
         <div class="card">
@@ -1286,12 +1287,26 @@ function applyRemoteSnapshot(snapshot) {
     Object.keys(raw).forEach(k => { if (k !== "activeSessions") remote[k] = persistKey(raw, k); });
     const rStr = {};
     Object.keys(remote).forEach(k => { rStr[k] = stable(remote[k]); });
-    if (data) {
+
+    // Une génération différente signifie qu'un administrateur a réinitialisé le Cloud.
+    // Dans ce cas, aucune fusion avec l'ancien état local n'est autorisée.
+    const remoteGeneration = Number(remote._resetVersion || 0);
+    const knownGeneration = Number(serverBase._resetVersion || 0);
+    const generationChanged = !!data && remoteGeneration !== knownGeneration;
+    if (data && !generationChanged) {
         const same = Object.keys(rStr).length === Object.keys(serverStr).length && Object.keys(rStr).every(k => rStr[k] === serverStr[k]);
         if (same) { data.activeSessions = sessions; renderLoginChoices(); return false; }
     }
-    if (!data) {
+    if (!data || generationChanged) {
+        // Remplacement intégral volontaire : la nouvelle génération Cloud est prioritaire.
         data = { ...clone(remote), activeSessions: sessions };
+        if (generationChanged && currentMemberId && !data.members?.some(m => m.id === currentMemberId)) {
+            currentMemberId = null;
+            if (memberHeartbeatInterval) clearInterval(memberHeartbeatInterval);
+            memberHeartbeatInterval = null;
+            try { localStorage.removeItem("elite_member_id"); } catch (e) {}
+            document.getElementById("loginGate")?.classList.remove("hidden");
+        }
     } else {
         const localP = persistable(data);
         const next = {};
@@ -1337,19 +1352,20 @@ async function doSave(force) {
     const keys = Object.keys(local).filter(k => force || stable(local[k]) !== serverStr[k]);
     if (!keys.length) return true;
     let merged = {};
-    let replaced = false;
+    let conflictRaw = null;
     await runTransaction(db, async tx => {
         const snap = await tx.get(docRef);
         merged = {};
-        replaced = false;
-        if (!snap.exists() || force) {
-            const sessions = snap.exists() ? (snap.data().activeSessions || {}) : (data.activeSessions || {});
-            tx.set(docRef, { ...local, activeSessions: sessions });
-            merged = { ...local };
-            replaced = true;
-            return;
+        if (!snap.exists()) {
+            throw new Error("Document principal Firebase introuvable pendant une sauvegarde. Écriture bloquée pour éviter de ressusciter une ancienne copie locale. Restaure d'abord la sauvegarde Cloud.");
         }
         const raw = snap.data();
+        // Un appareil resté ouvert avant une réinitialisation ne peut plus republier
+        // son ancienne copie : sa sauvegarde est rejetée et le nouvel état est adopté.
+        if (Number(raw._resetVersion || 0) !== Number(local._resetVersion || 0)) {
+            conflictRaw = raw;
+            return;
+        }
         const upd = {};
         keys.forEach(k => {
             const rem = raw[k] === undefined ? undefined : persistKey(raw, k);
@@ -1357,9 +1373,13 @@ async function doSave(force) {
             upd[k] = val;
             merged[k] = val;
         });
-        tx.update(docRef, upd);
+        if (Object.keys(upd).length) tx.update(docRef, upd);
     });
-    if (replaced) { serverBase = {}; serverStr = {}; }
+    if (conflictRaw) {
+        applyRemoteSnapshot({ data: () => conflictRaw });
+        scheduleRender();
+        return false;
+    }
     Object.keys(merged).forEach(k => {
         const val = merged[k];
         const cur = data[k] === undefined ? undefined : persistKey(data, k);
@@ -1375,7 +1395,7 @@ let saveRunning = null, saveNext = null, saveFailed = false, retryTimer = null, 
 function runSave() {
     const force = forceNext;
     forceNext = false;
-    const p = doSave(force).then(() => { saveFailed = false; return true; }, err => {
+    const p = doSave(force).then(ok => { saveFailed = false; return ok; }, err => {
         console.error("Erreur de sauvegarde Cloud:", err);
         if (!saveFailed) alert("❌ Erreur de sauvegarde Firebase. Les modifications ne sont pas confirmées dans le Cloud." + (err && err.message && /volumineux/.test(err.message) ? "\n" + err.message : ""));
         saveFailed = true;
@@ -1388,6 +1408,7 @@ function runSave() {
     return p;
 }
 function saveData(options) {
+    if (cloudResetInProgress) return Promise.resolve(false);
     if (!data) return Promise.resolve(false);
     if (options && options.force) forceNext = true;
     scheduleRender();
@@ -1406,55 +1427,43 @@ const REGISTRATION_PASSWORD = "1234567"; // mot de passe d'inscription des nouve
 
 const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 
-const INITIAL_SHOP_ITEMS = [
-    { id:"shop1", name:"🔄 Seconde chance", price:3000, duration:"", description:"Obtenir une seconde chance." },
-    { id:"shop2", name:"✖️ Multiplication", price:10000, duration:"", description:"Achat de multiplication." }
-];
-
 function createEmptyMonths() {
     const months = {};
     MONTHS.forEach(month => {
-        months[month] = { daysCount: 0, dailyFee: 500, attendance: {} };
+        months[month] = { daysCount: 0, dailyFee: 0, attendance: {} };
     });
     return months;
 }
 
 const INITIAL_MONTHS = createEmptyMonths();
-INITIAL_MONTHS["Septembre"].daysCount = 2;
 
+// Modèle de départ volontairement vide : l'administrateur crée toutes les données.
 const INITIAL_DATA = {
     step: 250,
     cashStep: 5000,
     cash: 0,
-    targetCash: 100000,
-    currentMonth: "Septembre",
+    targetCash: 0,
+    currentMonth: MONTHS[new Date().getMonth()],
     months: INITIAL_MONTHS,
-    members: [
-        { id:"mani", name:"Mani", phone:"857947671", tokens:0, points:194375, rank:"D", present:false, password:"1234" },
-        { id:"ya-chris", name:"Ya Chris", phone:"979792686", tokens:0, points:54500, rank:"B", present:false, password:"1234" },
-        { id:"mana", name:"Mana", phone:"", tokens:0, points:49205, rank:"D", present:false, password:"1234" },
-        { id:"olivier", name:"Olivier", phone:"961395751", tokens:0, points:34990, rank:"D", present:false, password:"1234" },
-        { id:"ephraim", name:"Ephraim", phone:"999071483", tokens:0, points:31290, rank:"D", present:false, password:"1234" },
-        { id:"chris", name:"Chris", phone:"995900882", tokens:0, points:20625, rank:"D", present:false, password:"1234" },
-        { id:"ken", name:"Kennedy", phone:"974854402", tokens:0, points:9005, rank:"A", present:false, password:"1234" },
-        { id:"persis", name:"Persis", phone:"", tokens:0, points:5425, rank:"D", present:false, password:"1234" }
-    ],
+    members: [],
     history: [],
     cashHistory: [],
-    shopItems: JSON.parse(JSON.stringify(INITIAL_SHOP_ITEMS)),
+    shopItems: [],
     purchaseHistory: [],
     chatMessages: [],
     tokenHistory: [],
     nova: {
-        currentView: 'home',
+        currentView: "home",
         activeClubId: null,
         currentCompetitionId: null,
         currentMemberId: null,
-        clubs: []
+        clubs: [],
+        clubsInitialized: true
     }
 };
 
 let data = null;
+let cloudResetInProgress = false;
 let adminConnected = false;
 let currentMemberId = null;
 let activeTab = "home";
@@ -1704,7 +1713,7 @@ function ensureMonthsStructure() {
     }
     MONTHS.forEach(month => {
         if (!data.months[month]) {
-            data.months[month] = { daysCount: 0, dailyFee: 500, attendance: {} };
+            data.months[month] = { daysCount: 0, dailyFee: 0, attendance: {} };
         }
     });
 }
@@ -1772,6 +1781,44 @@ window.showSection = function(id) {
     if (section) section.classList.remove("hidden");
 };
 
+function createEmptyCloudData(resetVersion = 0) {
+    // État réellement vierge : ne jamais cloner INITIAL_DATA, car ce modèle
+    // historique contient encore les anciens membres et leurs anciens points.
+    // Les paramètres de fonctionnement sont conservés, mais aucune donnée
+    // métier (membre, club, compétition, achat, message ou historique) n'est préchargée.
+    return {
+        step: 250,
+        cashStep: 5000,
+        cash: 0,
+        targetCash: 0,
+        currentMonth: MONTHS[new Date().getMonth()],
+        months: createEmptyMonths(),
+        members: [],
+        history: [],
+        cashHistory: [],
+        shopItems: [],
+        purchaseHistory: [],
+        chatMessages: [],
+        tokenHistory: [],
+        nova: {
+            currentView: "home",
+            activeClubId: null,
+            currentCompetitionId: null,
+            currentMemberId: null,
+            clubs: [],
+            clubsInitialized: true
+        },
+        _resetVersion: Number(resetVersion) || 0,
+        activeSessions: {}
+    };
+}
+
+function syncServerBaseline(source) {
+    serverBase = persistable(source);
+    serverStr = {};
+    Object.keys(serverBase).forEach(k => { serverStr[k] = stable(serverBase[k]); });
+}
+
 function initFirebase() {
     onSnapshot(docRef, snapshot => {
         if (snapshot.exists()) {
@@ -1784,7 +1831,7 @@ function initFirebase() {
             if (!Array.isArray(data.tokenHistory)) data.tokenHistory = [];
             if (!data.activeSessions || typeof data.activeSessions !== "object") data.activeSessions = {};
             if (!Array.isArray(data.purchaseHistory)) data.purchaseHistory = [];
-            if (!Array.isArray(data.shopItems)) data.shopItems = JSON.parse(JSON.stringify(INITIAL_SHOP_ITEMS));
+            if (!Array.isArray(data.shopItems)) data.shopItems = [];
             if (!data.nova) {
                 data.nova = { currentView: 'home', activeClubId: null, currentMemberId: null, clubs: [] };
             }
@@ -1810,43 +1857,10 @@ function initFirebase() {
                 if (member.id === "ephraim") member.name = "Ephraim";
                 if (member.id === "ya-chris") member.name = "Ya Chris";
             });
-            // Initialisation unique des trois clubs officiels. Le marqueur évite de les recréer
-            // si l'administrateur décide plus tard de supprimer un club ou même tous les clubs.
+            // Migration non destructive : ne jamais supprimer un club, une compétition,
+            // une question ou remplacer le maître déjà enregistré.
             let clubsNeedSave = false;
-            const officialClubs = [
-                { name: "Psychologie", masterId: "mani" },
-                { name: "Programmation", masterId: "olivier" },
-                { name: "Langue et anglais", masterId: "ken" }
-            ];
             if (data.nova.clubsInitialized !== true) {
-                // Nettoyer seulement les anciennes entrées fictives identifiées, sans toucher
-                // aux clubs officiels ni aux autres clubs créés par l'administrateur.
-                const fakeNames = new Set(["club des psychopathes", "club des programmations", "club des langues / anglais"]);
-                data.nova.clubs = data.nova.clubs.filter(c => {
-                    const n = String(c.name || "").trim().toLocaleLowerCase("fr");
-                    const id = String(c.id || "");
-                    if (fakeNames.has(n) || id === "club-psychopathes") return false;
-                    if (id === "club-programmation" && n !== "programmation") return false;
-                    if (id === "club-anglais" && n !== "langue et anglais") return false;
-                    return true;
-                });
-                officialClubs.forEach(def => {
-                    let existing = data.nova.clubs.find(c => String(c.name || "").trim().toLocaleLowerCase("fr") === def.name.toLocaleLowerCase("fr"));
-                    if (!existing) {
-                        existing = { id: makeId(), name: def.name, masterMemberId: def.masterId, items: [], competitions: [] };
-                        data.nova.clubs.push(existing);
-                        clubsNeedSave = true;
-                    } else if (String(existing.masterMemberId) !== def.masterId) {
-                        existing.masterMemberId = def.masterId;
-                        clubsNeedSave = true;
-                    }
-                    // Les trois clubs officiels démarrent volontairement sans concours préchargé.
-                    if (!Array.isArray(existing.competitions) || existing.competitions.length) {
-                        existing.competitions = [];
-                        clubsNeedSave = true;
-                    }
-                    if (!Array.isArray(existing.items)) { existing.items = []; clubsNeedSave = true; }
-                });
                 data.nova.clubsInitialized = true;
                 clubsNeedSave = true;
             }
@@ -1857,7 +1871,8 @@ function initFirebase() {
                     if (!Array.isArray(comp.questions)) comp.questions = [];
                     if (!Array.isArray(comp.submissions)) comp.submissions = [];
                     if (!comp.attempts || typeof comp.attempts !== "object") comp.attempts = {};
-                    if (!Number.isFinite(Number(comp.secondsPerQuestion))) comp.secondsPerQuestion = 5;
+                    if (!Number.isFinite(Number(comp.secondsPerQuestion))) comp.secondsPerQuestion = 30;
+                    comp.questions.forEach(q => { if (!Number.isFinite(Number(q.seconds)) || Number(q.seconds) < 1) q.seconds = 30; });
                 });
             });
 
@@ -1893,9 +1908,8 @@ function initFirebase() {
                 return;
             }
             if (!data) {
-                data = JSON.parse(JSON.stringify(INITIAL_DATA));
-                data.activeSessions = {};
-                createInitialDoc().then(scheduleRender, e => console.error("Création initiale impossible:", e));
+                data = createEmptyCloudData(0);
+                createInitialDoc().then(() => { syncServerBaseline(data); scheduleRender(); }, e => console.error("Création initiale impossible:", e));
             }
             renderAll();
         }
@@ -2355,6 +2369,45 @@ function activeClub() {
     return data?.nova?.clubs?.find(c => c.id === data.nova.activeClubId) || null;
 }
 
+function hasReadyCompetitionQuestions(comp) {
+    const questions = Array.isArray(comp?.questions) ? comp.questions : [];
+    return questions.length > 0 && questions.every(q =>
+        typeof q?.text === "string" && q.text.trim().length > 0 &&
+        Array.isArray(q.options) && q.options.length >= 2 && q.options.length <= 8 &&
+        Number.isInteger(Number(q.correctIndex)) && Number(q.correctIndex) >= 0 && Number(q.correctIndex) < q.options.length
+    );
+}
+
+function buildCorrectionDetails(comp, sub) {
+    const saved = Array.isArray(sub.questionResults) ? sub.questionResults : null;
+    const rows = saved || (comp.questions || []).map((q, i) => ({
+        questionText: q.text, options: q.options || [], selectedIndex: Number.isInteger(Number(sub.answers?.[i])) ? Number(sub.answers[i]) : -1,
+        correctIndex: Number(q.correctIndex), isCorrect: Number(sub.answers?.[i]) === Number(q.correctIndex)
+    }));
+    return `<div class="card-inner"><strong>📝 Correction détaillée — ${escapeHTML(sub.memberName || "Participant")}</strong>` +
+        rows.map((r, i) => `<div class="history-item"><strong>${i+1}. ${escapeHTML(r.questionText || comp.questions?.[i]?.text || "Question")}</strong><br>` +
+            `<small>Ta réponse : ${r.selectedIndex >= 0 ? escapeHTML(r.options?.[r.selectedIndex] || "Réponse enregistrée") : "Aucune réponse / temps écoulé"}</small><br>` +
+            `<small>Bonne réponse : <strong>${escapeHTML(r.options?.[r.correctIndex] || "Non disponible")}</strong></small><br>` +
+            `<span class="${r.isCorrect ? "success-text" : "error-text"}">${r.isCorrect ? "✓ Correct" : "✗ Incorrect"}</span></div>`).join("") + `</div>`;
+}
+
+window.novaShowCompetitionCorrections = function(compId) {
+    const club = activeClub(), member = getNovaCurrentMember();
+    const comp = club?.competitions?.find(c => c.id === compId);
+    if (!club || !comp || !canManageComp(club, comp, member)) { alert("Seul le maître responsable de cette compétition peut consulter les corrections de tous les participants."); return; }
+    const area = document.getElementById("competitionQuizArea");
+    if (!area) return;
+    data.nova.currentCompetitionId = compId; data.nova.quizMode = true; data.nova.managerMode = false;
+    renderNovaLibrary();
+    const liveArea = document.getElementById("competitionQuizArea");
+    if (!liveArea) return;
+    liveArea.classList.remove("hidden");
+    liveArea.innerHTML = `<h3>🔐 Corrections — ${escapeHTML(comp.name)}</h3>` +
+        ((comp.submissions || []).length ? comp.submissions.map(sub => buildCorrectionDetails(comp, sub)).join("") : `<p class="empty-state">Aucun participant n'a encore soumis ses réponses.</p>`) +
+        `<button class="action" onclick="novaExitQuiz()">← Retour à la compétition</button>`;
+    liveArea.scrollIntoView({behavior:"smooth",block:"start"});
+};
+
 function buildCompetitionCard(comp, club, member, canManage) {
     if(!Array.isArray(comp.questions)) comp.questions=[];
     if(!Array.isArray(comp.submissions)) comp.submissions=[];
@@ -2364,14 +2417,14 @@ function buildCompetitionCard(comp, club, member, canManage) {
     const ownSubmission=comp.submissions.find(x=>x.memberId===member?.id);
     const names=participants.map(id=>data.members.find(m=>m.id===id)?.name).filter(Boolean);
     const prizeLabel=Number(comp.prizeTokens||0)>0?`${formatNumber(comp.prizeTokens)} tokens à gagner`:"Défi sans récompense";
-    const results=comp.submissions.length?`<div class="card-inner"><strong>📊 Résultats</strong><div class="table-responsive"><table><thead><tr><th>Participant</th><th>Réussies</th><th>Échouées</th><th>Score</th></tr></thead><tbody>${comp.submissions.map(sub=>{const m=data.members.find(x=>x.id===sub.memberId);const wrong=Math.max(0,Number(sub.total||0)-Number(sub.correct||0));return `<tr><td>${escapeHTML(m?.name||sub.memberName||"Membre")}</td><td>${sub.correct||0}</td><td>${wrong}</td><td>${sub.total?Math.round(sub.correct/sub.total*100):0}%${Number(sub.prizePaid||0)>0?` · 🏆 +${formatNumber(sub.prizePaid)} tokens`:""}</td></tr>`}).join("")}</tbody></table></div></div>`:"";
+    const results=canManage && comp.submissions.length?`<div class="card-inner"><strong>📊 Résultats</strong><div class="table-responsive"><table><thead><tr><th>Participant</th><th>Réussies</th><th>Échouées</th><th>Score</th></tr></thead><tbody>${comp.submissions.map(sub=>{const m=data.members.find(x=>x.id===sub.memberId);const wrong=Math.max(0,Number(sub.total||0)-Number(sub.correct||0));return `<tr><td>${escapeHTML(m?.name||sub.memberName||"Membre")}</td><td>${sub.correct||0}</td><td>${wrong}</td><td>${sub.total?Math.round(sub.correct/sub.total*100):0}%${Number(sub.prizePaid||0)>0?` · 🏆 +${formatNumber(sub.prizePaid)} tokens`:""}</td></tr>`}).join("")}</tbody></table></div><button class="action" onclick="novaShowCompetitionCorrections('${comp.id}')">🔎 Voir les réponses et corrections de tous</button></div>`:"";
     return `<div class="competition-card">
       <div class="competition-cover"><span class="competition-cover-icon">🏆</span><div><strong>${escapeHTML(comp.name)}</strong><small>${escapeHTML(comp.status||"Ouvert")} · ${comp.questions.length} question(s)</small></div></div>
       <p class="small-info">Compétition du club « ${escapeHTML(club.name)} ».${isCollective(club)?` Organisée par <strong>${escapeHTML(ownerOf(club,comp)?.name||"un membre")}</strong> : il reçoit les participations et finance le lot.`:""}</p>
-      <div class="competition-numbers"><span>🔓 Participation : <b>${formatNumber(ownFee)} tokens</b></span><span>🎁 Lot : <b>${prizeLabel}</b></span><span>⏱️ <b>${Number(comp.secondsPerQuestion||5)} s</b> / question</span></div>
+      <div class="competition-numbers"><span>🔓 Participation : <b>${formatNumber(ownFee)} tokens</b></span><span>🎁 Lot : <b>${prizeLabel}</b></span><span>⏱️ <b>${Number(comp.secondsPerQuestion||30)} s</b> par défaut · durée ajustable par question</span></div>
       <p class="small-info">${participants.length} participant(s)${names.length?" · "+escapeHTML(names.join(", ")):""}</p>
-      <div class="competition-purchase-line">${comp.status==="Ouvert"?(!joined?`<button class="action green" onclick="novaJoinCompetition('${comp.id}')">🛒 Acheter la participation · ${formatNumber(ownFee)} tokens</button>`:(ownSubmission?`<button class="action" onclick="novaShowMyQuizResult('${comp.id}')">Voir mon résultat</button>`:`<button class="action green" onclick="novaStartQuiz('${comp.id}')">${comp.questions.length?"Accéder au questionnaire":"Questionnaire en préparation"}</button>`)):`<p class="notice success">Compétition terminée${comp.winnerId?" · Gagnant : "+escapeHTML(data.members.find(m=>m.id===comp.winnerId)?.name||""):""}</p>`}</div>
-      ${canManage?`<div class="competition-admin-actions"><button class="action orange" onclick="setCompetitionMemberFee('${comp.id}')">Tarifs par membre</button><button class="action" onclick="novaManageQuestions('${comp.id}')">📝 Gérer les questions</button><button class="action" onclick="novaEditCompetition('${comp.id}')">Modifier</button><button class="action red" onclick="novaDeleteCompetition('${comp.id}')">Supprimer</button></div>`:""}
+      <div class="competition-purchase-line">${comp.status==="Ouvert"?(!joined?(hasReadyCompetitionQuestions(comp)?`<button class="action green" onclick="novaJoinCompetition('${comp.id}')">🛒 Acheter la participation · ${formatNumber(ownFee)} tokens</button>`:`<p class="notice error">🔒 Achat indisponible : le maître du club n'a pas encore fourni toutes les questions et leurs bonnes réponses.</p>`):(ownSubmission?`<button class="action" onclick="novaShowMyQuizResult('${comp.id}')">Voir mon résultat et ma correction</button>`:`<button class="action green" onclick="novaStartQuiz('${comp.id}')">Accéder au questionnaire</button>`)):`<p class="notice success">Compétition terminée${comp.winnerId?" · Gagnant : "+escapeHTML(data.members.find(m=>m.id===comp.winnerId)?.name||""):""}</p>${ownSubmission?`<button class="action" onclick="novaShowMyQuizResult('${comp.id}')">Voir mon résultat et ma correction</button>`:""}`}</div>
+      ${canManage?`<div class="competition-admin-actions"><button class="action orange" onclick="setCompetitionMemberFee('${comp.id}')">Tarifs par membre</button><button class="action" onclick="novaManageQuestions('${comp.id}')">📝 Gérer les questions</button>${comp.submissions.length?`<button class="action" onclick="novaShowCompetitionCorrections('${comp.id}')">🔎 Corrections des participants</button>`:""}<button class="action" onclick="novaEditCompetition('${comp.id}')">Modifier</button><button class="action red" onclick="novaDeleteCompetition('${comp.id}')">Supprimer</button></div>`:""}
       ${results}
     </div>`;
 }
@@ -2425,6 +2478,7 @@ window.novaManageQuestions = function(compId) {
       <label>Question</label><textarea id="newCompetitionQuestionText" rows="3" placeholder="Écris ta question ici..."></textarea>
       <label>Réponses possibles (une réponse par ligne, de 2 à 8)</label><textarea id="newCompetitionQuestionOptions" rows="5" placeholder="Réponse A&#10;Réponse B&#10;Réponse C&#10;Réponse D"></textarea>
       <label>Numéro de la bonne réponse</label><input id="newCompetitionCorrectIndex" type="number" min="1" max="8" value="1" placeholder="Ex. 2">
+      <label>Temps pour cette question (secondes, 30 par défaut)</label><input id="newCompetitionQuestionSeconds" type="number" min="1" max="300" value="30">
       <button class="action green" onclick="novaSaveCompetitionQuestion()">＋ Ajouter cette question</button>
       <div id="competitionQuestionList" class="card-inner"></div>`;
     renderQuestionManagerList(comp);
@@ -2433,7 +2487,7 @@ window.novaManageQuestions = function(compId) {
 
 function renderQuestionManagerList(comp) {
     const list=document.getElementById("competitionQuestionList"); if(!list) return;
-    list.innerHTML=comp.questions.length ? `<h4>Questions déjà ajoutées (${comp.questions.length})</h4>`+comp.questions.map((q,i)=>`<div class="history-item"><strong>${i+1}. ${escapeHTML(q.text)}</strong><br><small>${q.options.length} choix · Bonne réponse : ${q.correctIndex+1}</small><br><button class="action red" onclick="novaDeleteCompetitionQuestion('${comp.id}','${q.id}')">Supprimer cette question</button></div>`).join("") : `<p class="empty-state">Aucune question pour le moment.</p>`;
+    list.innerHTML=comp.questions.length ? `<h4>Questions déjà ajoutées (${comp.questions.length})</h4>`+comp.questions.map((q,i)=>`<div class="history-item"><strong>${i+1}. ${escapeHTML(q.text)}</strong><br><small>${q.options.length} choix · Bonne réponse : ${q.correctIndex+1} · ⏱️ ${Number(q.seconds||30)} secondes</small><br><button class="action red" onclick="novaDeleteCompetitionQuestion('${comp.id}','${q.id}')">Supprimer cette question</button></div>`).join("") : `<p class="empty-state">Aucune question pour le moment.</p>`;
 }
 
 window.novaCloseQuestionManager = function() {
@@ -2450,16 +2504,19 @@ window.novaSaveCompetitionQuestion = function() {
     const text=document.getElementById("newCompetitionQuestionText").value.trim();
     const options=document.getElementById("newCompetitionQuestionOptions").value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
     const correctIndex=Number(document.getElementById("newCompetitionCorrectIndex").value)-1;
+    const seconds=Number(document.getElementById("newCompetitionQuestionSeconds")?.value || 30);
+    if(!Number.isInteger(seconds)||seconds<1||seconds>300){alert("Le temps doit être compris entre 1 et 300 secondes.");return;}
     if(!text){alert("Écris d'abord la question.");return;}
     if(options.length<2 || options.length>8){alert("Ajoute entre 2 et 8 réponses, une par ligne.");return;}
     if(!Number.isInteger(correctIndex)||correctIndex<0||correctIndex>=options.length){alert("Indique le numéro d'une bonne réponse existante.");return;}
     if(Object.keys(comp.attempts||{}).length || (comp.submissions||[]).length){alert("Des participants ont déjà commencé. Le questionnaire ne peut plus être modifié.");return;}
     if(!Array.isArray(comp.questions)) comp.questions=[];
-    comp.questions.push({id:makeId(),text,options,correctIndex});
+    comp.questions.push({id:makeId(),text,options,correctIndex,seconds});
     saveData();
     document.getElementById("newCompetitionQuestionText").value="";
     document.getElementById("newCompetitionQuestionOptions").value="";
     document.getElementById("newCompetitionCorrectIndex").value="1";
+    document.getElementById("newCompetitionQuestionSeconds").value="30";
     renderQuestionManagerList(comp); renderClubCompetitions();
 };
 
@@ -2475,9 +2532,13 @@ window.novaAddCompetitionQuestion = function(compId) {
     const correctText = prompt("Numéro de la bonne réponse (1 à "+options.length+") :", "1");
     if(correctText===null) return;
     const correctIndex = Number(correctText)-1;
+    const secondsText = prompt("Temps pour cette question en secondes (1 à 300) :", "30");
+    if(secondsText===null) return;
+    const seconds = Number(secondsText);
+    if(!Number.isInteger(seconds)||seconds<1||seconds>300){alert("Temps invalide.");return;}
     if(!Number.isInteger(correctIndex)||correctIndex<0||correctIndex>=options.length){alert("Numéro de bonne réponse invalide.");return;}
     if(!Array.isArray(comp.questions)) comp.questions=[];
-    comp.questions.push({id:makeId(),text:text.trim(),options,correctIndex});
+    comp.questions.push({id:makeId(),text:text.trim(),options,correctIndex,seconds});
     saveData(); renderClubCompetitions();
     alert("Question ajoutée. Le participant ne verra pas la bonne réponse avant d'avoir soumis son questionnaire.");
 };
@@ -2497,7 +2558,7 @@ window.novaEditCompetition = function(compId) {
     const club=activeClub(), member=getNovaCurrentMember();
     const comp=(club?.competitions||[]).find(c=>c.id===compId); if(!club||!comp||!canManageComp(club,comp,member)){alert("Action réservée à l'organisateur de cette compétition.");return;}
     const name=prompt("Nom de la compétition :",comp.name); if(name===null) return;
-    const duration=Number(prompt("Temps par question en secondes :",String(comp.secondsPerQuestion||5)));
+    const duration=Number(prompt("Temps par question en secondes :",String(comp.secondsPerQuestion||30)));
     if(!Number.isInteger(duration)||duration<1||duration>300){alert("Temps invalide (1 à 300 secondes).");return;}
     comp.name=name.trim()||comp.name; comp.secondsPerQuestion=duration;
     saveData(); renderClubCompetitions();
@@ -2539,7 +2600,7 @@ function renderCompetitionQuiz(compId) {
 window.novaRevealQuestion = function(compId) {
     const comp=activeClub()?.competitions?.find(c=>c.id===compId), member=getNovaCurrentMember(), attempt=comp?.attempts?.[member?.id];
     if(!comp||!attempt||attempt.revealed)return;
-    attempt.revealed=true;attempt.locked=false;attempt.questionDeadline=Date.now()+Number(comp.secondsPerQuestion||5)*1000;
+    attempt.revealed=true;attempt.locked=false;attempt.questionDeadline=Date.now()+Number(comp.questions?.[Number(attempt.currentIndex||0)]?.seconds || comp.secondsPerQuestion || 30)*1000;
     saveData();renderCompetitionQuiz(compId);
 };
 window.novaNextQuestion = function(compId) {
@@ -2586,14 +2647,17 @@ window.novaSubmitQuiz = function(compId) {
     }
     delete comp.prizeReservations[member.id];
     comp.submissions=Array.isArray(comp.submissions)?comp.submissions:[];
-    comp.submissions.push({memberId:member.id,memberName:member.name,answers,correct,total,startedAt:new Date(attempt.startedAt).toISOString(),submittedAt:new Date().toISOString(),expired:answers.includes(-1),perfect,prizePaid,prizeRefunded});
+    const questionResults = comp.questions.map((q,i) => ({
+        questionId:q.id, questionText:q.text, options:[...(q.options||[])], selectedIndex:answers[i],
+        correctIndex:Number(q.correctIndex), isCorrect:answers[i]===Number(q.correctIndex), seconds:Number(q.seconds||comp.secondsPerQuestion||30)
+    }));
+    comp.submissions.push({memberId:member.id,memberName:member.name,answers,questionResults,correct,total,startedAt:new Date(attempt.startedAt).toISOString(),submittedAt:new Date().toISOString(),expired:answers.includes(-1),perfect,prizePaid,prizeRefunded});
     delete comp.attempts[member.id];
     if(competitionTimerInterval)clearInterval(competitionTimerInterval);competitionTimerInterval=null;
     saveData();
-    const area=document.getElementById("competitionQuizArea");
-    if(area){area.classList.remove("hidden");area.innerHTML=`<h3>✅ Questionnaire terminé</h3><div class="dashboard"><div class="stat"><strong>${correct}/${total}</strong>Réponses réussies</div><div class="stat"><strong>${total-correct}</strong>Réponses échouées</div><div class="stat"><strong>${Math.round(correct/Math.max(1,total)*100)}%</strong>Score</div></div><p class="notice ${perfect?"success":""}">${escapeHTML(prizeMessage)}</p><p class="small-info">Les résultats sont enregistrés dans cette compétition.</p><button class="action" onclick="novaExitQuiz()">← Retour à la compétition</button>`;}
     renderClubCompetitions();
     renderProfile();
+    novaShowMyQuizResult(compId);
 };
 
 window.novaShowMyQuizResult = function(compId) {
@@ -2606,7 +2670,7 @@ window.novaShowMyQuizResult = function(compId) {
     const area=document.getElementById("competitionQuizArea"); if(!area) return;
     if(competitionTimerInterval) clearInterval(competitionTimerInterval); competitionTimerInterval=null;
     area.classList.remove("hidden");
-    area.innerHTML=`<h3>📊 Ton résultat — ${escapeHTML(comp.name)}</h3><div class="dashboard"><div class="stat"><strong>${sub.correct}/${sub.total}</strong>Réponses réussies</div><div class="stat"><strong>${Math.max(0,sub.total-sub.correct)}</strong>Réponses échouées</div><div class="stat"><strong>${Math.round(sub.correct/Math.max(1,sub.total)*100)}%</strong>Score</div></div><p class="notice ${sub.perfect?"success":""}">${Number(sub.prizePaid||0)>0?`🏆 Lot reçu : ${formatNumber(sub.prizePaid)} tokens.`:(sub.perfect?"Toutes les réponses sont correctes.":"Une ou plusieurs réponses sont incorrectes : aucun lot remporté.")}</p><p class="small-info">${sub.expired?"Temps écoulé":"Questionnaire soumis"} · ${new Date(sub.submittedAt).toLocaleString("fr-FR")}</p><button class="action" onclick="novaExitQuiz()">← Retour à la compétition</button>`;
+    area.innerHTML=`<h3>📊 Ton résultat — ${escapeHTML(comp.name)}</h3><div class="dashboard"><div class="stat"><strong>${sub.correct}/${sub.total}</strong>Réponses réussies</div><div class="stat"><strong>${Math.max(0,sub.total-sub.correct)}</strong>Réponses échouées</div><div class="stat"><strong>${Math.round(sub.correct/Math.max(1,sub.total)*100)}%</strong>Score</div></div><p class="notice ${sub.perfect?"success":""}">${Number(sub.prizePaid||0)>0?`🏆 Lot reçu : ${formatNumber(sub.prizePaid)} tokens.`:(sub.perfect?"Toutes les réponses sont correctes.":"Une ou plusieurs réponses sont incorrectes : aucun lot remporté.")}</p><p class="small-info">${sub.expired?"Temps écoulé":"Questionnaire soumis"} · ${new Date(sub.submittedAt).toLocaleString("fr-FR")}</p>${buildCorrectionDetails(comp,sub)}<button class="action" onclick="novaExitQuiz()">← Retour à la compétition</button>`;
     area.scrollIntoView({behavior:"smooth",block:"start"});
 };
 
@@ -2625,7 +2689,7 @@ window.novaCreateCompetition = function() {
     const name = document.getElementById("competitionName").value.trim();
     const feeTokens = Number(document.getElementById("competitionFee").value);
     const prizeTokens = Number(document.getElementById("competitionPrize").value);
-    const secondsPerQuestion = Number(document.getElementById("competitionQuestionSeconds")?.value || 5);
+    const secondsPerQuestion = Number(document.getElementById("competitionQuestionSeconds")?.value || 30);
     if (!name || !Number.isInteger(feeTokens) || feeTokens < 0 || !Number.isInteger(prizeTokens) || prizeTokens < 0 || !Number.isInteger(secondsPerQuestion) || secondsPerQuestion < 1 || secondsPerQuestion > 300) {
         alert("Vérifie le nom, les montants et le temps (1 à 300 secondes)."); return;
     }
@@ -2638,7 +2702,7 @@ window.novaCreateCompetition = function() {
     document.getElementById("competitionName").value = "";
     document.getElementById("competitionFee").value = "";
     document.getElementById("competitionPrize").value = "";
-    document.getElementById("competitionQuestionSeconds").value = "5";
+    document.getElementById("competitionQuestionSeconds").value = "30";
     renderClubCompetitions();
 };
 
@@ -2672,6 +2736,7 @@ window.novaJoinCompetition = function(compId) {
     const comp = club?.competitions?.find(c => c.id === compId);
     if (!club || !member || !comp) { alert("Concours ou membre introuvable."); return; }
     if (comp.status !== "Ouvert") { alert("Ce concours n'accepte plus de participants."); return; }
+    if (!hasReadyCompetitionQuestions(comp)) { alert("Achat impossible : le maître du club doit d'abord fournir toutes les questions, les choix et les bonnes réponses."); return; }
     if (!Array.isArray(comp.participants)) comp.participants = [];
     if (comp.participants.includes(member.id)) { alert("Tu as déjà acheté ta participation à ce défi."); return; }
     const fee = Number(comp.feesByMember?.[member.id] ?? comp.feeTokens ?? 0);
@@ -3014,6 +3079,7 @@ function renderAdminMembers() {
             <div class="quick">
                 <button class="plus" onclick="individualChange('${member.id}',1)">➕</button>
                 <button class="minus" onclick="individualChange('${member.id}',-1)">➖</button>
+                <button class="action" onclick="individualDivide('${member.id}')">÷ Diviser</button>
             </div>
         `;
         container.appendChild(div);
@@ -3023,6 +3089,22 @@ function renderAdminMembers() {
 window.individualChange = function(id, direction) {
     if (!verifyAdminAuth()) return;
     changeMemberPoints(id, Number(data.step) * direction, "Gestion rapide");
+};
+
+window.individualDivide = function(id) {
+    if (!verifyAdminAuth()) return;
+    const member = data.members.find(m => String(m.id) === String(id));
+    if (!member) return;
+    const divisorText = prompt(`Diviser les ${formatNumber(member.points || 0)} points de ${member.name} par quel nombre entier ?`, "2");
+    if (divisorText === null) return;
+    const divisor = Number(divisorText);
+    if (!Number.isInteger(divisor) || divisor < 2) { alert("Le diviseur doit être un entier supérieur ou égal à 2."); return; }
+    const before = Number(member.points || 0);
+    const after = Math.floor(before / divisor);
+    const removed = before - after;
+    member.points = after;
+    data.history.unshift({id:makeId(),date:new Date().toISOString(),type:"points",member:member.name,amount:-removed,reason:`Division par ${divisor}`,text:`${member.name} : ${formatNumber(before)} ÷ ${divisor} = ${formatNumber(after)} points`});
+    saveData();
 };
 
 function changeMemberPoints(id, amount, reason) {
@@ -3454,6 +3536,22 @@ window.manualChange = function(direction) {
     changeMemberPoints(id, amount * direction, reason);
 };
 
+window.manualDivide = function() {
+    if (!verifyAdminAuth()) return;
+    const id = document.getElementById("manualMember").value;
+    const divisor = Number(document.getElementById("manualAmount").value);
+    const reason = document.getElementById("manualReason").value.trim() || "Division manuelle";
+    const member = data.members.find(m => String(m.id) === String(id));
+    if (!member) return;
+    if (!Number.isInteger(divisor) || divisor < 2) { alert("Pour diviser, indique un diviseur entier supérieur ou égal à 2 dans le champ Nombre de points."); return; }
+    const before = Number(member.points || 0);
+    const after = Math.floor(before / divisor);
+    const removed = before - after;
+    member.points = after;
+    data.history.unshift({id:makeId(),date:new Date().toISOString(),type:"points",member:member.name,amount:-removed,reason,text:`${member.name} : ${formatNumber(before)} ÷ ${divisor} = ${formatNumber(after)} points (${reason})`});
+    saveData();
+};
+
 window.changeRank = function() {
     if (!verifyAdminAuth()) return;
     const id = document.getElementById("rankMember").value;
@@ -3711,16 +3809,88 @@ window.renderPurchaseHistory = function() {
 window.clearGeneralHistory = () => { if(verifyAdminAuth() && confirm("Vider tout l'historique général ?")) { data.history=[]; saveData(); } };
 window.clearPurchaseHistory = () => { if(verifyAdminAuth() && confirm("Vider l'historique des achats ?")) { data.purchaseHistory=[]; saveData(); } };
 window.clearCashHistory = () => { if(verifyAdminAuth() && confirm("Vider l'historique de la caisse ?")) { data.cashHistory=[]; saveData(); } };
-window.resetCloudData = () => {
-    if(!verifyAdminAuth()) return;
-    if(!confirm("⚠️ Réinitialiser TOUTES les données Firebase (membres, points, tokens, clubs, historiques) ?")) return;
-    if(!confirm("Dernière confirmation : cette action est irréversible. Continuer ?")) return;
-    const sessions = data?.activeSessions || {};
-    const ui = pickUi(data?.nova);
-    data = JSON.parse(JSON.stringify(INITIAL_DATA));
-    data.activeSessions = sessions;
-    data.nova = { ...data.nova, ...ui };
-    saveData({ force: true });
+window.resetCloudData = async () => {
+    if (!verifyAdminAuth()) return;
+    if (!data) { alert("Les données ne sont pas encore chargées. Réessaie lorsque Firebase est connecté."); return; }
+    if (saveFailed) { alert("Une sauvegarde précédente n'est pas confirmée. Connecte-toi à Internet et attends la synchronisation avant de réinitialiser."); return; }
+    if (!confirm("⚠️ Réinitialiser réellement la base Cloud ? Les membres, points, tokens, clubs, concours et historiques seront supprimés. Un fichier de sauvegarde sera téléchargé avant l'opération.")) return;
+    if (!confirm("DERNIÈRE CONFIRMATION : cette opération est irréversible dans Firebase. Continuer ?")) return;
+
+    const button = document.querySelector('button[onclick="resetCloudData()"]');
+    if (button) { button.disabled = true; button.textContent = "⏳ Réinitialisation sécurisée…"; }
+    try {
+        cloudResetInProgress = true;
+        // Terminer les écritures déjà engagées avant de préparer la sauvegarde.
+        if (saveNext) await saveNext;
+        if (saveRunning) await saveRunning;
+        if (saveFailed) throw new Error("Une sauvegarde reste en échec : réinitialisation annulée pour protéger les données.");
+        clearTimeout(retryTimer);
+        retryTimer = null;
+        forceNext = false;
+
+        // Première transaction en lecture seule : on récupère l'état exact du Cloud.
+        let cloudBackupData = null;
+        await runTransaction(db, async tx => {
+            const snap = await tx.get(docRef);
+            if (!snap.exists()) throw new Error("Document principal Firebase introuvable : aucune réinitialisation effectuée.");
+            cloudBackupData = clone(snap.data() || {});
+        });
+
+        const backup = {
+            createdAt: new Date().toISOString(),
+            source: "organisation/mainData",
+            data: cloudBackupData
+        };
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "ELITE_sauvegarde_avant_reinitialisation_" + new Date().toISOString().replace(/[:.]/g, "-") + ".json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 30000);
+
+        if (!confirm("La sauvegarde JSON vient d'être préparée. Vérifie qu'elle apparaît bien dans les téléchargements et qu'elle est conservée. Seulement après cela, confirmer la suppression des données Cloud.")) return;
+
+        // Deuxième transaction : si quelqu'un a modifié le Cloud entre-temps,
+        // on refuse la réinitialisation afin de ne pas omettre ces nouvelles données du backup.
+        let clean;
+        await runTransaction(db, async tx => {
+            const snap = await tx.get(docRef);
+            if (!snap.exists()) throw new Error("Le document Firebase a disparu après la sauvegarde : réinitialisation annulée.");
+            const cloudNow = snap.data() || {};
+            if (stable(clone(cloudNow)) !== stable(cloudBackupData)) {
+                throw new Error("Les données Cloud ont changé après la sauvegarde. Rien n'a été réinitialisé : relance l'opération pour créer une sauvegarde à jour.");
+            }
+            const nextVersion = Math.max(Number(cloudNow._resetVersion || 0), Number(data._resetVersion || 0)) + 1;
+            clean = createEmptyCloudData(nextVersion);
+            tx.set(docRef, { ...persistable(clean), activeSessions: {} });
+        });
+
+        data = clean;
+        currentMemberId = null;
+        adminConnected = true;
+        try { localStorage.removeItem("elite_member_id"); } catch (e) {}
+        if (memberHeartbeatInterval) clearInterval(memberHeartbeatInterval);
+        memberHeartbeatInterval = null;
+        syncServerBaseline(data);
+        saveFailed = false;
+        saveNext = null;
+        forceNext = false;
+        const gate = document.getElementById("loginGate");
+        if (gate) gate.classList.remove("hidden");
+        const notice = document.getElementById("statusNotice");
+        if (notice) { notice.className = "notice success"; notice.textContent = "🟢 Base Firebase réinitialisée. Nouvelle génération sécurisée."; }
+        renderAll();
+        alert("✅ Réinitialisation confirmée par Firebase. Les anciennes sessions ouvertes ne pourront plus réinjecter leurs anciennes données. La sauvegarde JSON a été téléchargée.");
+    } catch (error) {
+        console.error("Échec de la réinitialisation Firebase:", error);
+        alert("❌ Réinitialisation non confirmée par Firebase. Aucune réussite n'est annoncée. Vérifie la connexion et les règles Firestore. Détail : " + (error?.message || error));
+    } finally {
+        cloudResetInProgress = false;
+        if (button) { button.disabled = false; button.textContent = "♻️ Réinitialiser Firebase"; }
+    }
 };
 
 
