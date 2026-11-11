@@ -6,6 +6,7 @@
 <title>ÉLITE — Organisation</title>
 
 <style>
+:root{--elite-primary:#173b8a;--elite-secondary:#0b1534;--elite-accent:#f0c84b}
 *{box-sizing:border-box}
 
 body{
@@ -563,6 +564,7 @@ nav.bottom-nav{position:fixed;top:auto;bottom:0;left:0;right:0;z-index:100;displ
 main{max-width:1050px;padding:16px 14px 25px}.card{background:linear-gradient(145deg,#142239,#0f1a2b);border:1px solid #263d5c;border-radius:21px;padding:18px;margin-bottom:14px;box-shadow:0 10px 25px #0003}.card h2{font-size:20px;margin:0 0 10px}.card h3{font-size:16px}
 .dashboard{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{border:1px solid #2c4565;background:linear-gradient(145deg,#1a304c,#101c2e);border-radius:18px;padding:16px 10px;min-height:105px;display:flex;flex-direction:column;justify-content:center;gap:4px;font-size:12px;color:#b6c6da}.stat strong{font-size:25px;color:#f2c66d;margin:0}.token-stat strong{color:#61dcb0}.wallet-hero{display:flex;align-items:center;justify-content:space-between;gap:15px;background:linear-gradient(120deg,#173d50,#15314b 60%,#302b36);border-color:#3c6874}.wallet-hero h2{max-width:500px;margin:6px 0}.wallet-hero p{color:#b9c9d8;max-width:570px;font-size:13px;line-height:1.5}.wallet-symbol{width:68px;height:68px;flex:0 0 68px;border-radius:22px;display:grid;place-items:center;background:linear-gradient(145deg,#f8dc92,#b98131);color:#182336;font-size:36px;box-shadow:0 7px 22px #e6b95b44}
 .eyebrow{font-size:10px;letter-spacing:1.5px;color:#e8c77d;font-weight:800}.section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.section-heading h2{margin:4px 0 8px}.live-pill,.profile-dot{font-size:10px;color:#73e0b7;background:#143e3a;border:1px solid #28665c;border-radius:20px;padding:6px 10px;font-weight:800}.profile-wallets .stat:first-child{border-color:#347968;background:linear-gradient(145deg,#16463f,#102b2c)}.profile-wallets .stat:first-child strong{color:#68e2b6}
+.profile-identity-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.profile-subheading{margin:18px 0 8px}.profile-main-card .profile-wallets{margin-top:8px}.profile-chat-card h2{margin-top:0}@media(max-width:520px){.profile-identity-grid{grid-template-columns:1fr}}
 input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:12px;color:#edf4ff;padding:13px}input:focus,select:focus,textarea:focus{border-color:#68a9ff;box-shadow:0 0 0 3px #3d8bff20}button.action{border-radius:12px;padding:11px 15px;background:linear-gradient(135deg,#2678d5,#3b91ed);box-shadow:0 4px 12px #0002}button.action.green{background:linear-gradient(135deg,#12865f,#25b987)!important}button.action.orange{background:linear-gradient(135deg,#a96c21,#d99b3d)!important}button.action.red{background:linear-gradient(135deg,#9d303e,#d34b58)!important}
 .member,.shop-item,.shop-admin-item{background:linear-gradient(145deg,#172a43,#101b2c);border:1px solid #2b4565;border-radius:18px}.member-grid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.points{color:#78baff}.rank{background:#203d5e;color:#e5c77e}.token-pill{display:inline-flex;padding:6px 10px;border-radius:30px;background:#123d38;border:1px solid #286c5d;color:#72e4ba;font-weight:800}
 .bottom-nav~main .hidden{display:none!important}.clubs-grid-home{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.club-home-card{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:8px;padding:17px;border:1px solid #355575;border-radius:18px;background:linear-gradient(145deg,#1a3552,#111e31);color:#f3f7ff;cursor:pointer;min-height:150px}.club-home-card strong{font-size:16px}.club-home-card small{color:#a8bad0}.club-icon{font-size:25px}.club-open{margin-top:auto;color:#f0cb7c;font-size:12px;font-weight:800}.club-master-banner{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:#172d45;border:1px solid #355675;padding:13px;border-radius:14px;margin:12px 0}.competition-create{padding:15px;border:1px solid #354f6d;border-radius:16px;background:#0f1d2e;margin:14px 0}.form-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}.competition-card{padding:15px;border:1px solid #34516f;background:linear-gradient(145deg,#192f49,#101b2b);border-radius:16px;margin:10px 0}
@@ -583,6 +585,109 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
 .club-delete-button{margin-left:auto}
 .competition-card .competition-cover{display:flex;align-items:center;gap:12px;padding:12px;margin:-15px -15px 13px;background:linear-gradient(115deg,#173c60,#17263d);border-bottom:1px solid #34516f}.competition-cover-icon{width:54px;height:54px;flex:0 0 54px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,#f4d48a,#a9752c);font-size:27px}.competition-cover small{display:block;color:#a9bfd5;margin-top:4px}.competition-purchase-line{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}.competition-purchase-line .action{margin:0}.competition-top,.competition-numbers{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.competition-status{font-size:10px;padding:5px 9px;border-radius:20px;background:#153f37;color:#7be2b9}.competition-numbers{justify-content:flex-start;color:#c4d3e3;font-size:12px;margin:10px 0}.competition-numbers b{color:#f2ce7c}.competition-admin-actions{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}.empty-state{padding:18px;text-align:center;color:#9eb1c8;background:#0e1b2b;border:1px dashed #39516c;border-radius:14px}.competition-card label{cursor:pointer}.competition-card input[type=radio]{width:18px;height:18px;accent-color:#e8c77d}.competition-card label span{line-height:1.4}#competitionQuizArea{border-color:#8c7446;background:linear-gradient(145deg,#182b40,#111c2b)}.card-inner{padding-top:8px}.notice{border:1px solid #2b4d6c;background:#132c45;border-radius:13px}.notice.success{background:#123a34;border-color:#286457;color:#9aebcd}.history-item{border-color:#263e59}.table-responsive{border-radius:12px}th{background:#18334f;color:#e6c77f}td{background:#0e1b2b}footer{color:#6f829a;padding:15px 15px 100px}
 @media(max-width:600px){header h1{font-size:20px}main{padding:12px 10px 20px}.card{padding:15px;border-radius:18px}.dashboard{grid-template-columns:repeat(2,minmax(0,1fr))}.stat{min-height:92px;padding:13px 8px}.stat strong{font-size:22px}.form-two{grid-template-columns:1fr}.wallet-hero{align-items:flex-start}.wallet-symbol{width:52px;height:52px;flex-basis:52px;font-size:28px;border-radius:17px}.bottom-nav button small{font-size:9px}}
+
+
+/* ===== REFONTE STRUCTURELLE ÉLITE : accueil éditorial, cartes et menus ===== */
+:root{--elite-bg:#050a1c;--elite-surface:#101a3c;--elite-surface2:#172653;--elite-line:#273d7c;--elite-blue:#347cff;--elite-gold:#f4c545;--elite-muted:#aab8dc}
+html{background:var(--elite-bg)}
+body{background:radial-gradient(ellipse at 50% -18%,#142b72 0,#080f2b 38%,#05091b 78%);color:#f4f6ff;font-family:Inter,system-ui,Arial,sans-serif;min-height:100vh}
+.app-header{background:transparent;border:0;box-shadow:none;padding:18px 18px 10px}
+.header-top{max-width:560px;gap:12px}.brand-mark{width:54px;height:54px;border-radius:50%;border:2px solid #eac34f;background:radial-gradient(circle,#1a2b66,#070e2b);color:#f8d45c;font-family:Georgia,serif;font-size:32px;box-shadow:0 0 20px #2369ff55}.app-header h1{font-family:Georgia,serif;font-size:27px;letter-spacing:2px;color:#f4d46a}.app-header p{font-size:10px;letter-spacing:.5px;color:#d4defc}.header-menu{border:1px solid #344c94;background:#121f4b;border-radius:50%;width:42px;height:42px}
+main{max-width:560px;padding:12px 15px 110px;margin:auto}
+main>section{animation:eliteIn .22s ease-out}@keyframes eliteIn{from{opacity:.65;transform:translateY(5px)}to{opacity:1;transform:none}}
+.card{background:linear-gradient(155deg,#111d45,#0b1433 85%);border:1px solid #263c7c;border-radius:22px;padding:17px;margin:0 0 15px;box-shadow:0 9px 28px #0004}
+.card h2{font-size:19px;letter-spacing:-.3px}.card h3{font-size:15px}.small-info,.card p{color:#b8c5e7;line-height:1.5}
+#accueil>.card:first-child{background:transparent;border:0;box-shadow:none;padding:5px 2px 12px;margin:0}#accueil>.card:first-child h2{font-size:15px;color:#b7c7ef;margin-bottom:5px}#accueil>.card:first-child p{font-size:12px;margin:0 0 8px}
+#statusNotice{font-size:11px;padding:8px 10px}
+.dashboard{gap:9px}.stat{background:linear-gradient(145deg,#172958,#101a3b);border:1px solid #2b438a;border-radius:18px;min-height:88px;padding:13px 10px;text-align:left;color:#c2ccef;font-size:11px}.stat strong{font-size:23px;color:#f5d05b}.token-stat strong{color:#7fc4ff}
+.home-hero-banner{position:relative;isolation:isolate;overflow:hidden;min-height:205px;border:1px solid #3769e5;border-radius:25px;padding:21px 18px;margin:4px 0 20px;background:radial-gradient(circle at 84% 22%,#2858c6 0,#162c75 25%,transparent 47%),linear-gradient(115deg,#111d52,#0a1434 65%,#17265d);box-shadow:0 12px 30px #00114d88}
+.home-hero-banner:before,.home-hero-banner:after{content:"";position:absolute;z-index:-1;border-radius:50%;filter:blur(1px)}.home-hero-banner:before{width:190px;height:190px;right:-35px;top:8px;border:1px solid #69a1ff88;box-shadow:0 0 25px #236dff88,inset 0 0 30px #286dff66}.home-hero-banner:after{width:140px;height:140px;right:-10px;top:30px;background:radial-gradient(circle,#5a8cff66,transparent 68%)}
+.home-hero-copy{position:relative;z-index:2;max-width:75%}.home-hero-copy h2{font-size:24px;line-height:1.1;margin:10px 0 8px}.home-hero-copy h2 em{font-style:normal;color:#f4cf57}.home-hero-copy p{font-size:12px;color:#d6e1ff;line-height:1.5}.hero-cta{border:0;border-radius:30px;background:linear-gradient(135deg,#ffe27b,#e9ad20);color:#17162a;font-weight:900;padding:11px 16px;margin-top:9px}.hero-cta span{margin-left:8px}.home-hero-emblem{position:absolute;right:24px;top:55px;width:95px;height:95px;border:2px solid #f3ce4e;border-radius:50%;display:grid;place-items:center;color:#f5d45b;font-family:Georgia,serif;font-size:58px;text-shadow:0 0 18px #f4c545;box-shadow:0 0 25px #397bff,inset 0 0 22px #397bff66;transform:rotate(-8deg)}
+#eliteClubsHomeCard{padding:16px 13px;background:transparent;border:0;box-shadow:none;margin:0 0 12px}#eliteClubsHomeCard .section-heading{padding:0 3px}#eliteClubsHomeCard .section-heading h2{font-size:17px}#eliteClubsHomeGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.club-home-card{min-height:112px;align-items:center;text-align:center;justify-content:center;padding:13px 9px;border-radius:20px;background:linear-gradient(145deg,#17285b,#101a3d);border:1px solid #2e4b9c;box-shadow:0 6px 18px #0003}.club-home-card .club-icon{font-size:27px;color:#f2ce55}.club-home-card strong{font-size:13px}.club-home-card small,.club-open{font-size:10px}.club-open{margin-top:2px}
+.home-shortcuts{margin:4px 0 16px}.home-section-title{display:flex;justify-content:space-between;align-items:center;padding:0 3px 10px}.home-section-title h3{margin:0;font-size:16px}.home-section-title span{font-size:11px;color:#9eadd6}.shortcut-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.shortcut-grid button{display:flex;align-items:center;gap:10px;text-align:left;padding:13px;border:1px solid #2b4388;border-radius:16px;background:linear-gradient(145deg,#172755,#101a3b);color:#edf2ff}.shortcut-grid button span{font-size:22px}.shortcut-grid button b{font-size:12px}
+.wallet-hero{background:linear-gradient(120deg,#14285c,#142048);border-color:#334d98}.wallet-hero h2{font-size:15px}.wallet-hero p{font-size:11px}.wallet-symbol{width:50px;height:50px;flex-basis:50px;border-radius:50%;font-size:25px}
+.bottom-nav{grid-template-columns:repeat(4,minmax(0,1fr))!important;padding:8px 12px calc(8px + env(safe-area-inset-bottom))!important;background:#080f27ed!important;border-top:1px solid #263e85!important;backdrop-filter:blur(18px);box-shadow:0 -8px 25px #0008!important}.bottom-nav button{min-height:52px;border-radius:15px;color:#8294c5}.bottom-nav button span{font-size:22px}.bottom-nav button small{font-size:10px}.bottom-nav button.active{background:linear-gradient(145deg,#1c3474,#122451)!important;color:#f5d04f!important}.bottom-nav button.active span{filter:drop-shadow(0 0 7px #e8bd62)}
+/* Profil : identité et portefeuille mis au premier plan */
+.profile-main-card{padding:20px 16px}.profile-main-card>.section-heading{justify-content:center;text-align:center}.profile-main-card>.section-heading>div{width:100%}.profile-main-card>.section-heading .eyebrow{display:block}.profile-main-card>.section-heading h2{font-size:20px;margin:5px 0 15px}.profile-dot{display:none}#profileIdentity{border:0;background:transparent;text-align:center;padding:8px 0;color:#c6d4fa}.profile-identity-grid{gap:8px}.profile-identity-grid label{font-size:10px;color:#9eadcf}.profile-identity-grid input{font-size:12px}.profile-subheading{text-align:center}.profile-wallets .stat{text-align:center;align-items:center}.profile-wallets .stat strong{font-size:25px}.profile-main-card>button{width:100%;margin:12px 0 0}.profile-chat-card{padding:17px}
+/* Pages intérieures : cartes moins denses et hiérarchie claire */
+#boutique>.card,#membres>.card,#classement>.card,#caisse>.card,#admin .card,#historique>.card,#tokenHistoryPanel>.card{border-radius:20px}#eliteClubSpace{padding:13px}#eliteClubTitle{font-size:21px}.club-master-banner{background:#152653;border-color:#304a94;border-radius:16px}.competition-create{background:#101c40;border-color:#2b4385;border-radius:18px}.competition-card{background:linear-gradient(145deg,#172957,#0e1836);border-color:#2d478c;border-radius:18px}
+/* Plus : lignes de réglages façon application mobile */
+#plusHub{padding:8px 0}.plus-heading{padding:12px 5px 16px}.plus-heading h2{font-size:27px;margin:5px 0}.plus-heading p{font-size:12px;color:#aab8dc;max-width:330px;line-height:1.5}.plus-menu-list{overflow:hidden;border:1px solid #263e80;border-radius:20px;background:linear-gradient(145deg,#121f49,#0d1737)}.menu-row{width:100%;display:flex;align-items:center;gap:13px;text-align:left;padding:15px 13px;border:0;border-bottom:1px solid #263765;background:transparent;color:#f1f4ff}.menu-row:last-child{border-bottom:0}.menu-icon{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;border-radius:14px;background:#1a2d61;font-size:20px}.menu-row span:nth-child(2){display:flex;flex-direction:column;gap:4px;flex:1}.menu-row b{font-size:13px}.menu-row small{font-size:10px;color:#aab8dc}.menu-row i{font-style:normal;font-size:25px;color:#8da6ec}
+input,select,textarea{border-radius:13px;background:#080f29;border:1px solid #2a407e;color:#f4f6ff}button.action{border-radius:14px;background:linear-gradient(135deg,#2869df,#3c8dff)}
+@media(max-width:420px){main{padding-left:12px;padding-right:12px}.home-hero-banner{min-height:190px;padding:18px 14px}.home-hero-copy{max-width:78%}.home-hero-copy h2{font-size:21px}.home-hero-emblem{right:13px;width:78px;height:78px;font-size:47px}.stat{min-height:78px}.stat strong{font-size:20px}}
+
+
+/* Profil et Plus : composition mobile inspirée de la référence utilisateur */
+.profile-hero-card{position:relative;text-align:center;padding:24px 18px 20px;margin:0 0 15px;border:1px solid #2c4b9d;border-radius:25px;background:radial-gradient(circle at 50% 8%,#263f91 0,#111d49 43%,#0b1432 100%);box-shadow:0 12px 30px #0005;overflow:hidden}
+.profile-avatar-ring{width:112px;height:112px;margin:0 auto 12px;border-radius:50%;padding:4px;border:2px solid #4d91ff;background:linear-gradient(145deg,#f7d45c,#286cff 55%,#0d1740);box-shadow:0 0 22px #347cff88,inset 0 0 15px #f4ca4c44;display:grid;place-items:center}
+.profile-avatar-ring span{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,#243d91,#09132f);font-family:Georgia,serif;font-size:58px;color:#f4d35b}
+.profile-hero-name input{display:block;width:100%;max-width:290px;margin:0 auto;background:transparent;border:0;box-shadow:none;text-align:center;padding:3px;font-size:21px;font-weight:850;color:#fff}
+.profile-hero-phone{display:flex;flex-direction:column;gap:3px;align-items:center;color:#b8c7ee;font-size:11px}.profile-hero-phone input{width:auto;max-width:180px;padding:2px 5px;border:0;background:transparent;text-align:center;font-size:11px;color:#aabce8}
+#profileIdentity{margin:8px auto 0;max-width:320px;font-size:10px;padding:5px;background:transparent;border:0;color:#9fb6ec}
+.profile-rank-pill{display:inline-flex;align-items:center;gap:5px;margin:8px auto;padding:7px 15px;border-radius:24px;background:linear-gradient(135deg,#ffe47b,#e8ad21);color:#231b0b;font-size:12px;font-weight:800}.profile-points-line{font-size:14px;color:#edf2ff;margin:3px}.profile-points-line strong{font-weight:900}.profile-wallet-mini{display:inline-flex;gap:6px;align-items:center;margin-top:8px;padding:7px 13px;border-radius:20px;background:#142b62;border:1px solid #3158b2;color:#f6d15c;font-size:12px}
+.profile-account-section{padding:4px 0 15px}.profile-list-heading{display:flex;align-items:end;justify-content:space-between;padding:4px 5px 10px}.profile-list-heading h3{margin:0;font-size:17px}.profile-list-heading small{font-size:10px;color:#9eadd6}.profile-menu-list{overflow:hidden;border:1px solid #263e80;border-radius:20px;background:linear-gradient(145deg,#121f49,#0d1737)}.profile-menu-list .menu-row{min-height:68px}.profile-logout{width:100%;margin-top:13px;padding:13px}.plus-account-card{width:100%;display:flex;align-items:center;gap:13px;text-align:left;padding:16px;margin:0 0 18px;border:1px solid #2c438d;border-radius:22px;background:linear-gradient(120deg,#182b65,#101b43);color:#f5f6ff;box-shadow:0 8px 22px #0004}.plus-account-avatar{width:56px;height:56px;flex:0 0 56px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#284eaa,#111c48);border:2px solid #4b82ee;font-size:26px}.plus-account-copy{display:flex;flex-direction:column;gap:5px;flex:1}.plus-account-copy b{font-size:15px}.plus-account-copy small{font-size:10px;color:#b5c4e9;line-height:1.4}.plus-account-card i{font-style:normal;font-size:29px;color:#a9bdf6}.plus-group-title{padding:7px 5px 9px;color:#e8c75c;font-size:10px;font-weight:900;letter-spacing:1.4px}.plus-org-title{margin-top:18px}.plus-footer-note{text-align:center;color:#6378b5;font-size:10px;padding:18px 0 4px}
+#passwordChangeCard,#convertCard{scroll-margin-top:18px}
+@media(max-width:420px){.profile-hero-card{padding:21px 13px}.profile-avatar-ring{width:100px;height:100px}.profile-avatar-ring span{font-size:51px}.profile-hero-name input{font-size:19px}.profile-list-heading small{max-width:130px;text-align:right}}
+
+
+/* ===== PRESENTATION FIDELE A LA MAQUETTE MOBILE ===== */
+.home-status-notice{margin:10px 2px 0;padding:7px 10px;font-size:10px;background:transparent;border:0;color:#92a9d8}
+.home-section-title{display:flex;align-items:center;justify-content:space-between;padding:0 4px 11px}
+.home-section-title h3{font-size:16px;margin:0;color:#f4d15e}
+.home-see-all{border:0;background:transparent;color:#b9c9ef;font-size:12px;padding:5px}
+#homeClubsMount{margin:2px 0 22px}
+#homeClubsGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;min-height:0}
+#homeClubsGrid:empty{display:none}
+.club-home-card{position:relative;min-height:135px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;padding:12px 8px;border-radius:20px;background:linear-gradient(145deg,#14265b,#0c1535);border:1px solid #2b4a9b;color:#f5f6ff;box-shadow:0 7px 18px #0004}
+.club-emblem{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;border:2px solid #f1c94b;background:radial-gradient(circle,#1a347e,#09132f);box-shadow:0 0 15px #286aff66,inset 0 0 12px #286aff55;color:#f5d45a;font-family:Georgia,serif;font-size:29px;font-weight:900}
+.club-emblem:before{content:'❧';position:absolute;transform:translateX(-27px) rotate(-35deg);font-size:17px;color:#e9bd42}.club-emblem:after{content:'❧';position:absolute;transform:translateX(27px) scaleX(-1) rotate(-35deg);font-size:17px;color:#e9bd42}
+.club-card-code .club-emblem{font-family:monospace;font-size:20px;color:#66baff;border-color:#438dff}
+.club-card-science .club-emblem{color:#75d9ff;border-color:#58c5ff}
+.club-card-psy .club-emblem{color:#e7c85c}
+.club-home-card strong{font-size:12px;line-height:1.25}.club-home-card small{font-size:9px;color:#b5c4e8}.club-home-card .club-open{margin:0;color:#f2ce60;font-size:10px}
+#eliteClubsHomeCard{padding:12px 0;background:transparent;border:0;box-shadow:none}
+#eliteClubsHomeCard>.section-heading{padding:0 3px}
+#eliteClubsHomeCard>.section-heading h2{font-size:19px;color:#f4d15e}
+#eliteClubsHomeCard .small-info{font-size:11px;margin:5px 3px 13px}
+#eliteClubsHomeGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+#eliteClubsHomeGrid:empty{display:none}
+.home-shortcuts{margin:5px 0 15px}.shortcut-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.shortcut-grid button{min-height:58px;border-radius:16px;padding:11px;background:linear-gradient(145deg,#15275a,#0d1738);border:1px solid #293f87}.shortcut-grid button span{font-size:23px}.shortcut-grid button b{font-size:12px}
+/* Profile : avatar circulaire et quatre indicateurs comme sur la référence. */
+.profile-hero-card{padding:22px 15px 17px;text-align:center;border-radius:25px;background:radial-gradient(circle at 50% 5%,#263f91,#111d49 48%,#0b1432);border:1px solid #2d4c9d}
+.profile-avatar-ring{width:112px;height:112px;border-radius:50%;margin:0 auto 11px;padding:4px;border:2px solid #4d91ff;background:linear-gradient(145deg,#f8d75d,#347bff 55%,#101b4a);box-shadow:0 0 23px #347cff88;display:grid;place-items:center}
+.profile-avatar-ring span{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,#243d91,#09132f);font: bold 48px Georgia,serif;color:#f4d35b}
+.profile-hero-name input{font-size:21px;font-weight:850;text-align:center;background:transparent;border:0;box-shadow:none;padding:3px;color:#fff}
+.profile-hero-phone input{background:transparent;border:0;box-shadow:none;text-align:center;color:#aabce8;font-size:11px}
+.profile-rank-pill{margin:8px auto 7px}.profile-points-line{font-size:14px;margin:4px 0 14px}
+.profile-stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.profile-stat{min-height:88px;border:1px solid #2c438a;border-radius:17px;background:linear-gradient(145deg,#172958,#101a3b);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px}
+.profile-stat>span{font-size:20px}.profile-stat strong{font-size:19px;color:#fff}.profile-stat small{font-size:11px;color:#c2ccef}
+.profile-account-section{padding:5px 0 14px}.profile-list-heading{padding:7px 4px 10px}.profile-list-heading h3{font-size:16px}
+.profile-menu-list{border-radius:18px}.profile-menu-list .menu-row{min-height:65px}
+/* Une seule rubrique à la fois dans les pages de détail. */
+.inner-page-heading{display:flex;align-items:center;gap:12px;padding:5px 2px 14px}.inner-page-heading h2{font-size:19px;margin:0}.back-link{border:0;background:transparent;color:#b8c9f5;font-weight:800;font-size:14px;padding:8px 5px}
+#vente>.card,#vente>.transfer-box{margin-bottom:12px}#vente .card.hidden,#vente .transfer-box.hidden{display:none!important}
+#plusHub{padding-top:8px}.plus-heading{padding:9px 5px 14px}.plus-heading h2{font-size:25px;margin:0}
+.plus-account-card{min-height:90px;margin-bottom:14px;border-radius:19px}.plus-menu-list{border-radius:19px}.plus-menu-list .menu-row{min-height:67px}
+#chatPage .card{margin-top:0}
+@media(max-width:420px){.club-home-card{min-height:126px}.club-emblem{width:51px;height:51px}.profile-avatar-ring{width:105px;height:105px}.profile-stat{min-height:82px}}
+
+body[data-elite-theme="midnight"]{background:#050914}body[data-elite-theme="royal"]{background:#10102b}
+.card,.profile-stat,.profile-menu-list,.plus-account-card,.shop-item,.shop-admin-item{border-color:color-mix(in srgb,var(--elite-primary) 65%,#26314f)}
+.profile-stat,.profile-menu-list,.plus-account-card,.shop-item{background:linear-gradient(145deg,color-mix(in srgb,var(--elite-primary) 28%,#111a36),var(--elite-secondary))}
+.brand-mark,.profile-rank-pill{border-color:var(--elite-accent)}
+.bottom-nav button.active,.action:not(.red){border-color:var(--elite-primary)}
+.profile-wallet-mini{border-color:var(--elite-primary)}
+.eyebrow,.plus-group-title{color:var(--elite-accent)}
+
+/* Centre des historiques et personnalisation étendue */
+.history-category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:0 0 14px}
+.history-category{display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;padding:14px;border:1px solid var(--elite-border,var(--elite-line));border-radius:16px;background:var(--elite-card,var(--elite-surface));color:var(--elite-text,#f4f6ff);font-size:20px}
+.history-category b{font-size:13px}.history-category small{font-size:10px;color:var(--elite-muted,var(--elite-muted))}.history-category.active{outline:2px solid var(--elite-accent,var(--elite-gold));background:var(--elite-secondary,var(--elite-surface2))}
+.appearance-color-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}.appearance-color-grid>div{min-width:0;padding:10px;border:1px solid var(--elite-border,var(--elite-line));border-radius:13px;background:var(--elite-card,var(--elite-surface))}.appearance-color-grid label{display:block;font-size:11px;min-height:30px}.appearance-color-grid input[type=color]{width:100%;height:38px;padding:3px;cursor:pointer}
+:root{--elite-bg:#050a1c;--elite-card:#101a3c;--elite-button:#2869df;--elite-button-alt:#172653;--elite-text:#f4f6ff;--elite-muted:#aab8dc;--elite-border:#273d7c}
+body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-hero-card{background-color:var(--elite-card)}button.action{background:var(--elite-button);border-color:var(--elite-button);color:var(--elite-text)}.menu-icon,.header-menu,.shortcut-grid button{background:var(--elite-button-alt)}input,select,textarea{color:var(--elite-text);border-color:var(--elite-border)}.card{border-color:var(--elite-border)}
 
 </style>
 </head>
@@ -621,52 +726,33 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
 
 <nav class="bottom-nav" aria-label="Navigation principale">
     <button class="active" data-tab="home" onclick="showTab('home')"><span>⌂</span><small>Accueil</small></button>
+    <button data-tab="competition" onclick="showTab('competition')"><span>♟</span><small>Clubs</small></button>
     <button data-tab="profile" onclick="showTab('profile')"><span>◉</span><small>Profil</small></button>
-    <button data-tab="competition" onclick="showTab('competition')"><span>🏆</span><small>Compétition</small></button>
-    <button data-tab="display" onclick="showTab('display')"><span>▦</span><small>Affichage</small></button>
-    <button data-tab="settings" onclick="showTab('settings')"><span>⋯</span><small>Paramètres</small></button>
+    <button data-tab="settings" onclick="showTab('settings')"><span>▦</span><small>Plus</small></button>
 </nav>
 
 <main>
 
 <section id="accueil">
-    <div class="card">
-        <h2>Bienvenue 👋</h2>
-        <p>Bienvenue dans ton espace Élite. Suis les membres, la caisse et la monnaie de l’organisation.</p>
-        <div id="statusNotice" class="notice success">
-            ☁️ Connexion à Firebase en cours...
-        </div>
+    <div class="home-hero-banner">
+        <div class="home-hero-copy"><span class="eyebrow">ORGANISATION • DISCIPLINE • EXCELLENCE</span><h2>Bienvenue sur <em>ÉLITE</em></h2><p>Ensemble, construisons une organisation d'exception.</p><button class="hero-cta" onclick="showTab('competition')">Découvrir <span>→</span></button></div>
+        <div class="home-hero-emblem" aria-hidden="true">É</div>
     </div>
-
-    <div class="dashboard">
-        <div class="stat">
-            <strong id="totalMembers">0</strong>
-            Membres
-        </div>
-        <div class="stat">
-            <strong id="totalPoints">0</strong>
-            Points totaux
-        </div>
-        <div class="stat">
-            <strong id="totalPresent">0</strong>
-            Présents
-        </div>
-        <div class="stat token-stat">
-            <strong id="totalTokens">0</strong>
-            Tokens en circulation
-        </div>
-        <div class="stat">
-            <strong id="cashValue">0</strong>
-            FC (Actuel)
-        </div>
-        <div class="stat">
-            <strong id="targetCashValue">0</strong>
-            FC (Objectif)
-        </div>
+    <div id="homeClubsMount">
+      <div class="home-section-title"><h3>◆ Nos Clubs</h3><button class="home-see-all" onclick="showTab('competition')">Voir tout ›</button></div>
+      <div id="homeClubsGrid" class="clubs-grid-home"></div>
     </div>
-    <div class="card wallet-hero">
-        <div><span class="eyebrow">MONNAIE DE L'ÉLITE</span><h2>Le token, la valeur interne de l'organisation</h2><p>1 FC versé = 1 token crédité. Les tokens restent séparés des points et de la caisse réelle.</p></div>
-        <div class="wallet-symbol">◆</div>
+    <div class="home-shortcuts">
+      <div class="home-section-title"><h3>◆ Accès rapide</h3></div>
+      <div class="shortcut-grid">
+        <button onclick="showTab('display')"><span>🏆</span><b>Classement</b></button>
+        <button onclick="showTab('competition')"><span>🗓️</span><b>Compétitions</b></button>
+      </div>
+    </div>
+    <div id="statusNotice" class="home-status-notice notice success">☁️ Connexion à Firebase en cours...</div>
+    <!-- Les statistiques techniques restent dans le DOM pour les fonctions existantes, sans surcharger l'accueil. -->
+    <div class="hidden" aria-hidden="true">
+      <span id="totalMembers">0</span><span id="totalPoints">0</span><span id="totalPresent">0</span><span id="totalTokens">0</span><span id="cashValue">0</span><span id="targetCashValue">0</span>
     </div>
 </section>
 
@@ -701,28 +787,64 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
 </section>
 
 <section id="historique" class="hidden">
-    <div class="card">
-        <h2>📜 Historique</h2>
-        <div id="historyContainer"></div>
+    <div class="inner-page-heading"><button class="back-link" onclick="showTab('settings')">‹ Plus</button><h2>📜 Centre des historiques</h2></div>
+    <div class="history-category-grid">
+      <button class="history-category active" data-history="general" onclick="selectHistory('general',this)">📜<b>Général</b><small>Événements de l'organisation</small></button>
+      <button class="history-category" data-history="cash" onclick="selectHistory('cash',this)">💰<b>Caisse</b><small>Entrées et sorties FC</small></button>
+      <button class="history-category" data-history="tokens" onclick="selectHistory('tokens',this)">🪙<b>Tokens</b><small>Gains, transferts et dépenses</small></button>
+      <button class="history-category" data-history="purchases" onclick="selectHistory('purchases',this)">🛒<b>Achats</b><small>Articles, clubs et récompenses</small></button>
     </div>
+    <div class="card"><h3 id="historyCategoryTitle">Historique général</h3><div id="historyContainer"></div></div>
 </section>
 
 <section id="profil" class="hidden">
-  <div class="card">
-    <div class="section-heading"><div><span class="eyebrow">ESPACE PERSONNEL</span><h2>👤 Mon profil</h2></div><span class="profile-dot">●</span></div>
+  <div class="profile-hero-card">
+    <div class="profile-avatar-ring"><span id="profileAvatarInitial">É</span></div>
+    <div class="profile-hero-name"><input id="profileName" maxlength="40" readonly aria-label="Nom du membre"></div>
+    <div class="profile-hero-phone"><span id="profilePhoneLabel">Compte membre</span><input id="profilePhone" type="tel" readonly aria-label="Numéro de téléphone"></div>
     <div id="profileIdentity" class="notice success">Connecte-toi avec ton numéro pour voir ton profil.</div>
-    <label>Nom du membre</label><input id="profileName" maxlength="40" readonly>
-    <label>Numéro de téléphone</label><input id="profilePhone" type="tel" readonly>
-    <p class="small-info">Ton identité est liée au numéro enregistré par l’administration. Contacte l’administrateur pour toute correction.</p><div id="profileSaveMessage"></div>
-    <div class="dashboard profile-wallets">
-      <div class="stat"><strong id="profileTokens">0</strong><span>◆ Mon portefeuille tokens</span></div>
-      <div class="stat"><strong id="profilePoints">0</strong><span>Points de classement</span></div>
-      <div class="stat"><strong id="profileRank">—</strong><span>Rang Élite</span></div>
+    <div class="profile-rank-pill">👑 Rang <strong id="profileRank">—</strong></div>
+    <div class="profile-points-line">⭐ <strong id="profilePoints">0</strong> points</div>
+    <div class="profile-stats-grid">
+      <div class="profile-stat"><span>🏆</span><strong id="profileCompetitions">0</strong><small>Compétitions</small></div>
+      <div class="profile-stat"><span>👥</span><strong id="profileClubs">0</strong><small>Clubs</small></div>
+      <div class="profile-stat"><span>🪙</span><strong id="profileTokens">0</strong><small>Tokens</small></div>
+      <div class="profile-stat"><span>🗓️</span><strong id="profileEvents">0</strong><small>Événements</small></div>
     </div>
-    <button class="action red" onclick="logoutMember()">Se déconnecter</button>
+    <div id="profileSaveMessage"></div>
   </div>
-  <div class="card">
-    <h2>💬 Discussion générale de l’Élite</h2>
+  <div class="profile-account-section">
+    <div class="profile-list-heading"><h3>Mon espace</h3></div>
+    <div class="profile-menu-list">
+      <button class="menu-row" onclick="openProfilePanel('transferBox')"><span class="menu-icon">💸</span><span><b>Transférer mes tokens</b><small>Envoyer des tokens à un membre</small></span><i>›</i></button>
+      <button class="menu-row" onclick="showTab('history')"><span class="menu-icon">📜</span><span><b>Mes mouvements</b><small>Consulter les historiques de l'organisation</small></span><i>›</i></button>
+      <button class="menu-row" onclick="openProfilePanel('passwordChangeCard')"><span class="menu-icon">🔐</span><span><b>Mon mot de passe</b><small>Modifier mon code personnel</small></span><i>›</i></button>
+      <button class="menu-row" onclick="openProfilePanel('convertCard')"><span class="menu-icon">🪙</span><span><b>Conversion points / tokens</b><small>Gérer ma conversion personnelle</small></span><i>›</i></button>
+      <button class="menu-row" onclick="showTab('chat')"><span class="menu-icon">💬</span><span><b>Discussion</b><small>Accéder à la discussion générale</small></span><i>›</i></button>
+      <button class="menu-row" onclick="showTab('competition')"><span class="menu-icon">👥</span><span><b>Mes clubs</b><small>Mes espaces et clubs</small></span><i>›</i></button>
+      <button class="menu-row" onclick="showTab('competition')"><span class="menu-icon">🏆</span><span><b>Mes compétitions</b><small>Défis et questionnaires</small></span><i>›</i></button>
+      <button class="menu-row" onclick="showTab('competition')"><span class="menu-icon">🎁</span><span><b>Mes récompenses</b><small>Mes achats et avantages</small></span><i>›</i></button>
+    </div>
+    <div class="profile-list-heading"><h3>Achats et récompenses</h3></div>
+    <div id="profileClubPurchaseHost">    <div class="card" id="achatClubCard">
+        <div class="section-heading"><div><span class="eyebrow">SECTION ACHAT</span><h2>🛒 Achats</h2></div><span class="live-pill" id="achatBalance">💎 0 tokens</span></div>
+        <div class="shop-item">
+            <h3>🏆 Acheter un club</h3>
+            <div class="shop-price">💎 2 500 tokens</div>
+            <p class="small-info">Tu deviens le maître officiel de ton nouveau club : tu y crées tes compétitions, tu reçois les participations et tu finances les lots.</p>
+            <input id="achatClubName" placeholder="Nom de ton nouveau club" maxlength="40">
+            <button class="action orange" onclick="buyClub()">🛒 Acheter un club · 2 500 tokens</button>
+            <div id="achatMessage"></div>
+        </div>
+    </div>
+</div>
+    <div class="card profile-rewards-card"><h3>🎁 Mes achats</h3><div id="myPurchaseHistory"><p class="small-info">Aucun achat enregistré.</p></div></div>
+    <button class="action red profile-logout" onclick="logoutMember()">↪ Se déconnecter</button>
+  </div>
+</section>
+<section id="chatPage" class="hidden">
+  <div class="inner-page-heading"><button class="back-link" onclick="showTab('profile')">‹ Profil</button><h2>Discussion générale</h2></div>
+  <div class="card profile-chat-card">
     <p class="small-info">Tous les messages sont visibles par les membres. Les discussions privées sont désactivées.</p>
     <div id="chatConversationTitle" class="notice">Discussion générale du groupe.</div>
     <div id="chatMessages" style="max-height:360px;overflow-y:auto;padding:8px;background:#071426;border-radius:12px"></div>
@@ -730,14 +852,15 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
     <button class="action green" onclick="sendChatMessage()">Envoyer</button>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px">
       <button class="action" id="recordAudioButton" onclick="toggleAudioRecording()">🎙️ Enregistrer un audio</button>
-      <span id="audioRecordStatus" class="small-info">Enregistre et envoie des messages vocaux. Les appels en direct nécessitent une configuration WebRTC supplémentaire.</span>
+      <span id="audioRecordStatus" class="small-info">Enregistre et envoie des messages vocaux.</span>
     </div>
   </div>
 </section>
 
 
 <section id="vente" class="hidden">
-    <div class="transfer-box">
+    <div class="inner-page-heading"><button class="back-link" onclick="showTab('settings')">‹ Plus</button><h2 id="accountDetailTitle">Mon compte</h2></div>
+    <div class="transfer-box" id="transferBox">
         <h2>💸 Vente / transfert de tokens</h2>
         <p>Transfère tes tokens à un autre membre. Les points de classement ne sont jamais utilisés comme monnaie.</p>
 
@@ -772,7 +895,7 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
         <p class="small-info" id="convertFcInfo"></p>
     </div>
 
-    <div class="card">
+    <div class="card" id="passwordChangeCard">
         <h2>🔑 Changer mon mot de passe</h2>
         <select id="passwordMemberSelect"></select>
         <input id="oldPlayerPassword" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Ancien mot de passe">
@@ -784,20 +907,9 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
 
 <section id="boutique" class="hidden">
     <div class="card" id="eliteClubsHomeCard">
-        <div class="section-heading"><div><span class="eyebrow">ACHATS ÉLITE</span><h2>🏆 Clubs</h2></div><span class="live-pill">ACTIF</span></div>
-        <p class="small-info">Espace dédié aux clubs, aux compétitions, aux questionnaires chronométrés et aux résultats. Chaque maître gère les compétitions de son propre club.</p>
+        <div class="section-heading"><div><span class="eyebrow">ESPACE ÉLITE</span><h2>Nos Clubs</h2></div></div>
+        <p class="small-info">Choisis un club pour découvrir ses compétitions et ses activités.</p>
         <div id="eliteClubsHomeGrid" class="clubs-grid-home"></div>
-    </div>
-    <div class="card" id="achatClubCard">
-        <div class="section-heading"><div><span class="eyebrow">SECTION ACHAT</span><h2>🛒 Achats</h2></div><span class="live-pill" id="achatBalance">💎 0 tokens</span></div>
-        <div class="shop-item">
-            <h3>🏆 Acheter un club</h3>
-            <div class="shop-price">💎 2 500 tokens</div>
-            <p class="small-info">Tu deviens le maître officiel de ton nouveau club : tu y crées tes compétitions, tu reçois les participations et tu finances les lots.</p>
-            <input id="achatClubName" placeholder="Nom de ton nouveau club" maxlength="40">
-            <button class="action orange" onclick="buyClub()">🛒 Acheter un club · 2 500 tokens</button>
-            <div id="achatMessage"></div>
-        </div>
     </div>
     <div id="eliteClubSpace" class="card hidden">
         <div class="club-space-header">
@@ -854,42 +966,13 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
     </div>
 
     <div class="card">
-        <h3>⚡ Modification & Ajustement de la Caisse</h3>
-        <p>Pas actuel de la caisse : <strong id="cashStepDisplay">5000</strong> FC</p>
-        <label>Ajuster le Solde :</label>
-        <div class="quick" style="max-width:300px; margin-bottom:15px;">
-            <button class="plus" onclick="quickCashChange(1)">➕</button>
-            <button class="minus" onclick="quickCashChange(-1)">➖</button>
-        </div>
-        <label>Ajuster l'Objectif Cible :</label>
-        <div class="quick" style="max-width:300px; margin-bottom:15px;">
-            <button class="plus" onclick="quickTargetCashChange(1)">➕</button>
-            <button class="minus" onclick="quickTargetCashChange(-1)">➖</button>
-        </div>
-        <hr>
-        <h4>✏️ Transaction Manuelle Directe Caisse</h4>
-        <input id="adminCashAmount" type="number" placeholder="Montant (FC)">
-        <input id="adminCashReason" placeholder="Motif de la transaction">
-        <button class="action green" onclick="adminCashChange(1)">➕ Ajouter</button>
-        <button class="action red" onclick="adminCashChange(-1)">➖ Retirer</button>
-        <hr>
-        <h4>⚙️ Configuration des Valeurs</h4>
-        <label>Montant de cotisation / Jour — Mois sélectionné : <strong id="adminDailyFeeDisplay">500</strong> FC</label>
-        <input id="newDailyFee" type="number" min="0" placeholder="Nouveau montant par jour (FC)">
-        <button class="action green" onclick="changeDailyFee()">Modifier montant par jour</button>
-
-        <label style="margin-top:10px; display:block;">Tokens reçus par cotisation cochée — Mois sélectionné : <strong id="adminDailyTokensDisplay">—</strong></label>
-        <input id="newDailyTokens" type="number" min="0" step="1" placeholder="Tokens donnés à chaque cotisation cochée">
-        <button class="action green" onclick="changeDailyTokens()">Modifier les tokens par cotisation</button>
-        <button class="action" onclick="resetDailyTokens()">Revenir à l'égalité FC = tokens</button>
-
-        <label style="margin-top:10px; display:block;">Pas de caisse : <strong id="adminCashStepDisplay">5000</strong> FC</label>
-        <input id="newCashStep" type="number" min="1" placeholder="Nouveau pas de caisse (FC)">
-        <button class="action" onclick="changeCashStep()">Modifier le pas</button>
-
-        <label style="margin-top:10px; display:block;">Définir Objectif Cible :</label>
-        <input id="targetCashInput" type="number" min="0" placeholder="Montant cible à atteindre (FC)">
-        <button class="action green" onclick="setTargetCash()">Fixer l'objectif</button>
+        <details>
+            <summary style="cursor:pointer;font-weight:800;color:#8fcfff;">⚙️ Paramètres des cotisations · configuration avancée</summary>
+            <label style="margin-top:12px;display:block;">Tokens reçus par cotisation cochée — Mois sélectionné : <strong id="adminDailyTokensDisplay">—</strong></label>
+            <input id="newDailyTokens" type="number" min="0" step="1" placeholder="Tokens donnés à chaque cotisation cochée">
+            <button class="action green" onclick="changeDailyTokens()">Modifier les tokens par cotisation</button>
+            <button class="action" onclick="resetDailyTokens()">Revenir à l'égalité FC = tokens</button>
+        </details>
     </div>
 
     <div class="card">
@@ -955,6 +1038,21 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
     </div>
 </section>
 
+<section id="plusHub" class="hidden">
+  <div class="plus-heading"><h2>Paramètres</h2></div>
+  <button class="plus-account-card" onclick="showTab('profile')">
+    <span class="plus-account-avatar" id="plusAccountAvatar">É</span>
+    <span class="plus-account-copy"><b>Mon compte</b><small>Gérer mon profil et mes informations personnelles</small></span><i>›</i>
+  </button>
+  <div class="plus-menu-list">
+
+    <button class="menu-row" onclick="showTab('admin')"><span class="menu-icon">🛡️</span><span><b>Administration</b><small>Gestion réservée à l'administrateur</small></span><i>›</i></button>
+    <button class="menu-row" onclick="showTab('display')"><span class="menu-icon">💰</span><span><b>Caisse et cotisations</b><small>Pointage et contributions</small></span><i>›</i></button>
+    <button class="menu-row" onclick="showTab('history')"><span class="menu-icon">📜</span><span><b>Historiques</b><small>Général, caisse, tokens et achats</small></span><i>›</i></button>
+  </div>
+  <button class="action red profile-logout" onclick="logoutMember()">↪ Se déconnecter</button>
+</section>
+
 <section id="admin" class="hidden">
     <div class="admin-session-bar">
         <label for="globalAdminPassword"><strong>🔑 Session Admin Directe :</strong></label>
@@ -977,6 +1075,37 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
             <h2>⚙️ Administration</h2>
             <div class="notice success">✅ Session Administrateur active</div>
             <button class="action red" onclick="logoutAdmin()">🚪 Déconnexion</button>
+        </div>
+
+        <div class="card">
+            <h3>💰 Paramètres avancés de la caisse</h3>
+            <p class="small-info">Ces réglages sont réservés à l'administration. Le pointage et l'ajout/retrait des jours restent dans Affichage.</p>
+            <p>Pas actuel de la caisse : <strong id="cashStepDisplay">5000</strong> FC</p>
+            <label>Ajuster le solde de la caisse</label>
+            <div class="quick" style="max-width:300px;margin-bottom:15px;">
+                <button class="plus" onclick="quickCashChange(1)">➕</button>
+                <button class="minus" onclick="quickCashChange(-1)">➖</button>
+            </div>
+            <label>Ajuster l'objectif cible</label>
+            <div class="quick" style="max-width:300px;margin-bottom:15px;">
+                <button class="plus" onclick="quickTargetCashChange(1)">➕</button>
+                <button class="minus" onclick="quickTargetCashChange(-1)">➖</button>
+            </div>
+            <label>Transaction manuelle directe</label>
+            <input id="adminCashAmount" type="number" min="1" placeholder="Montant (FC)">
+            <input id="adminCashReason" placeholder="Motif de la transaction">
+            <button class="action green" onclick="adminCashChange(1)">➕ Ajouter</button>
+            <button class="action red" onclick="adminCashChange(-1)">➖ Retirer</button>
+            <hr>
+            <label>Montant de cotisation par jour : <strong id="adminDailyFeeDisplay">500</strong> FC</label>
+            <input id="newDailyFee" type="number" min="0" placeholder="Nouveau montant par jour (FC)">
+            <button class="action green" onclick="changeDailyFee()">Modifier le montant par jour</button>
+            <label style="margin-top:10px;display:block;">Pas de caisse : <strong id="adminCashStepDisplay">5000</strong> FC</label>
+            <input id="newCashStep" type="number" min="1" placeholder="Nouveau pas de caisse (FC)">
+            <button class="action" onclick="changeCashStep()">Modifier le pas</button>
+            <label style="margin-top:10px;display:block;">Définir l'objectif cible</label>
+            <input id="targetCashInput" type="number" min="0" placeholder="Montant cible à atteindre (FC)">
+            <button class="action green" onclick="setTargetCash()">Fixer l'objectif</button>
         </div>
 
         <div class="card">
@@ -1106,6 +1235,34 @@ input,select,textarea{background:#0a1423;border:1px solid #314967;border-radius:
             <div id="novaAdminClubsList"></div>
         </div>
 
+        <div class="card" id="adminShopManager">
+            <h3>🛒 Gestion des achats et des prix</h3>
+            <p class="small-info">L'administrateur peut ajouter des articles, modifier leur nom et leur prix, ou les retirer.</p>
+            <input id="newShopName" placeholder="Nom de l'article à vendre">
+            <input id="newShopPrice" type="number" min="0" step="1" placeholder="Prix en tokens">
+            <button class="action green" onclick="addShopItem()">＋ Ajouter un article</button>
+            <div id="adminShopContainer"></div>
+        </div>
+        <div class="card" id="adminAppearanceManager">
+            <h3>🎨 Apparence de l'organisation</h3>
+            <p class="small-info">Personnalise les couleurs des fonds, cartes, boutons, textes, bordures et accents de l'application. Les réglages sont enregistrés pour tous les membres.</p>
+            <div class="appearance-color-grid">
+              <div><label>Fond de l'application</label><input id="eliteBgColor" type="color" value="#050a1c"></div>
+              <div><label>Fond des cartes</label><input id="eliteCardColor" type="color" value="#101a3c"></div>
+              <div><label>Couleur principale</label><input id="elitePrimaryColor" type="color" value="#173b8a"></div>
+              <div><label>Couleur secondaire</label><input id="eliteSecondaryColor" type="color" value="#0b1534"></div>
+              <div><label>Boutons principaux</label><input id="eliteButtonColor" type="color" value="#2869df"></div>
+              <div><label>Boutons secondaires</label><input id="eliteButtonAltColor" type="color" value="#172653"></div>
+              <div><label>Accent / or</label><input id="eliteAccentColor" type="color" value="#f0c84b"></div>
+              <div><label>Texte principal</label><input id="eliteTextColor" type="color" value="#f4f6ff"></div>
+              <div><label>Texte secondaire</label><input id="eliteMutedColor" type="color" value="#aab8dc"></div>
+              <div><label>Bordures</label><input id="eliteBorderColor" type="color" value="#273d7c"></div>
+            </div>
+            <label>Thème de base</label><select id="eliteThemeMode"><option value="night">Bleu nuit</option><option value="midnight">Minuit</option><option value="royal">Royal</option></select>
+            <button class="action green" onclick="saveEliteAppearance()">Enregistrer l'apparence</button>
+            <button class="action" onclick="resetEliteAppearance()">Rétablir l'apparence par défaut</button>
+            <div id="appearanceAdminMessage" class="small-info"></div>
+        </div>
         <div class="card danger-zone">
             <h3>📜 Historique & maintenance</h3>
             <button class="action red" onclick="clearGeneralHistory()">🗑️ Effacer l'historique général</button>
@@ -1560,17 +1717,28 @@ function showTab(tab, skipRender) {
     navTrack();
     const groups = {
         home: ["accueil"],
-        profile: ["profil","vente"],
+        profile: ["profil"],
+        accountDetail: ["vente"],
+        chat: ["chatPage"],
         competition: ["boutique"],
         display: ["membres","classement","caisse","tokenHistoryPanel"],
-        settings: ["historique","admin"]
+        settings: ["plusHub"],
+        admin: ["admin"],
+        history: ["historique"]
     };
     document.querySelectorAll("main > section").forEach(section => {
         section.classList.toggle("hidden", !(groups[tab] || []).includes(section.id));
     });
-    document.querySelectorAll(".bottom-nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
+    const activeNav = (tab === "display" || tab === "admin" || tab === "history" || tab === "accountDetail" || tab === "chat") ? "settings" : tab;
+    document.querySelectorAll(".bottom-nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === activeNav));
     if (skipRender) return;
     if (tab === "profile") { renderProfile(); }
+    if (tab === "settings") {
+        ["transferBox","passwordChangeCard","convertCard"].forEach(id => document.getElementById(id)?.classList.remove("hidden"));
+        const m=getCurrentMember(); const av=document.getElementById("plusAccountAvatar"); if(av) av.textContent=m?(String(m.name||"É").trim().split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase()||"É"):"É";
+    }
+    if (tab === "chat") { renderChat(); }
+    if (tab === "admin" && adminConnected) { renderAdminShop(); applyEliteAppearance(); }
     if (tab === "competition") { renderNovaLibrary(); }
     if (tab === "display") { renderMembers(); renderRanking(); renderCashHistory(); renderTokenHistory(); }
 }
@@ -1666,7 +1834,7 @@ window.loginAsAdmin = function() {
     currentMemberId = null;
     try { localStorage.removeItem("elite_member_id"); } catch(e) {}
     document.getElementById("loginGate").classList.add("hidden");
-    showTab("settings");
+    showTab("admin");
     document.getElementById("loginFeedback").textContent = "Session administrateur ouverte.";
 };
 
@@ -1832,6 +2000,7 @@ function initFirebase() {
             if (!data.activeSessions || typeof data.activeSessions !== "object") data.activeSessions = {};
             if (!Array.isArray(data.purchaseHistory)) data.purchaseHistory = [];
             if (!Array.isArray(data.shopItems)) data.shopItems = [];
+            if (!data.appearance || typeof data.appearance !== "object") data.appearance = {};
             if (!data.nova) {
                 data.nova = { currentView: 'home', activeClubId: null, currentMemberId: null, clubs: [] };
             }
@@ -1922,6 +2091,7 @@ function initFirebase() {
 
 function renderAll() {
     if (!data) return;
+    applyEliteAppearance();
     ensureMonthsStructure();
     const monthData = getCurrentMonthData();
 
@@ -2402,10 +2572,42 @@ window.novaShowCompetitionCorrections = function(compId) {
     const liveArea = document.getElementById("competitionQuizArea");
     if (!liveArea) return;
     liveArea.classList.remove("hidden");
-    liveArea.innerHTML = `<h3>🔐 Corrections — ${escapeHTML(comp.name)}</h3>` +
+    const published = comp.correctionPublished === true;
+    const publishControl = (comp.submissions || []).length
+        ? (published
+            ? `<p class="notice success">✅ Correction envoyée aux membres. Chacun peut maintenant consulter sa propre correction.</p>`
+            : `<p class="notice">La correction n'est pas encore visible par les participants.</p><button class="action green" onclick="novaPublishCompetitionCorrections('${comp.id}')">📨 Envoyer la correction aux membres</button>`)
+        : `<p class="empty-state">Les corrections seront publiables après la première soumission.</p>`;
+    liveArea.innerHTML = `<h3>🔐 Corrections — ${escapeHTML(comp.name)}</h3>${publishControl}` +
         ((comp.submissions || []).length ? comp.submissions.map(sub => buildCorrectionDetails(comp, sub)).join("") : `<p class="empty-state">Aucun participant n'a encore soumis ses réponses.</p>`) +
         `<button class="action" onclick="novaExitQuiz()">← Retour à la compétition</button>`;
     liveArea.scrollIntoView({behavior:"smooth",block:"start"});
+};
+
+window.novaPublishCompetitionCorrections = async function(compId) {
+    const club = activeClub(), member = getNovaCurrentMember();
+    const comp = club?.competitions?.find(c => c.id === compId);
+    if (!club || !comp || !canManageComp(club, comp, member)) {
+        alert("Seul le maître ou responsable autorisé de cette compétition peut envoyer la correction.");
+        return;
+    }
+    if (!(comp.submissions || []).length) { alert("Aucun participant n'a encore terminé le questionnaire."); return; }
+    if (comp.correctionPublished === true) { alert("La correction a déjà été envoyée aux membres."); return; }
+    if (!confirm("Envoyer maintenant la correction à tous les participants ? Chacun verra uniquement sa propre correction détaillée.")) return;
+    comp.correctionPublished = true;
+    comp.correctionPublishedAt = new Date().toISOString();
+    comp.correctionPublishedBy = member.id;
+    const saved = await saveData();
+    if (saved === false) {
+        comp.correctionPublished = false;
+        delete comp.correctionPublishedAt;
+        delete comp.correctionPublishedBy;
+        alert("La publication n'a pas été confirmée par la sauvegarde. Réessaie.");
+        return;
+    }
+    alert("✅ Correction envoyée. Les participants peuvent maintenant consulter leur propre correction.");
+    renderClubCompetitions();
+    window.novaShowCompetitionCorrections(compId);
 };
 
 function buildCompetitionCard(comp, club, member, canManage) {
@@ -2423,8 +2625,8 @@ function buildCompetitionCard(comp, club, member, canManage) {
       <p class="small-info">Compétition du club « ${escapeHTML(club.name)} ».${isCollective(club)?` Organisée par <strong>${escapeHTML(ownerOf(club,comp)?.name||"un membre")}</strong> : il reçoit les participations et finance le lot.`:""}</p>
       <div class="competition-numbers"><span>🔓 Participation : <b>${formatNumber(ownFee)} tokens</b></span><span>🎁 Lot : <b>${prizeLabel}</b></span><span>⏱️ <b>${Number(comp.secondsPerQuestion||30)} s</b> par défaut · durée ajustable par question</span></div>
       <p class="small-info">${participants.length} participant(s)${names.length?" · "+escapeHTML(names.join(", ")):""}</p>
-      <div class="competition-purchase-line">${comp.status==="Ouvert"?(!joined?(hasReadyCompetitionQuestions(comp)?`<button class="action green" onclick="novaJoinCompetition('${comp.id}')">🛒 Acheter la participation · ${formatNumber(ownFee)} tokens</button>`:`<p class="notice error">🔒 Achat indisponible : le maître du club n'a pas encore fourni toutes les questions et leurs bonnes réponses.</p>`):(ownSubmission?`<button class="action" onclick="novaShowMyQuizResult('${comp.id}')">Voir mon résultat et ma correction</button>`:`<button class="action green" onclick="novaStartQuiz('${comp.id}')">Accéder au questionnaire</button>`)):`<p class="notice success">Compétition terminée${comp.winnerId?" · Gagnant : "+escapeHTML(data.members.find(m=>m.id===comp.winnerId)?.name||""):""}</p>${ownSubmission?`<button class="action" onclick="novaShowMyQuizResult('${comp.id}')">Voir mon résultat et ma correction</button>`:""}`}</div>
-      ${canManage?`<div class="competition-admin-actions"><button class="action orange" onclick="setCompetitionMemberFee('${comp.id}')">Tarifs par membre</button><button class="action" onclick="novaManageQuestions('${comp.id}')">📝 Gérer les questions</button>${comp.submissions.length?`<button class="action" onclick="novaShowCompetitionCorrections('${comp.id}')">🔎 Corrections des participants</button>`:""}<button class="action" onclick="novaEditCompetition('${comp.id}')">Modifier</button><button class="action red" onclick="novaDeleteCompetition('${comp.id}')">Supprimer</button></div>`:""}
+      <div class="competition-purchase-line">${comp.status==="Ouvert"?(!joined?(hasReadyCompetitionQuestions(comp)?`<button class="action green" onclick="novaJoinCompetition('${comp.id}')">🛒 Acheter la participation · ${formatNumber(ownFee)} tokens</button>`:`<p class="notice error">🔒 Achat indisponible : le maître du club n'a pas encore fourni toutes les questions et leurs bonnes réponses.</p>`):(ownSubmission?`<button class="action" onclick="novaShowMyQuizResult('${comp.id}')">Voir mon résultat</button>`:`<button class="action green" onclick="novaStartQuiz('${comp.id}')">Accéder au questionnaire</button>`)):`<p class="notice success">Compétition terminée${comp.winnerId?" · Gagnant : "+escapeHTML(data.members.find(m=>m.id===comp.winnerId)?.name||""):""}</p>${ownSubmission?`<button class="action" onclick="novaShowMyQuizResult('${comp.id}')">Voir mon résultat</button>`:""}`}</div>
+      ${canManage?`<div class="competition-admin-actions"><button class="action orange" onclick="setCompetitionMemberFee('${comp.id}')">Tarifs par membre</button><button class="action" onclick="novaManageQuestions('${comp.id}')">📝 Gérer les questions</button>${comp.submissions.length?`<button class="action" onclick="novaShowCompetitionCorrections('${comp.id}')">🔎 Corrections des participants</button>${comp.correctionPublished===true?`<span class="notice success">Correction envoyée</span>`:`<button class="action green" onclick="novaPublishCompetitionCorrections('${comp.id}')">📨 Envoyer la correction</button>`}`:""}<button class="action" onclick="novaEditCompetition('${comp.id}')">Modifier</button><button class="action red" onclick="novaDeleteCompetition('${comp.id}')">Supprimer</button></div>`:""}
       ${results}
     </div>`;
 }
@@ -2670,7 +2872,11 @@ window.novaShowMyQuizResult = function(compId) {
     const area=document.getElementById("competitionQuizArea"); if(!area) return;
     if(competitionTimerInterval) clearInterval(competitionTimerInterval); competitionTimerInterval=null;
     area.classList.remove("hidden");
-    area.innerHTML=`<h3>📊 Ton résultat — ${escapeHTML(comp.name)}</h3><div class="dashboard"><div class="stat"><strong>${sub.correct}/${sub.total}</strong>Réponses réussies</div><div class="stat"><strong>${Math.max(0,sub.total-sub.correct)}</strong>Réponses échouées</div><div class="stat"><strong>${Math.round(sub.correct/Math.max(1,sub.total)*100)}%</strong>Score</div></div><p class="notice ${sub.perfect?"success":""}">${Number(sub.prizePaid||0)>0?`🏆 Lot reçu : ${formatNumber(sub.prizePaid)} tokens.`:(sub.perfect?"Toutes les réponses sont correctes.":"Une ou plusieurs réponses sont incorrectes : aucun lot remporté.")}</p><p class="small-info">${sub.expired?"Temps écoulé":"Questionnaire soumis"} · ${new Date(sub.submittedAt).toLocaleString("fr-FR")}</p>${buildCorrectionDetails(comp,sub)}<button class="action" onclick="novaExitQuiz()">← Retour à la compétition</button>`;
+    const correctionVisible = comp.correctionPublished === true;
+    const correctionContent = correctionVisible
+        ? buildCorrectionDetails(comp,sub)
+        : `<div class="notice">🔒 Ton résultat est disponible, mais la correction détaillée reste masquée. Le maître du club doit d'abord envoyer officiellement la correction.</div>`;
+    area.innerHTML=`<h3>📊 Ton résultat — ${escapeHTML(comp.name)}</h3><div class="dashboard"><div class="stat"><strong>${sub.correct}/${sub.total}</strong>Réponses réussies</div><div class="stat"><strong>${Math.max(0,sub.total-sub.correct)}</strong>Réponses échouées</div><div class="stat"><strong>${Math.round(sub.correct/Math.max(1,sub.total)*100)}%</strong>Score</div></div><p class="notice ${sub.perfect?"success":""}">${Number(sub.prizePaid||0)>0?`🏆 Lot reçu : ${formatNumber(sub.prizePaid)} tokens.`:(sub.perfect?"Toutes les réponses sont correctes.":"Une ou plusieurs réponses sont incorrectes : aucun lot remporté.")}</p><p class="small-info">${sub.expired?"Temps écoulé":"Questionnaire soumis"} · ${new Date(sub.submittedAt).toLocaleString("fr-FR")}</p>${correctionContent}<button class="action" onclick="novaExitQuiz()">← Retour à la compétition</button>`;
     area.scrollIntoView({behavior:"smooth",block:"start"});
 };
 
@@ -2804,24 +3010,32 @@ function renderNovaLibrary() {
     if(!data || !data.nova) return;
     if(!Array.isArray(data.nova.clubs)) data.nova.clubs=[];
     const grid=document.getElementById("eliteClubsHomeGrid");
+    const homeGrid=document.getElementById("homeClubsGrid");
     const homeCard=document.getElementById("eliteClubsHomeCard");
     const space=document.getElementById("eliteClubSpace");
     if(!grid || !space) return;
     const member=getNovaCurrentMember();
     renderAchat(member);
-    grid.innerHTML="";
-    if(!data.nova.clubs.length) {
-        grid.innerHTML=`<div class="empty-state">Aucun club disponible pour le moment. L'administrateur peut créer un club dans Administration.</div>`;
-    } else {
-        data.nova.clubs.forEach(club=>{
-            const master=data.members.find(m=>m.id===club.masterMemberId);
-            const card=document.createElement("button");
-            card.type="button"; card.className="club-home-card";
-            card.innerHTML=`<span class="club-icon">🏆</span><strong>${escapeHTML(club.name)}</strong><small>${isCollective(club)?"🌐 Club collectif · tous les membres":"Maître : "+escapeHTML(master?.name||"À définir")}</small><small>${(club.competitions||[]).length} compétition(s)</small><span class="club-open">Ouvrir le club →</span>`;
-            card.onclick=()=>novaOpenClubSpace(club.id);
-            grid.appendChild(card);
-        });
-    }
+    const renderClubCards = target => {
+      if(!target) return;
+      target.innerHTML="";
+      (data.nova.clubs || []).forEach(club=>{
+        const master=data.members.find(m=>m.id===club.masterMemberId);
+        const name=String(club.name||"");
+        const low=name.toLocaleLowerCase("fr");
+        let symbol="É", kind="elite";
+        if(low.includes("otaku")||low.includes("manga")){symbol="É";kind="otaku";}
+        else if(low.includes("scient")){symbol="⚗";kind="science";}
+        else if(low.includes("programm")||low.includes("code")){symbol="</>";kind="code";}
+        else if(low.includes("psych")){symbol="Ψ";kind="psy";}
+        const card=document.createElement("button");
+        card.type="button"; card.className="club-home-card club-card-"+kind;
+        card.innerHTML=`<span class="club-emblem"><span>${symbol}</span></span><strong>${escapeHTML(name)}</strong><small>${isCollective(club)?"Club collectif":"Maître : "+escapeHTML(master?.name||"À définir")}</small><span class="club-open">Ouvrir le club <b>›</b></span>`;
+        card.onclick=()=>novaOpenClubSpace(club.id);
+        target.appendChild(card);
+      });
+    };
+    renderClubCards(grid); renderClubCards(homeGrid);
     const club=activeClub();
     const inClub=data.nova.currentView==="clubSpace" && !!club;
     document.getElementById("achatClubCard")?.classList.toggle("hidden",inClub);
@@ -3152,19 +3366,26 @@ function renderTokenHistory() {
     host.innerHTML = entries.slice(0,60).map(item => `<div class="history-item"><strong>${Number(item.amount)>=0?"＋":"−"}${formatNumber(Math.abs(Number(item.amount||0)))} tokens</strong> — ${escapeHTML(item.memberName||"")}<br><small>${escapeHTML(item.reason||"")} · ${new Date(item.date).toLocaleString("fr-FR")}</small></div>`).join("");
 }
 
+let activeHistoryCategory = "general";
+window.selectHistory = function(category, button) {
+    activeHistoryCategory = category;
+    document.querySelectorAll(".history-category").forEach(el=>el.classList.toggle("active",el===button));
+    renderHistory();
+};
 function renderHistory() {
     const container = document.getElementById("historyContainer");
     if (!data || !container) return;
-    if (!data.history.length) {
-        container.innerHTML = "<p>Aucun historique.</p>";
-        return;
-    }
-    container.innerHTML = data.history.slice(0,100).map(item => `
-        <div class="history-item">
-            <strong>${escapeHTML(item.text || "")}</strong><br>
-            <small>${new Date(item.date).toLocaleString("fr-FR")}</small>
-        </div>
-    `).join("");
+    const title=document.getElementById("historyCategoryTitle");
+    const labels={general:"Historique général",cash:"Historique de la caisse",tokens:"Historique des tokens",purchases:"Historique des achats"};
+    if(title)title.textContent=labels[activeHistoryCategory]||labels.general;
+    let rows=[];
+    if(activeHistoryCategory==="cash") rows=(data.cashHistory||[]).map(x=>({date:x.date,title:(Number(x.amount)>=0?"Entrée de caisse":"Sortie de caisse"),detail:`${formatNumber(x.amount||0)} FC · ${x.reason||""}`}));
+    else if(activeHistoryCategory==="tokens") rows=(data.tokenHistory||[]).map(x=>({date:x.date,title:`${Number(x.amount)>=0?"＋":"−"}${formatNumber(Math.abs(Number(x.amount||0)))} tokens · ${x.memberName||"Membre"}`,detail:x.reason||"Mouvement de tokens"}));
+    else if(activeHistoryCategory==="purchases") rows=(data.purchaseHistory||[]).map(x=>({date:x.date,title:x.itemName||"Achat",detail:`${formatNumber(x.price||0)} ${x.currency||"tokens"} · ${x.memberName||"Membre"}`}));
+    else rows=(data.history||[]).map(x=>({date:x.date,title:x.text||x.reason||"Opération",detail:[x.member,x.type].filter(Boolean).join(" · ")}));
+    rows.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));
+    if(!rows.length){container.innerHTML="<p class='small-info'>Aucune opération enregistrée dans cette catégorie.</p>";return;}
+    container.innerHTML=rows.slice(0,150).map(x=>`<div class="history-item"><strong>${escapeHTML(x.title||"Opération")}</strong>${x.detail?`<br><small>${escapeHTML(x.detail)}</small>`:""}<br><small>${x.date?new Date(x.date).toLocaleString("fr-FR"):"Date non renseignée"}</small></div>`).join("");
 }
 
 
@@ -3311,6 +3532,15 @@ function getCurrentMember() {
     return data?.members?.find(m => m.id === currentMemberId) || null;
 }
 
+window.openProfilePanel = function(id) {
+    const allowed = ["passwordChangeCard", "convertCard", "transferBox"];
+    if (!allowed.includes(id)) return;
+    showTab("accountDetail");
+    ["transferBox","passwordChangeCard","convertCard"].forEach(key=>{const el=document.getElementById(key);if(el)el.classList.toggle("hidden",key!==id);});
+    const title = document.getElementById("accountDetailTitle");
+    if (title) title.textContent = id === "passwordChangeCard" ? "Mot de passe personnel" : id === "convertCard" ? "Conversion points / tokens" : "Transfert de tokens";
+};
+
 function renderProfile() {
     const member = getCurrentMember();
     const identity = document.getElementById("profileIdentity");
@@ -3319,10 +3549,13 @@ function renderProfile() {
         identity.textContent = "Aucun membre connecté.";
         const sellerSelect = document.getElementById("sellerSelect");
         if (sellerSelect) sellerSelect.disabled = false;
-        ["profileName","profilePhone"].forEach(id => document.getElementById(id).value = "");
+        ["profileName","profilePhone"].forEach(id => { const el=document.getElementById(id); if(el) el.value = ""; });
+        const phoneLabel=document.getElementById("profilePhoneLabel"); if(phoneLabel) phoneLabel.textContent="Compte membre";
         document.getElementById("profilePoints").textContent = "0";
         document.getElementById("profileTokens").textContent = "0";
         document.getElementById("profileRank").textContent = "—";
+        const avatar=document.getElementById("profileAvatarInitial"); if(avatar) avatar.textContent="É";
+        ["profileCompetitions","profileClubs","profileEvents"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="0";});
         return;
     }
     identity.textContent = "Connecté en tant que " + member.name;
@@ -3330,11 +3563,54 @@ function renderProfile() {
     if (sellerSelect) { sellerSelect.value = member.id; sellerSelect.disabled = true; }
     document.getElementById("profileName").value = member.name || "";
     document.getElementById("profilePhone").value = member.phone || "";
+    const phoneLabel=document.getElementById("profilePhoneLabel"); if(phoneLabel) phoneLabel.textContent="Membre ÉLITE";
     document.getElementById("profilePoints").textContent = formatNumber(member.points);
     document.getElementById("profileTokens").textContent = formatNumber(member.tokens || 0);
     document.getElementById("profileRank").textContent = member.rank || "—";
+    const clubs = Array.isArray(data?.nova?.clubs) ? data.nova.clubs : [];
+    const memberCompetitions = clubs.flatMap(c => (c.competitions || []).map(comp => ({club:c, comp}))).filter(x => x.comp.createdBy === member.id || (x.comp.participants || []).includes(member.id));
+    const memberClubs = clubs.filter(c => String(c.masterMemberId) === String(member.id) || (c.competitions || []).some(comp => (comp.participants || []).includes(member.id)));
+    const eventCount = clubs.reduce((n,c) => n + (c.competitions || []).reduce((m,comp) => m + (comp.submissions || []).filter(sub => String(sub.memberId) === String(member.id)).length,0),0);
+    const avatarText = String(member.name || "É").trim().split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase() || "É";
+    const avatar=document.getElementById("profileAvatarInitial"); if(avatar) avatar.textContent=avatarText;
+    const plusAvatar=document.getElementById("plusAccountAvatar"); if(plusAvatar) plusAvatar.textContent=avatarText;
+    const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=formatNumber(value);};
+    set("profileCompetitions",memberCompetitions.length); set("profileClubs",memberClubs.length); set("profileEvents",eventCount);
+    renderMyPurchases(member);
+    renderAchat(member);
 }
 
+function renderMyPurchases(member) {
+    const host=document.getElementById("myPurchaseHistory"); if(!host) return;
+    const rows=(data.purchaseHistory||[]).filter(p=>String(p.memberId)===String(member?.id));
+    host.innerHTML=rows.length?rows.slice(0,30).map(p=>`<div class="history-item"><strong>${escapeHTML(p.itemName||"Achat")}</strong><br><small>${formatNumber(p.price||0)} ${escapeHTML(p.currency||"tokens")} · ${new Date(p.date).toLocaleString("fr-FR")}</small></div>`).join(""):`<p class="small-info">Aucun achat enregistré pour ton compte.</p>`;
+}
+window.adminDeleteChatMessage = async function(id) {
+    if(!adminConnected || !verifyAdminAuth()) return;
+    if(!confirm("Supprimer définitivement ce message de la discussion ?")) return;
+    const before=data.chatMessages.length;
+    data.chatMessages=data.chatMessages.filter(m=>String(m.id)!==String(id));
+    if(data.chatMessages.length===before) return;
+    data.history.unshift({id:makeId(),date:new Date().toISOString(),type:"message",member:"Administration",amount:0,reason:"Suppression d'un message",text:"Un message de la discussion générale a été supprimé par l'administration."});
+    await saveData(); renderChat();
+};
+function applyEliteAppearance() {
+    const a=data?.appearance||{}; const root=document.documentElement;
+    const values={"--elite-primary":a.primary||"#173b8a","--elite-secondary":a.secondary||"#0b1534","--elite-accent":a.accent||"#f0c84b","--elite-bg":a.bg||"#050a1c","--elite-card":a.card||"#101a3c","--elite-button":a.button||"#2869df","--elite-button-alt":a.buttonAlt||"#172653","--elite-text":a.text||"#f4f6ff","--elite-muted":a.muted||"#aab8dc","--elite-border":a.border||"#273d7c"};
+    Object.entries(values).forEach(([k,v])=>root.style.setProperty(k,v));
+    document.body.dataset.eliteTheme=a.mode||"night";
+    const ids={elitePrimaryColor:values["--elite-primary"],eliteSecondaryColor:values["--elite-secondary"],eliteAccentColor:values["--elite-accent"],eliteBgColor:values["--elite-bg"],eliteCardColor:values["--elite-card"],eliteButtonColor:values["--elite-button"],eliteButtonAltColor:values["--elite-button-alt"],eliteTextColor:values["--elite-text"],eliteMutedColor:values["--elite-muted"],eliteBorderColor:values["--elite-border"]};
+    Object.entries(ids).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.value=v;});
+    const mode=document.getElementById("eliteThemeMode");if(mode)mode.value=a.mode||"night";
+}
+window.saveEliteAppearance=async function(){
+    if(!verifyAdminAuth())return;
+    const val=id=>document.getElementById(id)?.value;
+    data.appearance={primary:val("elitePrimaryColor"),secondary:val("eliteSecondaryColor"),accent:val("eliteAccentColor"),bg:val("eliteBgColor"),card:val("eliteCardColor"),button:val("eliteButtonColor"),buttonAlt:val("eliteButtonAltColor"),text:val("eliteTextColor"),muted:val("eliteMutedColor"),border:val("eliteBorderColor"),mode:val("eliteThemeMode")};
+    data.history.unshift({id:makeId(),date:new Date().toISOString(),type:"appearance",member:"Administration",amount:0,reason:"Modification de l'apparence",text:"L'apparence complète de l'organisation a été modifiée."});
+    applyEliteAppearance(); await saveData(); const m=document.getElementById("appearanceAdminMessage");if(m)m.textContent="Apparence enregistrée.";
+};
+window.resetEliteAppearance=async function(){if(!verifyAdminAuth())return;data.appearance={primary:"#173b8a",secondary:"#0b1534",accent:"#f0c84b",bg:"#050a1c",card:"#101a3c",button:"#2869df",buttonAlt:"#172653",text:"#f4f6ff",muted:"#aab8dc",border:"#273d7c",mode:"night"};applyEliteAppearance();await saveData();};
 function renderChatContacts() { const container=document.getElementById("chatContacts"); if(container) container.innerHTML=""; }
 window.openMemberChat = function(){alert("Les messages privés sont désactivés. Utilise la discussion générale.");renderChat();};
 function renderChat() {
@@ -3343,7 +3619,7 @@ function renderChat() {
     const title=document.getElementById("chatConversationTitle");if(title)title.textContent="Discussion générale de l’Élite — visible par tous les membres";
     const messages=(data.chatMessages||[]).filter(msg=>!msg.recipientId||msg.recipientId==="all").slice(-100);
     if(!messages.length){box.innerHTML="<p class='small-info'>Aucun message. Envoie le premier message du groupe !</p>";return;}
-    box.innerHTML=messages.map(msg=>`<div class="chat-message ${msg.senderId===member.id?"mine":""}"><strong>${escapeHTML(msg.senderName||"Membre")}</strong>${msg.type==="audio"?`<audio controls preload="none" src="${escapeHTML(msg.audioUrl||"")}"></audio>`:`<div>${escapeHTML(msg.text||"")}</div>`}<div class="chat-meta">${escapeHTML(msg.senderPhone||"Numéro non renseigné")} · ${new Date(msg.date).toLocaleString("fr-FR")}</div></div>`).join("");
+    box.innerHTML=messages.map(msg=>`<div class="chat-message ${msg.senderId===member.id?"mine":""}"><strong>${escapeHTML(msg.senderName||"Membre")}</strong>${msg.type==="audio"?`<audio controls preload="none" src="${escapeHTML(msg.audioUrl||"")}"></audio>`:`<div>${escapeHTML(msg.text||"")}</div>`}<div class="chat-meta">${escapeHTML(msg.senderPhone||"Numéro non renseigné")} · ${new Date(msg.date).toLocaleString("fr-FR")}</div>${adminConnected?`<button class="action red" style="padding:5px 9px;margin-top:6px" onclick="adminDeleteChatMessage('${msg.id}')">Supprimer</button>`:""}</div>`).join("");
     box.scrollTop=box.scrollHeight;
 }
 window.sendChatMessage = async function(){
@@ -3771,25 +4047,38 @@ window.addShopItem = async function() {
     const price = Number(document.getElementById("newShopPrice").value);
     if (!name || !Number.isInteger(price) || price < 0) { alert("❌ Nom et prix (entier positif) obligatoires."); return; }
     data.shopItems.push({ id: makeId(), name, price, duration: "", description: "" });
-    saveData();
+    data.history.unshift({id:makeId(),date:new Date().toISOString(),type:"shop",member:"Administration",amount:0,reason:"Ajout d'un article",text:`Article ajouté au catalogue : ${name} — ${formatNumber(price)} tokens`});
+    saveData(); renderAdminShop(); renderShop();
     alert("✅ Achat ajouté.");
 };
 
 function renderAdminShop() {
     const container = document.getElementById("adminShopContainer");
     if (!container || !adminConnected) return;
-    container.innerHTML = data.shopItems.map((item, index) => `
-        <div class="shop-admin-item">
-            <strong>${escapeHTML(item.name)}</strong> — ${formatNumber(item.price)} tokens
-            <button class="action red" onclick="deleteShopItem('${item.id}')">🗑️ Supprimer</button>
+    container.innerHTML = data.shopItems.map((item) => `
+        <div class="shop-admin-item" style="display:grid;grid-template-columns:1fr 110px auto;gap:7px;align-items:center;margin:10px 0">
+            <input id="shopName_${item.id}" value="${escapeHTML(item.name)}" aria-label="Nom de l'article">
+            <input id="shopPrice_${item.id}" type="number" min="0" step="1" value="${Number(item.price)||0}" aria-label="Prix en tokens">
+            <div style="display:flex;gap:5px;flex-wrap:wrap"><button class="action green" onclick="updateShopItem('${item.id}')">Enregistrer</button><button class="action red" onclick="deleteShopItem('${item.id}')">Supprimer</button></div>
         </div>
-    `).join("");
+    `).join("") || "<p class='small-info'>Aucun article à vendre.</p>";
 }
 
+window.updateShopItem = async function(id) {
+    if(!verifyAdminAuth())return;
+    const item=data.shopItems.find(x=>String(x.id)===String(id));if(!item)return;
+    const name=document.getElementById("shopName_"+id)?.value.trim();const price=Number(document.getElementById("shopPrice_"+id)?.value);
+    if(!name||!Number.isInteger(price)||price<0){alert("Nom et prix entier positif obligatoires.");return;}
+    item.name=name;item.price=price;
+    data.history.unshift({id:makeId(),date:new Date().toISOString(),type:"shop",member:"Administration",amount:0,reason:"Modification du catalogue",text:`Article modifié : ${name} — ${formatNumber(price)} tokens`});
+    await saveData();renderShop();renderAdminShop();
+};
 window.deleteShopItem = async function(id) {
     if (!verifyAdminAuth()) return;
+    const removed=data.shopItems.find(i=>i.id===id);
     data.shopItems = data.shopItems.filter(i => i.id !== id);
-    saveData();
+    data.history.unshift({id:makeId(),date:new Date().toISOString(),type:"shop",member:"Administration",amount:0,reason:"Suppression d'un article",text:"Article supprimé du catalogue : "+(removed?.name||id)});
+    saveData(); renderAdminShop();
 };
 
 window.renderPurchaseHistory = function() {
