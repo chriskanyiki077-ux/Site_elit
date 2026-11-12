@@ -689,6 +689,48 @@ body[data-elite-theme="midnight"]{background:#050914}body[data-elite-theme="roya
 :root{--elite-bg:#050a1c;--elite-card:#101a3c;--elite-button:#2869df;--elite-button-alt:#172653;--elite-text:#f4f6ff;--elite-muted:#aab8dc;--elite-border:#273d7c}
 body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-hero-card{background-color:var(--elite-card)}button.action{background:var(--elite-button);border-color:var(--elite-button);color:var(--elite-text)}.menu-icon,.header-menu,.shortcut-grid button{background:var(--elite-button-alt)}input,select,textarea{color:var(--elite-text);border-color:var(--elite-border)}.card{border-color:var(--elite-border)}
 
+
+/* Outils des clubs : regroupement lisible et responsive */
+.admin-club-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;margin-top:12px}
+.admin-club-group{min-width:0;padding:12px;border:1px solid var(--elite-border,#273d7c);border-radius:14px;background:rgba(8,18,48,.42)}
+.admin-club-group>summary{cursor:pointer;font-weight:800;color:var(--elite-text,#f4f6ff);padding:5px 2px}
+.admin-club-group form{display:grid;gap:9px;margin-top:12px}
+.admin-club-group #novaAdminClubsList{display:grid;gap:10px;margin-top:12px}
+.admin-club-group #novaAdminClubsList>.history-item{margin:0!important;padding:12px;border-radius:12px}
+.admin-club-group #novaAdminClubsList .quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+@media(max-width:520px){.admin-club-tools{grid-template-columns:minmax(0,1fr)}.admin-club-group{padding:10px}}
+
+/* Organisation visuelle des espaces personnels des clubs */
+.club-header-main{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.club-leave-button{border:1px solid #536b9d;background:#111e43;color:#dce7ff;border-radius:12px;padding:10px 13px;font-weight:750;cursor:pointer;white-space:nowrap}
+.club-overview-sections{display:grid;gap:12px}
+.club-personal-section{border:1px solid #304779;border-radius:16px;background:linear-gradient(145deg,#101d40,#0b1430);overflow:hidden;margin:0}
+.club-personal-section>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px;font-weight:800;color:#e9d18a}
+.club-personal-section>summary::-webkit-details-marker{display:none}
+.club-personal-section>summary:after{content:'＋';color:#80baff;font-size:19px}
+.club-personal-section[open]>summary:after{content:'−'}
+.club-personal-section>summary small{margin-left:auto;color:#9eafd0;font-size:11px;font-weight:500}
+.club-section-content{padding:0 13px 12px}
+#competitionCreateBox{margin:0;border:0;border-top:1px solid #263d70;border-radius:0;background:transparent;padding:14px}
+#competitionCreateBox.hidden{display:none!important}
+#clubCompetitionsList{padding-top:4px}
+#clubCompetitionsList .competition-card{margin:9px 0}
+.competition-admin-panel{margin-top:14px;border:1px solid #344d83;border-radius:13px;background:#101d3d;overflow:hidden}
+.competition-admin-panel>summary{cursor:pointer;padding:12px 14px;color:#f0d28a;font-weight:800}
+.competition-admin-panel .competition-admin-actions{padding:0 12px 12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px}
+.competition-admin-panel .competition-admin-actions .action{margin:0;min-height:42px}
+#competitionQuestionManager{padding:0!important;overflow:hidden}
+#competitionQuestionManager .manager-section{padding:14px;border-bottom:1px solid #304779}
+#competitionQuestionManager .manager-section:last-child{border-bottom:0}
+#competitionQuestionManager .manager-section h4{margin:0 0 10px;color:#f0d28a}
+#competitionQuestionManager .manager-actions{display:flex;gap:8px;flex-wrap:wrap}
+#competitionQuestionList .history-item{margin:9px 0}
+#eliteCompetitionDetail{border-radius:18px}
+#eliteCompetitionDetail>.competition-detail-head{padding-bottom:12px;border-bottom:1px solid #304779}
+#eliteCompetitionDetail>.competition-detail-head h3{margin:0;flex:1}
+#eliteCompetitionDetail #competitionDetailContent>.competition-card{margin-top:0}
+@media(max-width:520px){.club-header-main{align-items:flex-start}.club-leave-button{width:100%}.club-personal-section>summary{align-items:flex-start;flex-wrap:wrap}.club-personal-section>summary small{width:100%;margin-left:0}.competition-admin-panel .competition-admin-actions{grid-template-columns:1fr 1fr}}
+
 </style>
 </head>
 
@@ -757,6 +799,7 @@ body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-her
 </section>
 
 <section id="membres" class="hidden">
+    <div class="history-category-grid display-subnav"><button class="history-category active" onclick="showDisplayPanel('members',this)">👥<b>Membres</b></button><button class="history-category" onclick="showDisplayPanel('ranking',this)">🏆<b>Classement</b></button><button class="history-category" onclick="showDisplayPanel('cash',this)">💰<b>Cotisations</b></button></div>
     <div class="card">
         <h2>👥 Membres</h2>
         <input id="searchMember" placeholder="🔎 Rechercher un membre..." oninput="renderMembers()">
@@ -765,6 +808,7 @@ body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-her
 </section>
 
 <section id="classement" class="hidden">
+    <div class="history-category-grid display-subnav"><button class="history-category" onclick="showDisplayPanel('members',this)">👥<b>Membres</b></button><button class="history-category active" onclick="showDisplayPanel('ranking',this)">🏆<b>Classement</b></button><button class="history-category" onclick="showDisplayPanel('cash',this)">💰<b>Cotisations</b></button></div>
     <div class="card">
         <h2>🏆 Classement</h2>
         <table>
@@ -791,10 +835,11 @@ body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-her
     <div class="history-category-grid">
       <button class="history-category active" data-history="general" onclick="selectHistory('general',this)">📜<b>Général</b><small>Événements de l'organisation</small></button>
       <button class="history-category" data-history="cash" onclick="selectHistory('cash',this)">💰<b>Caisse</b><small>Entrées et sorties FC</small></button>
+      <button class="history-category" data-history="contributions" onclick="selectHistory('contributions',this)">📅<b>Cotisations</b><small>Pointages et versements</small></button>
       <button class="history-category" data-history="tokens" onclick="selectHistory('tokens',this)">🪙<b>Tokens</b><small>Gains, transferts et dépenses</small></button>
       <button class="history-category" data-history="purchases" onclick="selectHistory('purchases',this)">🛒<b>Achats</b><small>Articles, clubs et récompenses</small></button>
     </div>
-    <div class="card"><h3 id="historyCategoryTitle">Historique général</h3><div id="historyContainer"></div></div>
+    <div class="card"><div class="section-heading"><h3 id="historyCategoryTitle">Historique général</h3><button class="action red" id="clearCurrentHistoryBtn" onclick="clearCurrentHistory()">🗑️ Effacer cet historique</button></div><div id="historyContainer"></div></div>
 </section>
 
 <section id="profil" class="hidden">
@@ -821,8 +866,8 @@ body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-her
       <button class="menu-row" onclick="openProfilePanel('passwordChangeCard')"><span class="menu-icon">🔐</span><span><b>Mon mot de passe</b><small>Modifier mon code personnel</small></span><i>›</i></button>
       <button class="menu-row" onclick="openProfilePanel('convertCard')"><span class="menu-icon">🪙</span><span><b>Conversion points / tokens</b><small>Gérer ma conversion personnelle</small></span><i>›</i></button>
       <button class="menu-row" onclick="showTab('chat')"><span class="menu-icon">💬</span><span><b>Discussion</b><small>Accéder à la discussion générale</small></span><i>›</i></button>
-      <button class="menu-row" onclick="showTab('competition')"><span class="menu-icon">👥</span><span><b>Mes clubs</b><small>Mes espaces et clubs</small></span><i>›</i></button>
-      <button class="menu-row" onclick="showTab('competition')"><span class="menu-icon">🏆</span><span><b>Mes compétitions</b><small>Défis et questionnaires</small></span><i>›</i></button>
+      <button class="menu-row" onclick="showTab('myClubs')"><span class="menu-icon">👥</span><span><b>Mes clubs</b><small>Mes espaces et clubs</small></span><i>›</i></button>
+      <button class="menu-row" onclick="showTab('myCompetitions')"><span class="menu-icon">🏆</span><span><b>Mes compétitions</b><small>Défis et questionnaires</small></span><i>›</i></button>
       <button class="menu-row" onclick="showTab('competition')"><span class="menu-icon">🎁</span><span><b>Mes récompenses</b><small>Mes achats et avantages</small></span><i>›</i></button>
     </div>
     <div class="profile-list-heading"><h3>Achats et récompenses</h3></div>
@@ -838,9 +883,18 @@ body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-her
         </div>
     </div>
 </div>
+    <div class="card profile-rewards-card"><h3>🛍️ Boutique</h3><p class="small-info">Les articles disponibles et leurs prix en FC (tokens).</p><div id="shopContainer" class="shop-grid"></div></div>
     <div class="card profile-rewards-card"><h3>🎁 Mes achats</h3><div id="myPurchaseHistory"><p class="small-info">Aucun achat enregistré.</p></div></div>
     <button class="action red profile-logout" onclick="logoutMember()">↪ Se déconnecter</button>
   </div>
+</section>
+<section id="myClubsPage" class="hidden">
+  <div class="inner-page-heading"><button class="back-link" onclick="showTab('profile')">‹ Profil</button><h2>👥 Mes clubs</h2></div>
+  <div class="card"><p class="small-info">Seuls les clubs dont tu es le maître officiel sont affichés ici.</p><div id="myClubsContainer" class="clubs-grid-home"></div></div>
+</section>
+<section id="myCompetitionsPage" class="hidden">
+  <div class="inner-page-heading"><button class="back-link" onclick="showTab('profile')">‹ Profil</button><h2>🏆 Mes compétitions</h2></div>
+  <div class="card"><p class="small-info">Seules les compétitions que tu as créées sont affichées ici.</p><div id="myCompetitionsContainer"></div></div>
 </section>
 <section id="chatPage" class="hidden">
   <div class="inner-page-heading"><button class="back-link" onclick="showTab('profile')">‹ Profil</button><h2>Discussion générale</h2></div>
@@ -913,20 +967,26 @@ body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-her
     </div>
     <div id="eliteClubSpace" class="card hidden">
         <div class="club-space-header">
-            <div class="section-heading"><div><span class="eyebrow">ESPACE DU CLUB</span><h2 id="eliteClubTitle">Club</h2></div><button class="action" onclick="novaGoToHome()">← Clubs</button></div>
+            <div class="club-header-main"><div><span class="eyebrow">ESPACE DU CLUB</span><h2 id="eliteClubTitle">Club</h2></div><button class="club-leave-button" onclick="novaGoToHome()">← Quitter le club</button></div>
             <div class="club-master-banner"><div>👑 Maître du club : <strong id="eliteClubMasterName">—</strong></div><span class="live-pill">Maître officiel</span></div>
             <button id="novaDeleteClubBtn" class="action red club-delete-button hidden" onclick="novaDeleteClub()">🗑️ Supprimer ce club</button>
         </div>
-        <div id="clubOverview">
-            <div id="competitionCreateBox" class="competition-create">
+        <div id="clubOverview" class="club-overview-sections">
+            <details id="competitionCreateSection" class="club-personal-section">
+              <summary>＋ Créer une compétition <small>Paramètres et création</small></summary>
+              <div id="competitionCreateBox" class="competition-create">
                 <h3>Créer une compétition</h3>
                 <p class="small-info">Seul le maître officiel de ce club peut créer une compétition. Elle sera visible uniquement dans ce club.</p>
                 <input id="competitionName" placeholder="Nom du concours ou de la compétition">
                 <div class="form-two"><input id="competitionFee" type="number" min="0" step="1" placeholder="Participation de base (tokens)"><input id="competitionPrize" type="number" min="0" step="1" placeholder="Récompense (tokens)"></div>
                 <label>⏱️ Temps par question (secondes)</label><input id="competitionQuestionSeconds" type="number" min="1" max="300" value="30" placeholder="Ex. 30 secondes">
                 <button class="action green" onclick="novaCreateCompetition()">＋ Créer la compétition</button>
-            </div>
-            <div class="card-inner"><h3>Compétitions de ce club</h3><div id="clubCompetitionsList"></div></div>
+              </div>
+            </details>
+            <details id="competitionListSection" class="club-personal-section" open>
+              <summary>🏆 Compétitions du club <small>Consulter et ouvrir</small></summary>
+              <div class="club-section-content"><div id="clubCompetitionsList"></div></div>
+            </details>
         </div>
         <div id="eliteCompetitionDetail" class="card hidden">
             <div class="competition-detail-head"><button class="action" onclick="novaBackToClub()">← Retour au club</button><h3 id="eliteCompetitionTitle">Compétition</h3></div>
@@ -955,6 +1015,14 @@ body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-her
 </div>
 
 <section id="caisse" class="hidden">
+    <div class="history-category-grid display-subnav"><button class="history-category" onclick="showDisplayPanel('members',this)">👥<b>Membres</b></button><button class="history-category" onclick="showDisplayPanel('ranking',this)">🏆<b>Classement</b></button><button class="history-category active" onclick="showDisplayPanel('cash',this)">💰<b>Cotisations</b></button></div>
+    <div class="history-category-grid cash-subnav">
+      <button class="history-category active" onclick="showCashPanel('overview',this)">💰<b>Solde</b><small>Vue générale</small></button>
+      <button class="history-category" onclick="showCashPanel('settings',this)">⚙️<b>Réglages</b><small>Tokens par cotisation</small></button>
+      <button class="history-category" onclick="showCashPanel('attendance',this)">📅<b>Pointage</b><small>Par mois et par jour</small></button>
+      <button class="history-category" onclick="showCashPanel('totals',this)">📊<b>Totaux</b><small>Versements des membres</small></button>
+    </div>
+    <div class="cash-panel cash-overview">
     <div class="card">
         <h2>💰 Caisse & Pointage</h2>
         <div class="notice">
@@ -965,8 +1033,10 @@ body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-her
         <h3>Objectif à atteindre : <span id="targetCashBalance" style="color:#ffc45c;">0</span> FC</h3>
     </div>
 
+    </div>
+    <div class="cash-panel cash-settings hidden">
     <div class="card">
-        <details>
+        <details open>
             <summary style="cursor:pointer;font-weight:800;color:#8fcfff;">⚙️ Paramètres des cotisations · configuration avancée</summary>
             <label style="margin-top:12px;display:block;">Tokens reçus par cotisation cochée — Mois sélectionné : <strong id="adminDailyTokensDisplay">—</strong></label>
             <input id="newDailyTokens" type="number" min="0" step="1" placeholder="Tokens donnés à chaque cotisation cochée">
@@ -975,6 +1045,8 @@ body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-her
         </details>
     </div>
 
+    </div>
+    <div class="cash-panel cash-attendance hidden">
     <div class="card">
         <h3>📅 Tableau de Pointage des Cotisations</h3>
         <div class="month-selector-box">
@@ -1019,6 +1091,8 @@ body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-her
         </div>
     </div>
 
+    </div>
+    <div class="cash-panel cash-totals hidden">
     <div class="card">
         <h3>📊 Total Versé par Chaque Membre</h3>
         <div class="table-responsive">
@@ -1035,6 +1109,7 @@ body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-her
         <hr>
         <h3>📜 Historique des mouvements de la Caisse</h3>
         <div id="cashPublicHistory"></div>
+    </div>
     </div>
 </section>
 
@@ -1075,6 +1150,17 @@ body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-her
             <h2>⚙️ Administration</h2>
             <div class="notice success">✅ Session Administrateur active</div>
             <button class="action red" onclick="logoutAdmin()">🚪 Déconnexion</button>
+        </div>
+
+        <div class="card" id="adminSecurityCodesCard">
+            <h3>🔐 Codes d'accès de l'ÉLITE</h3>
+            <p class="small-info">Modifie ici le code d'accès administrateur et le code utilisé pour inscrire un nouveau membre. Les changements sont enregistrés dans les données Firebase.</p>
+            <label for="newAdminAccessCode">Nouveau code administrateur</label>
+            <input id="newAdminAccessCode" type="password" autocomplete="new-password" minlength="6" maxlength="32" placeholder="6 à 32 caractères">
+            <label for="newRegistrationCode">Nouveau code d'inscription</label>
+            <input id="newRegistrationCode" type="password" autocomplete="new-password" minlength="4" maxlength="20" placeholder="4 à 20 caractères">
+            <button class="action green" type="button" onclick="saveAdminAccessCodes()">💾 Enregistrer les codes</button>
+            <div id="adminCodesMessage" class="small-info" role="status"></div>
         </div>
 
         <div class="card">
@@ -1223,16 +1309,16 @@ body{background-color:var(--elite-bg);color:var(--elite-text)}.card,.profile-her
         <div class="card">
             <h2>🏆 Gestion des clubs Élite</h2>
             <p class="small-info">L'administrateur peut créer, supprimer un club et remplacer son maître officiel. Chaque nouveau club commence sans compétition.</p>
-            <h3>➕ Ajouter un club</h3>
-            <form id="novaClubForm" onsubmit="novaCreateClub(event)">
-                <input type="text" id="novaClubName" placeholder="Nom du club" required>
-                <label>Maître officiel du nouveau club</label>
-                <select id="novaClubMasterSelect" required></select>
-                <button type="submit" class="action green">Créer le club</button>
-            </form>
-            <hr>
-            <h3>👑 Clubs existants — maîtres et suppression</h3>
-            <div id="novaAdminClubsList"></div>
+            <div class="admin-club-tools">
+              <details class="admin-club-group" open><summary>➕ Ajouter un club</summary>
+                <form id="novaClubForm" onsubmit="novaCreateClub(event)">
+                    <label for="novaClubName">Nom du club</label><input type="text" id="novaClubName" placeholder="Nom du club" required>
+                    <label for="novaClubMasterSelect">Maître officiel du nouveau club</label><select id="novaClubMasterSelect" required></select>
+                    <button type="submit" class="action green">Créer le club</button>
+                </form>
+              </details>
+              <details class="admin-club-group" open><summary>👑 Clubs existants — maîtres et suppression</summary><div id="novaAdminClubsList"></div></details>
+            </div>
         </div>
 
         <div class="card" id="adminShopManager">
@@ -1578,9 +1664,20 @@ function saveData(options) {
 window.addEventListener("online", () => { if (saveFailed) saveData(); });
 window.addEventListener("beforeunload", e => { if (saveFailed || saveRunning) { e.preventDefault(); e.returnValue = ""; } });
 
-const ADMIN_PASSWORD = "1234Elite";
+let ADMIN_PASSWORD = "1234Elite";
 const DEFAULT_PLAYER_PASSWORD = "1234";
-const REGISTRATION_PASSWORD = "1234567"; // mot de passe d'inscription des nouveaux membres
+let REGISTRATION_PASSWORD = "1234567"; // code d'inscription modifiable par l'administrateur
+
+function applySavedSecurityCodes() {
+    const codes = data?.securityCodes && typeof data.securityCodes === "object" ? data.securityCodes : {};
+    ADMIN_PASSWORD = typeof codes.admin === "string" && codes.admin.trim() ? codes.admin : "1234Elite";
+    REGISTRATION_PASSWORD = typeof codes.registration === "string" && codes.registration.trim() ? codes.registration : "1234567";
+    const adminInput = document.getElementById("newAdminAccessCode");
+    const registrationInput = document.getElementById("newRegistrationCode");
+    if (adminInput && document.activeElement !== adminInput) adminInput.value = ADMIN_PASSWORD;
+    if (registrationInput && document.activeElement !== registrationInput) registrationInput.value = REGISTRATION_PASSWORD;
+}
+
 
 const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 
@@ -1607,6 +1704,7 @@ const INITIAL_DATA = {
     cashHistory: [],
     shopItems: [],
     purchaseHistory: [],
+    securityCodes: { admin: "1234Elite", registration: "1234567" },
     chatMessages: [],
     tokenHistory: [],
     nova: {
@@ -1712,12 +1810,45 @@ function releaseMemberSession() {
     }
 }
 
+let activeDisplayPanel="members";
+function showDisplayPanel(panel,button){
+    if(!["members","ranking","cash"].includes(panel)) panel="members";
+    activeDisplayPanel=panel;
+    const ids={members:"membres",ranking:"classement",cash:"caisse"};
+    const target=ids[panel];
+    ["membres","classement","caisse","tokenHistoryPanel"].forEach(id=>document.getElementById(id)?.classList.toggle("hidden",id!==target));
+    const activeSection=document.getElementById(target);
+    activeSection?.querySelectorAll(":scope > .display-subnav .history-category").forEach(el=>{
+        const match=panel==="members"?el.textContent.includes("Membres"):panel==="ranking"?el.textContent.includes("Classement"):el.textContent.includes("Cotisations");
+        el.classList.toggle("active",button?el===button:match);
+    });
+    if(panel==="members") renderMembers();
+    else if(panel==="ranking") renderRanking();
+    else {renderCashHistory();showCashPanel("overview");}
+}
+function showCashPanel(panel,button){
+    if(!["overview","settings","attendance","totals"].includes(panel)) panel="overview";
+    const monthSelect=document.getElementById("currentMonthSelect");
+    if(monthSelect && data?.currentMonth && monthSelect.value!==data.currentMonth) monthSelect.value=data.currentMonth;
+    document.querySelectorAll("#caisse .cash-panel").forEach(el=>el.classList.toggle("hidden",!el.classList.contains("cash-"+panel)));
+    document.querySelectorAll("#caisse .cash-subnav .history-category").forEach(el=>{
+        const label=panel==="overview"?"solde":panel==="settings"?"réglages":panel==="attendance"?"pointage":"totaux";
+        el.classList.toggle("active",button?el===button:el.textContent.toLowerCase().includes(label));
+    });
+    if(panel==="attendance") renderAttendanceTable();
+    else if(panel==="totals") renderMemberContributions();
+    else if(panel==="overview") renderCashHistory();
+    else renderCashSettings();
+}
+
 function showTab(tab, skipRender) {
     activeTab = tab;
     navTrack();
     const groups = {
         home: ["accueil"],
         profile: ["profil"],
+        myClubs: ["myClubsPage"],
+        myCompetitions: ["myCompetitionsPage"],
         accountDetail: ["vente"],
         chat: ["chatPage"],
         competition: ["boutique"],
@@ -1729,18 +1860,21 @@ function showTab(tab, skipRender) {
     document.querySelectorAll("main > section").forEach(section => {
         section.classList.toggle("hidden", !(groups[tab] || []).includes(section.id));
     });
-    const activeNav = (tab === "display" || tab === "admin" || tab === "history" || tab === "accountDetail" || tab === "chat") ? "settings" : tab;
+    const activeNav = (tab === "display" || tab === "admin" || tab === "history" || tab === "accountDetail" || tab === "chat") ? "settings" : (tab === "myClubs" || tab === "myCompetitions") ? "profile" : tab;
     document.querySelectorAll(".bottom-nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === activeNav));
-    if (skipRender) return;
+    if (skipRender) { if(tab === "display") showDisplayPanel(activeDisplayPanel); return; }
     if (tab === "profile") { renderProfile(); }
+    if (tab === "myClubs") { renderMyClubs(); }
+    if (tab === "myCompetitions") { renderMyCompetitions(); }
     if (tab === "settings") {
         ["transferBox","passwordChangeCard","convertCard"].forEach(id => document.getElementById(id)?.classList.remove("hidden"));
         const m=getCurrentMember(); const av=document.getElementById("plusAccountAvatar"); if(av) av.textContent=m?(String(m.name||"É").trim().split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase()||"É"):"É";
     }
     if (tab === "chat") { renderChat(); }
-    if (tab === "admin" && adminConnected) { renderAdminShop(); applyEliteAppearance(); }
+    if (tab === "history") { renderHistory(); }
+    if (tab === "admin" && adminConnected) { applySavedSecurityCodes(); renderAdminShop(); applyEliteAppearance(); }
     if (tab === "competition") { renderNovaLibrary(); }
-    if (tab === "display") { renderMembers(); renderRanking(); renderCashHistory(); renderTokenHistory(); }
+    if (tab === "display") { showDisplayPanel("members"); renderMembers(); renderRanking(); renderCashHistory(); renderTokenHistory(); }
 }
 
 window.showTab = showTab;
@@ -1880,10 +2014,16 @@ function ensureMonthsStructure() {
         data.months = createEmptyMonths();
     }
     MONTHS.forEach(month => {
-        if (!data.months[month]) {
+        if (!data.months[month] || typeof data.months[month] !== "object") {
             data.months[month] = { daysCount: 0, dailyFee: 0, attendance: {} };
         }
+        const monthData = data.months[month];
+        if (!Number.isFinite(Number(monthData.daysCount))) monthData.daysCount = 0;
+        monthData.daysCount = Math.max(0, Math.min(31, Math.floor(Number(monthData.daysCount))));
+        if (!Number.isFinite(Number(monthData.dailyFee))) monthData.dailyFee = 0;
+        if (!monthData.attendance || typeof monthData.attendance !== "object" || Array.isArray(monthData.attendance)) monthData.attendance = {};
     });
+    if (!MONTHS.includes(data.currentMonth)) data.currentMonth = MONTHS[new Date().getMonth()];
 }
 
 function getCurrentMonthData() {
@@ -1893,22 +2033,35 @@ function getCurrentMonthData() {
 
 function getMemberAttendance(memberId) {
     const monthData = getCurrentMonthData();
-    if (!monthData.attendance[memberId]) {
-        monthData.attendance[memberId] = new Array(monthData.daysCount).fill(false);
-    }
-    while (monthData.attendance[memberId].length < monthData.daysCount) {
-        monthData.attendance[memberId].push(false);
-    }
-    return monthData.attendance[memberId];
+    if (!monthData || !memberId) return [];
+    if (!monthData.attendance || typeof monthData.attendance !== "object" || Array.isArray(monthData.attendance)) monthData.attendance = {};
+    const raw = monthData.attendance[memberId];
+    // Certains anciens enregistrements peuvent contenir une valeur non-tableau.
+    // On la normalise sans toucher aux autres membres ni aux autres mois.
+    const attendance = Array.isArray(raw) ? raw.slice() : [];
+    const count = Math.max(0, Math.min(31, Number.isFinite(Number(monthData.daysCount)) ? Math.floor(Number(monthData.daysCount)) : 0));
+    while (attendance.length < count) attendance.push(false);
+    if (attendance.length > count) attendance.length = count;
+    monthData.attendance[memberId] = attendance;
+    return attendance;
 }
 
-window.changeCurrentMonth = function(month) {
-    if (!MONTHS.includes(month)) return;
-    if (!verifyAdminAuth()) return;
-    data.currentMonth = month;
-    saveData();
-    renderAll();
+window.changeCurrentMonth = async function(month) {
+    if (!MONTHS.includes(month) || !data) return;
+    if (!verifyAdminAuth()) { const el=document.getElementById("currentMonthSelect"); if(el)el.value=data.currentMonth; return; }
+    const previous=data.currentMonth; data.currentMonth=month;
+    if(await saveData()) { renderAttendanceTable(); renderMemberContributions(); renderCashHistory(); renderCashSettings(); }
+    else { data.currentMonth=previous; const el=document.getElementById("currentMonthSelect"); if(el)el.value=previous; }
 };
+
+function renderCashSettings(){
+    if(!data) return;
+    const monthData=getCurrentMonthData();
+    const fee=document.getElementById("adminDailyFeeDisplay"), feePublic=document.getElementById("dailyFeeDisplay"), tokens=document.getElementById("adminDailyTokensDisplay");
+    if(fee) fee.textContent=formatNumber(monthData.dailyFee||0);
+    if(feePublic) feePublic.textContent=formatNumber(monthData.dailyFee||0);
+    if(tokens) tokens.textContent=formatNumber(getFeeTokens(monthData))+" tokens";
+}
 
 window.unlockAdminSession = function() {
     const inputPass = document.getElementById("globalAdminPassword").value;
@@ -2000,6 +2153,8 @@ function initFirebase() {
             if (!data.activeSessions || typeof data.activeSessions !== "object") data.activeSessions = {};
             if (!Array.isArray(data.purchaseHistory)) data.purchaseHistory = [];
             if (!Array.isArray(data.shopItems)) data.shopItems = [];
+            if (!data.securityCodes || typeof data.securityCodes !== "object") data.securityCodes = {};
+            applySavedSecurityCodes();
             if (!data.appearance || typeof data.appearance !== "object") data.appearance = {};
             if (!data.nova) {
                 data.nova = { currentView: 'home', activeClubId: null, currentMemberId: null, clubs: [] };
@@ -2098,7 +2253,7 @@ function renderAll() {
     document.getElementById("totalMembers").textContent = data.members.length;
     document.getElementById("totalPoints").textContent = formatNumber(data.members.reduce((sum, m) => sum + Number(m.points || 0), 0));
     document.getElementById("totalPresent").textContent = data.members.filter(m => m.present).length;
-    document.getElementById("totalTokens").textContent = formatNumber(data.members.reduce((sum,m) => sum + Number(m.tokens || 0), 0));
+    document.getElementById("totalTokens").textContent = formatNumber(data.members.reduce((sum,m) => sum + Number(m.tokens || 0), 0)) + " FC";
     document.getElementById("cashValue").textContent = formatNumber(data.cash);
     document.getElementById("targetCashValue").textContent = formatNumber(data.targetCash);
     document.getElementById("cashBalance").textContent = formatNumber(data.cash);
@@ -2115,11 +2270,15 @@ function renderAll() {
     renderAttendanceTable();
     renderCashHistory();
     renderMemberContributions();
+    renderCashSettings();
     fillSelects();
     renderNovaLibrary();
     renderAdminClubs();
     renderTokenHistory();
     renderProfile();
+    renderShop();
+    renderMyClubs();
+    renderMyCompetitions();
     renderChat();
     renderChatContacts();
     renderExtras();
@@ -2508,7 +2667,7 @@ function undoRefunds(done) {
 /* ---------- SECTION ACHAT : acheter un club ---------- */
 function renderAchat(member) {
     const b = document.getElementById("achatBalance");
-    if (b) b.textContent = "💎 " + formatNumber(member ? member.tokens || 0 : 0) + " tokens";
+    if (b) b.textContent = "💰 " + formatNumber(member ? member.tokens || 0 : 0) + " FC · tokens";
 }
 window.buyClub = async function() {
     const member = getCurrentMember();
@@ -2525,14 +2684,15 @@ window.buyClub = async function() {
     if (pwd === null) return;
     if (String(pwd) !== String(member.password)) { show("error", "❌ Mot de passe incorrect."); return; }
     const now = new Date().toISOString();
+    const oldTokens=member.tokens, oldTokenHistory=[...(data.tokenHistory||[])], oldPurchaseHistory=[...(data.purchaseHistory||[])], oldClubs=[...(data.nova.clubs||[])];
     member.tokens = balance - CLUB_PRICE;
     data.tokenHistory.unshift({id:makeId(),date:now,memberId:member.id,memberName:member.name,amount:-CLUB_PRICE,reason:"Achat d'un club : " + name});
     data.purchaseHistory.unshift({id:makeId(),date:now,memberId:member.id,memberName:member.name,itemId:"club",itemName:"Club : " + name,price:CLUB_PRICE,currency:"tokens"});
     data.nova.clubs.push({id:makeId(),name,masterMemberId:member.id,items:[],competitions:[]});
+    if (!await saveData()) { member.tokens=oldTokens; data.tokenHistory=oldTokenHistory; data.purchaseHistory=oldPurchaseHistory; data.nova.clubs=oldClubs; renderNovaLibrary(); renderProfile(); show("error", "⚠️ Achat non confirmé dans le Cloud. Aucun débit ni club n'est conservé localement."); return; }
     if (input) input.value = "";
     show("success", `✅ Club « ${escapeHTML(name)} » acheté ! Tu en es le maître officiel.`);
-    renderNovaLibrary(); renderProfile();
-    if (!await saveData()) show("error", "⚠️ Achat non confirmé dans le Cloud : nouvelle tentative automatique.");
+    renderNovaLibrary(); renderProfile(); renderMyClubs();
 };
 
 function activeClub() {
@@ -2626,7 +2786,7 @@ function buildCompetitionCard(comp, club, member, canManage) {
       <div class="competition-numbers"><span>🔓 Participation : <b>${formatNumber(ownFee)} tokens</b></span><span>🎁 Lot : <b>${prizeLabel}</b></span><span>⏱️ <b>${Number(comp.secondsPerQuestion||30)} s</b> par défaut · durée ajustable par question</span></div>
       <p class="small-info">${participants.length} participant(s)${names.length?" · "+escapeHTML(names.join(", ")):""}</p>
       <div class="competition-purchase-line">${comp.status==="Ouvert"?(!joined?(hasReadyCompetitionQuestions(comp)?`<button class="action green" onclick="novaJoinCompetition('${comp.id}')">🛒 Acheter la participation · ${formatNumber(ownFee)} tokens</button>`:`<p class="notice error">🔒 Achat indisponible : le maître du club n'a pas encore fourni toutes les questions et leurs bonnes réponses.</p>`):(ownSubmission?`<button class="action" onclick="novaShowMyQuizResult('${comp.id}')">Voir mon résultat</button>`:`<button class="action green" onclick="novaStartQuiz('${comp.id}')">Accéder au questionnaire</button>`)):`<p class="notice success">Compétition terminée${comp.winnerId?" · Gagnant : "+escapeHTML(data.members.find(m=>m.id===comp.winnerId)?.name||""):""}</p>${ownSubmission?`<button class="action" onclick="novaShowMyQuizResult('${comp.id}')">Voir mon résultat</button>`:""}`}</div>
-      ${canManage?`<div class="competition-admin-actions"><button class="action orange" onclick="setCompetitionMemberFee('${comp.id}')">Tarifs par membre</button><button class="action" onclick="novaManageQuestions('${comp.id}')">📝 Gérer les questions</button>${comp.submissions.length?`<button class="action" onclick="novaShowCompetitionCorrections('${comp.id}')">🔎 Corrections des participants</button>${comp.correctionPublished===true?`<span class="notice success">Correction envoyée</span>`:`<button class="action green" onclick="novaPublishCompetitionCorrections('${comp.id}')">📨 Envoyer la correction</button>`}`:""}<button class="action" onclick="novaEditCompetition('${comp.id}')">Modifier</button><button class="action red" onclick="novaDeleteCompetition('${comp.id}')">Supprimer</button></div>`:""}
+      ${canManage?`<details class="competition-admin-panel"><summary>⚙️ Espace de gestion de cette compétition</summary><div class="competition-admin-actions"><button class="action orange" onclick="setCompetitionMemberFee('${comp.id}')">Tarifs par membre</button><button class="action" onclick="novaManageQuestions('${comp.id}')">📝 Questions</button>${comp.submissions.length?`<button class="action" onclick="novaShowCompetitionCorrections('${comp.id}')">🔎 Voir les corrections</button>${comp.correctionPublished===true?`<span class="notice success">Correction envoyée</span>`:`<button class="action green" onclick="novaPublishCompetitionCorrections('${comp.id}')">📨 Envoyer la correction</button>`}`:""}<button class="action" onclick="novaEditCompetition('${comp.id}')">Modifier les paramètres</button><button class="action red" onclick="novaDeleteCompetition('${comp.id}')">Supprimer la compétition</button></div></details>`:""}
       ${results}
     </div>`;
 }
@@ -2675,21 +2835,51 @@ window.novaManageQuestions = function(compId) {
     renderNovaLibrary();
     box.dataset.competitionId=compId;
     box.classList.remove("hidden");
-    box.innerHTML=`<div class="section-heading"><h3>📝 Questionnaire : ${escapeHTML(comp.name)}</h3><button class="action red" onclick="novaCloseQuestionManager()">Fermer</button></div>
-      <p class="small-info">Ajoute autant de questions que tu veux. Écris chaque proposition sur une ligne et indique le numéro de la bonne réponse. Les participants ne verront pas la correction avant de valider.</p>
-      <label>Question</label><textarea id="newCompetitionQuestionText" rows="3" placeholder="Écris ta question ici..."></textarea>
-      <label>Réponses possibles (une réponse par ligne, de 2 à 8)</label><textarea id="newCompetitionQuestionOptions" rows="5" placeholder="Réponse A&#10;Réponse B&#10;Réponse C&#10;Réponse D"></textarea>
-      <label>Numéro de la bonne réponse</label><input id="newCompetitionCorrectIndex" type="number" min="1" max="8" value="1" placeholder="Ex. 2">
-      <label>Temps pour cette question (secondes, 30 par défaut)</label><input id="newCompetitionQuestionSeconds" type="number" min="1" max="300" value="30">
-      <button class="action green" onclick="novaSaveCompetitionQuestion()">＋ Ajouter cette question</button>
-      <div id="competitionQuestionList" class="card-inner"></div>`;
+    box.innerHTML=`<style>
+      #competitionQuestionManager .qmgr-grid{display:grid;grid-template-columns:1fr;gap:12px}
+      #competitionQuestionManager .qmgr-panel{background:rgba(4,18,35,.72);border:1px solid #28577c;border-radius:13px;padding:14px;margin:12px 0}
+      #competitionQuestionManager .qmgr-panel h4{margin:0 0 10px;color:#72c5ff}
+      #competitionQuestionManager .qmgr-options{display:grid;gap:7px;margin-top:9px}
+      #competitionQuestionManager .qmgr-option{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#102b46;border:1px solid #28577c;border-radius:9px;cursor:pointer}
+      #competitionQuestionManager .qmgr-option input{width:19px;height:19px;accent-color:#20a4ff;flex:0 0 auto}
+      #competitionQuestionManager .qmgr-option b{color:#7fcaff;min-width:24px}
+      #competitionQuestionManager .qmgr-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+      #competitionQuestionManager .qmgr-counter{font-size:.84rem;color:#9fc7e5;margin-top:6px}
+      #competitionQuestionManager .qmgr-question{padding:12px;border:1px solid #244d70;border-radius:11px;margin:9px 0;background:#0b2037}
+      #competitionQuestionManager .qmgr-question summary{cursor:pointer;font-weight:700;color:#e6f4ff}
+      #competitionQuestionManager textarea{width:100%;box-sizing:border-box}
+      @media(min-width:700px){#competitionQuestionManager .qmgr-two{display:grid;grid-template-columns:1fr 180px;gap:12px;align-items:end}}
+    </style>
+    <div class="manager-section"><div class="section-heading"><div><h3>📝 Questions de la compétition</h3><p class="small-info">${escapeHTML(comp.name)} · ${comp.questions.length} question(s) enregistrée(s)</p></div><button class="action red" onclick="novaCloseQuestionManager()">Fermer</button></div><p class="small-info">Prépare chaque question, écris les réponses une par ligne, puis coche le numéro correspondant à la bonne réponse. Les participants ne verront pas ce choix.</p></div>
+    <div class="qmgr-panel"><h4>① Rédiger une question</h4>
+      <label for="newCompetitionQuestionText">Énoncé</label><textarea id="newCompetitionQuestionText" rows="3" placeholder="Ex. Quelle est la capitale de la RDC ?"></textarea>
+      <div class="qmgr-two"><div><label for="newCompetitionQuestionOptions">Réponses possibles — une par ligne</label><textarea id="newCompetitionQuestionOptions" rows="5" oninput="renderCompetitionCorrectChoices()" placeholder="Kinshasa&#10;Lubumbashi&#10;Goma&#10;Kisangani"></textarea><div class="qmgr-counter">De 2 à 8 réponses. Chaque ligne devient automatiquement un choix numéroté.</div></div><div><label for="newCompetitionQuestionSeconds">Temps (secondes)</label><input id="newCompetitionQuestionSeconds" type="number" min="1" max="300" value="30"></div></div>
+      <div class="qmgr-panel" style="margin:12px 0 0;padding:12px"><h4>② Cocher la bonne réponse</h4><div id="competitionCorrectChoices" class="qmgr-options"><p class="small-info">Écris d'abord les réponses pour afficher les cases à cocher.</p></div></div>
+      <div class="qmgr-tools"><button class="action green" onclick="novaSaveCompetitionQuestion()">＋ Enregistrer et passer à la suivante</button><button class="action" onclick="clearCompetitionQuestionDraft()">Effacer le formulaire</button></div>
+    </div>
+    <div class="qmgr-panel"><h4>③ Questions enregistrées</h4><p class="small-info">Les numéros suivent automatiquement l'ordre du questionnaire.</p><div id="competitionQuestionList"></div></div>`;
     renderQuestionManagerList(comp);
     box.scrollIntoView({behavior:"smooth",block:"start"});
 };
 
+window.renderCompetitionCorrectChoices = function(){
+    const source=document.getElementById("newCompetitionQuestionOptions");
+    const target=document.getElementById("competitionCorrectChoices");
+    if(!source||!target)return;
+    const options=source.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    if(!options.length){target.innerHTML='<p class="small-info">Écris les réponses pour afficher les choix numérotés.</p>';return;}
+    target.innerHTML=options.slice(0,8).map((value,i)=>`<label class="qmgr-option"><input type="radio" name="competitionCorrectChoice" value="${i}"><b>${i+1}.</b><span>${escapeHTML(value)}</span></label>`).join("")+(options.length>8?'<p class="error-text">Maximum : 8 réponses.</p>':'');
+};
+
+window.clearCompetitionQuestionDraft = function(){
+    const q=document.getElementById("newCompetitionQuestionText"),o=document.getElementById("newCompetitionQuestionOptions"),t=document.getElementById("newCompetitionQuestionSeconds");
+    if(q)q.value="";if(o)o.value="";if(t)t.value="30";renderCompetitionCorrectChoices();if(q)q.focus();
+};
+
 function renderQuestionManagerList(comp) {
-    const list=document.getElementById("competitionQuestionList"); if(!list) return;
-    list.innerHTML=comp.questions.length ? `<h4>Questions déjà ajoutées (${comp.questions.length})</h4>`+comp.questions.map((q,i)=>`<div class="history-item"><strong>${i+1}. ${escapeHTML(q.text)}</strong><br><small>${q.options.length} choix · Bonne réponse : ${q.correctIndex+1} · ⏱️ ${Number(q.seconds||30)} secondes</small><br><button class="action red" onclick="novaDeleteCompetitionQuestion('${comp.id}','${q.id}')">Supprimer cette question</button></div>`).join("") : `<p class="empty-state">Aucune question pour le moment.</p>`;
+    const list=document.getElementById("competitionQuestionList");if(!list)return;
+    const questions=Array.isArray(comp.questions)?comp.questions:[];
+    list.innerHTML=questions.length?questions.map((q,i)=>`<details class="qmgr-question"><summary>Question ${i+1} — ${escapeHTML(q.text||"Sans énoncé")} <span class="qmgr-counter">(${(q.options||[]).length} choix)</span></summary><div style="padding-top:10px">${(q.options||[]).map((v,j)=>`<div class="qmgr-option" style="cursor:default"><b>${j+1}.</b><span>${escapeHTML(v)}</span>${j===Number(q.correctIndex)?'<span class="success-text" style="margin-left:auto">✓ Bonne réponse</span>':''}</div>`).join("")}<p class="small-info">⏱️ ${Number(q.seconds||30)} secondes</p><button class="action red" onclick="novaDeleteCompetitionQuestion('${comp.id}','${q.id}')">Supprimer cette question</button></div></details>`).join(""):'<p class="empty-state">Aucune question enregistrée. Commence par remplir le formulaire ci-dessus.</p>';
 }
 
 window.novaCloseQuestionManager = function() {
@@ -2698,28 +2888,30 @@ window.novaCloseQuestionManager = function() {
     renderNovaLibrary();
 };
 
-window.novaSaveCompetitionQuestion = function() {
+window.novaSaveCompetitionQuestion = async function() {
     const box=document.getElementById("competitionQuestionManager");
     const compId=box?.dataset.competitionId;
     const club=activeClub(), member=getNovaCurrentMember();
     const comp=(club?.competitions||[]).find(c=>c.id===compId); if(!club||!comp||!canManageComp(club,comp,member)){alert("Action réservée à l'organisateur de cette compétition.");return;}
-    const text=document.getElementById("newCompetitionQuestionText").value.trim();
-    const options=document.getElementById("newCompetitionQuestionOptions").value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
-    const correctIndex=Number(document.getElementById("newCompetitionCorrectIndex").value)-1;
-    const seconds=Number(document.getElementById("newCompetitionQuestionSeconds")?.value || 30);
+    const text=document.getElementById("newCompetitionQuestionText")?.value.trim()||"";
+    const options=(document.getElementById("newCompetitionQuestionOptions")?.value||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    const selected=document.querySelector('input[name="competitionCorrectChoice"]:checked');
+    const correctIndex=selected?Number(selected.value):-1;
+    const seconds=Number(document.getElementById("newCompetitionQuestionSeconds")?.value||30);
+    if(!text){alert("Écris d'abord l'énoncé de la question.");return;}
+    if(options.length<2||options.length>8){alert("Ajoute entre 2 et 8 réponses, une par ligne.");return;}
+    if(new Set(options.map(x=>x.toLocaleLowerCase())).size!==options.length){alert("Deux réponses sont identiques. Corrige-les avant d'enregistrer.");return;}
+    if(!Number.isInteger(correctIndex)||correctIndex<0||correctIndex>=options.length){alert("Coche le numéro de la bonne réponse.");return;}
     if(!Number.isInteger(seconds)||seconds<1||seconds>300){alert("Le temps doit être compris entre 1 et 300 secondes.");return;}
-    if(!text){alert("Écris d'abord la question.");return;}
-    if(options.length<2 || options.length>8){alert("Ajoute entre 2 et 8 réponses, une par ligne.");return;}
-    if(!Number.isInteger(correctIndex)||correctIndex<0||correctIndex>=options.length){alert("Indique le numéro d'une bonne réponse existante.");return;}
-    if(Object.keys(comp.attempts||{}).length || (comp.submissions||[]).length){alert("Des participants ont déjà commencé. Le questionnaire ne peut plus être modifié.");return;}
-    if(!Array.isArray(comp.questions)) comp.questions=[];
+    if(Object.keys(comp.attempts||{}).length||(comp.submissions||[]).length){alert("Des participants ont déjà commencé. Le questionnaire ne peut plus être modifié.");return;}
+    if(!Array.isArray(comp.questions))comp.questions=[];
     comp.questions.push({id:makeId(),text,options,correctIndex,seconds});
-    saveData();
-    document.getElementById("newCompetitionQuestionText").value="";
-    document.getElementById("newCompetitionQuestionOptions").value="";
-    document.getElementById("newCompetitionCorrectIndex").value="1";
-    document.getElementById("newCompetitionQuestionSeconds").value="30";
-    renderQuestionManagerList(comp); renderClubCompetitions();
+    const ok=await saveData();
+    if(!ok){comp.questions.pop();alert("La sauvegarde Firebase n'a pas été confirmée. La question n'a pas été conservée.");return;}
+    clearCompetitionQuestionDraft();
+    renderQuestionManagerList(comp);renderClubCompetitions();
+    const counter=document.querySelector('#competitionQuestionManager .section-heading .small-info');
+    if(counter)counter.textContent=`${escapeHTML(comp.name)} · ${comp.questions.length} question(s) enregistrée(s)`;
 };
 
 window.novaAddCompetitionQuestion = function(compId) {
@@ -3038,7 +3230,7 @@ function renderNovaLibrary() {
     renderClubCards(grid); renderClubCards(homeGrid);
     const club=activeClub();
     const inClub=data.nova.currentView==="clubSpace" && !!club;
-    document.getElementById("achatClubCard")?.classList.toggle("hidden",inClub);
+    document.getElementById("achatClubCard")?.classList.remove("hidden");
     homeCard?.classList.toggle("hidden",inClub);
     space.classList.toggle("hidden",!inClub);
     if(!inClub) {
@@ -3056,7 +3248,10 @@ function renderNovaLibrary() {
     if(createInfo) createInfo.textContent=collective?"Club collectif : tout membre connecté peut créer une compétition. Il reçoit les participations achetées et finance le lot qui sera versé au gagnant.":"Seul le maître officiel de ce club peut créer une compétition. Elle sera visible uniquement dans ce club.";
     const isMaster=!!member && String(member.id)===String(club.masterMemberId);
     const createBox=document.getElementById("competitionCreateBox");
-    if(createBox) createBox.classList.toggle("hidden",!canCreateComp(club,member));
+    const createSection=document.getElementById("competitionCreateSection");
+    const canCreate=canCreateComp(club,member);
+    if(createBox) createBox.classList.toggle("hidden",!canCreate);
+    if(createSection) createSection.classList.toggle("hidden",!canCreate);
     const deleteBtn=document.getElementById("novaDeleteClubBtn");
     if(deleteBtn) deleteBtn.classList.toggle("hidden",!isMaster);
     const masterSelect=document.getElementById("novaClubMasterSelect");
@@ -3088,7 +3283,7 @@ function renderAttendanceTable() {
     }
 
     tbody.innerHTML = "";
-    data.members.forEach(member => {
+    (Array.isArray(data.members)?data.members:[]).forEach(member => {
         const tr = document.createElement("tr");
         const attendance = getMemberAttendance(member.id);
         let html = `<td><strong>${escapeHTML(member.name)}</strong></td>`;
@@ -3181,7 +3376,7 @@ window.toggleAttendance = function(memberId, dayIndex, checkboxElem) {
     renderProfile();
 };
 
-window.addDayColumn = function() {
+window.addDayColumn = async function() {
     if (!verifyAdminAuth()) return;
     ensureMonthsStructure();
     const monthData = getCurrentMonthData();
@@ -3190,10 +3385,11 @@ window.addDayColumn = function() {
         if (!monthData.attendance[member.id]) monthData.attendance[member.id] = [];
         monthData.attendance[member.id].push(false);
     });
-    saveData();
+    await saveData();
+    renderAttendanceTable(); renderMemberContributions(); renderCashHistory();
 };
 
-window.removeDayColumn = function() {
+window.removeDayColumn = async function() {
     if (!verifyAdminAuth()) return;
     ensureMonthsStructure();
     const monthData = getCurrentMonthData();
@@ -3216,33 +3412,36 @@ window.removeDayColumn = function() {
 
     data.cash = Math.max(0, Number(data.cash || 0) - removedTotal);
     monthData.daysCount -= 1;
-    saveData();
+    await saveData();
+    renderAttendanceTable(); renderMemberContributions(); renderCashHistory();
 };
 
-window.changeDailyFee = function() {
+window.changeDailyFee = async function() {
     if (!verifyAdminAuth()) return;
     const input = document.getElementById("newDailyFee");
-    const value = Number(input.value);
+    const value = Number(input?.value);
     if (!Number.isFinite(value) || value < 0) return;
     getCurrentMonthData().dailyFee = value;
-    saveData();
-    input.value = "";
+    await saveData();
+    if(input) input.value = "";
+    renderCashSettings(); renderAttendanceTable(); renderMemberContributions();
 };
 
 window.renderMembers = function() {
-    if (!data) return;
     const container = document.getElementById("membersContainer");
+    if (!data || !container) return;
     const searchInput = document.getElementById("searchMember");
-    const search = searchInput ? searchInput.value.toLowerCase() : "";
-    const members = data.members.filter(m => m.name.toLowerCase().includes(search));
+    const search = searchInput ? String(searchInput.value||"").trim().toLocaleLowerCase("fr") : "";
+    const members = (Array.isArray(data.members)?data.members:[]).filter(m => String(m?.name||"").toLocaleLowerCase("fr").includes(search));
     container.innerHTML = "";
+    if(!members.length){container.innerHTML="<p class='small-info'>Aucun membre à afficher.</p>";return;}
 
     members.forEach(member => {
         const div = document.createElement("div");
         div.className = "member";
         div.innerHTML = `
-            <h3>${escapeHTML(member.name)}</h3>
-            <span class="rank">Rang ${escapeHTML(member.rank)}</span>
+            <h3>${escapeHTML(member.name||"Membre")}</h3>
+            <span class="rank">Rang ${escapeHTML(member.rank||"—")}</span>
             ${member.present ? `<span class="rank">🟢 Présent</span>` : ""}
             <div class="points">${formatNumber(member.points)} pts</div>
             <div class="token-pill">💎 ${formatNumber(member.tokens || 0)} tokens</div>
@@ -3345,14 +3544,18 @@ function changeMemberPoints(id, amount, reason) {
 function renderRanking() {
     const body = document.getElementById("rankingBody");
     if (!data || !body) return;
-    const sorted = [...data.members].sort((a,b) => Number(b.points) - Number(a.points));
+    const sorted = [...(Array.isArray(data.members) ? data.members : [])].sort((a,b) => {
+        const ap = Number.isFinite(Number(a?.points)) ? Number(a.points) : 0;
+        const bp = Number.isFinite(Number(b?.points)) ? Number(b.points) : 0;
+        return bp - ap;
+    });
     body.innerHTML = sorted.map((member, index) => `
         <tr>
             <td>${index + 1}</td>
-            <td>${escapeHTML(member.name)}</td>
-            <td>${escapeHTML(member.rank)}</td>
-            <td><strong>${formatNumber(member.points)}</strong></td>
-            <td><span class="token-pill">${formatNumber(member.tokens || 0)}</span></td>
+            <td>${escapeHTML(member?.name || "Membre")}</td>
+            <td>${escapeHTML(member?.rank || "—")}</td>
+            <td><strong>${formatNumber(Number.isFinite(Number(member?.points)) ? Number(member.points) : 0)}</strong></td>
+            <td><span class="token-pill">${formatNumber(Number.isFinite(Number(member?.tokens)) ? Number(member.tokens) : 0)} FC</span></td>
         </tr>
     `).join("");
 }
@@ -3363,27 +3566,29 @@ function renderTokenHistory() {
     if (!host || !data) return;
     const entries = Array.isArray(data.tokenHistory) ? data.tokenHistory : [];
     if (!entries.length) { host.innerHTML = "<p class='small-info'>Aucun mouvement de tokens enregistré.</p>"; return; }
-    host.innerHTML = entries.slice(0,60).map(item => `<div class="history-item"><strong>${Number(item.amount)>=0?"＋":"−"}${formatNumber(Math.abs(Number(item.amount||0)))} tokens</strong> — ${escapeHTML(item.memberName||"")}<br><small>${escapeHTML(item.reason||"")} · ${new Date(item.date).toLocaleString("fr-FR")}</small></div>`).join("");
+    host.innerHTML = entries.slice(0,60).map(item => `<div class="history-item"><strong>${Number(item.amount)>=0?"＋":"−"}${formatNumber(Math.abs(Number(item.amount||0)))} FC · tokens</strong> — ${escapeHTML(item.memberName||"")}<br><small>${escapeHTML(item.reason||"")} · ${new Date(item.date).toLocaleString("fr-FR")}</small></div>`).join("");
 }
 
 let activeHistoryCategory = "general";
 window.selectHistory = function(category, button) {
     activeHistoryCategory = category;
-    document.querySelectorAll(".history-category").forEach(el=>el.classList.toggle("active",el===button));
+    document.querySelectorAll(".history-category[data-history]").forEach(el=>el.classList.toggle("active",el===button));
     renderHistory();
 };
 function renderHistory() {
     const container = document.getElementById("historyContainer");
     if (!data || !container) return;
     const title=document.getElementById("historyCategoryTitle");
-    const labels={general:"Historique général",cash:"Historique de la caisse",tokens:"Historique des tokens",purchases:"Historique des achats"};
+    const labels={general:"Historique général",cash:"Historique de la caisse",contributions:"Historique des cotisations",tokens:"Historique des tokens",purchases:"Historique des achats"};
     if(title)title.textContent=labels[activeHistoryCategory]||labels.general;
     let rows=[];
-    if(activeHistoryCategory==="cash") rows=(data.cashHistory||[]).map(x=>({date:x.date,title:(Number(x.amount)>=0?"Entrée de caisse":"Sortie de caisse"),detail:`${formatNumber(x.amount||0)} FC · ${x.reason||""}`}));
+    if(activeHistoryCategory==="cash") rows=(data.cashHistory||[]).filter(x=>!/(cotisation|contribution|pointage)/i.test(String(x.reason||""))).map(x=>({date:x.date,title:(Number(x.amount)>=0?"Entrée de caisse":"Sortie de caisse"),detail:`${formatNumber(x.amount||0)} FC · ${x.reason||""}`}));
+    else if(activeHistoryCategory==="contributions") rows=(data.cashHistory||[]).filter(x=>/(cotisation|contribution|pointage)/i.test(String(x.reason||""))).map(x=>({date:x.date,title:"Cotisation / contribution",detail:`${formatNumber(x.amount||0)} FC · ${x.reason||""}`}));
     else if(activeHistoryCategory==="tokens") rows=(data.tokenHistory||[]).map(x=>({date:x.date,title:`${Number(x.amount)>=0?"＋":"−"}${formatNumber(Math.abs(Number(x.amount||0)))} tokens · ${x.memberName||"Membre"}`,detail:x.reason||"Mouvement de tokens"}));
     else if(activeHistoryCategory==="purchases") rows=(data.purchaseHistory||[]).map(x=>({date:x.date,title:x.itemName||"Achat",detail:`${formatNumber(x.price||0)} ${x.currency||"tokens"} · ${x.memberName||"Membre"}`}));
     else rows=(data.history||[]).map(x=>({date:x.date,title:x.text||x.reason||"Opération",detail:[x.member,x.type].filter(Boolean).join(" · ")}));
     rows.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));
+    const clearBtn=document.getElementById("clearCurrentHistoryBtn");if(clearBtn)clearBtn.classList.toggle("hidden",!adminConnected);
     if(!rows.length){container.innerHTML="<p class='small-info'>Aucune opération enregistrée dans cette catégorie.</p>";return;}
     container.innerHTML=rows.slice(0,150).map(x=>`<div class="history-item"><strong>${escapeHTML(x.title||"Opération")}</strong>${x.detail?`<br><small>${escapeHTML(x.detail)}</small>`:""}<br><small>${x.date?new Date(x.date).toLocaleString("fr-FR"):"Date non renseignée"}</small></div>`).join("");
 }
@@ -3408,12 +3613,14 @@ window.changeDailyTokens = function() {
     getCurrentMonthData().dailyTokens = value;
     saveData();
     input.value = "";
+    renderCashSettings();
     alert(`✅ Chaque cotisation cochée en ${data.currentMonth} donnera ${formatNumber(value)} tokens.`);
 };
 window.resetDailyTokens = function() {
     if (!verifyAdminAuth()) return;
     delete getCurrentMonthData().dailyTokens;
     saveData();
+    renderCashSettings();
     alert("✅ Les tokens reçus par cotisation sont de nouveau égaux au montant en FC.");
 };
 window.saveRates = function() {
@@ -3552,10 +3759,13 @@ function renderProfile() {
         ["profileName","profilePhone"].forEach(id => { const el=document.getElementById(id); if(el) el.value = ""; });
         const phoneLabel=document.getElementById("profilePhoneLabel"); if(phoneLabel) phoneLabel.textContent="Compte membre";
         document.getElementById("profilePoints").textContent = "0";
-        document.getElementById("profileTokens").textContent = "0";
+        document.getElementById("profileTokens").textContent = "0 FC";
         document.getElementById("profileRank").textContent = "—";
         const avatar=document.getElementById("profileAvatarInitial"); if(avatar) avatar.textContent="É";
         ["profileCompetitions","profileClubs","profileEvents"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="0";});
+        const purchases=document.getElementById("myPurchaseHistory");if(purchases)purchases.innerHTML="<p class='small-info'>Connecte-toi pour consulter tes achats.</p>";
+        const shop=document.getElementById("shopContainer");if(shop)shop.innerHTML="<p class='small-info'>Connecte-toi pour effectuer un achat.</p>";
+        renderAchat(null);
         return;
     }
     identity.textContent = "Connecté en tant que " + member.name;
@@ -3565,11 +3775,11 @@ function renderProfile() {
     document.getElementById("profilePhone").value = member.phone || "";
     const phoneLabel=document.getElementById("profilePhoneLabel"); if(phoneLabel) phoneLabel.textContent="Membre ÉLITE";
     document.getElementById("profilePoints").textContent = formatNumber(member.points);
-    document.getElementById("profileTokens").textContent = formatNumber(member.tokens || 0);
+    document.getElementById("profileTokens").textContent = formatNumber(member.tokens || 0) + " FC";
     document.getElementById("profileRank").textContent = member.rank || "—";
     const clubs = Array.isArray(data?.nova?.clubs) ? data.nova.clubs : [];
-    const memberCompetitions = clubs.flatMap(c => (c.competitions || []).map(comp => ({club:c, comp}))).filter(x => x.comp.createdBy === member.id || (x.comp.participants || []).includes(member.id));
-    const memberClubs = clubs.filter(c => String(c.masterMemberId) === String(member.id) || (c.competitions || []).some(comp => (comp.participants || []).includes(member.id)));
+    const memberCompetitions = clubs.flatMap(c => (c.competitions || []).map(comp => ({club:c, comp}))).filter(x => String(x.comp.createdBy) === String(member.id));
+    const memberClubs = clubs.filter(c => String(c.masterMemberId) === String(member.id));
     const eventCount = clubs.reduce((n,c) => n + (c.competitions || []).reduce((m,comp) => m + (comp.submissions || []).filter(sub => String(sub.memberId) === String(member.id)).length,0),0);
     const avatarText = String(member.name || "É").trim().split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase() || "É";
     const avatar=document.getElementById("profileAvatarInitial"); if(avatar) avatar.textContent=avatarText;
@@ -3578,6 +3788,24 @@ function renderProfile() {
     set("profileCompetitions",memberCompetitions.length); set("profileClubs",memberClubs.length); set("profileEvents",eventCount);
     renderMyPurchases(member);
     renderAchat(member);
+    renderShop();
+}
+
+function renderMyClubs() {
+    const host=document.getElementById("myClubsContainer"); if(!host||!data) return;
+    const member=getCurrentMember();
+    if(!member){host.innerHTML="<p class='small-info'>Connecte-toi pour voir tes clubs.</p>";return;}
+    const clubs=(data.nova?.clubs||[]).filter(c=>String(c.masterMemberId)===String(member.id));
+    host.innerHTML=clubs.length?"":"<p class='small-info'>Tu n'es maître officiel d'aucun club pour le moment.</p>";
+    clubs.forEach(club=>{const b=document.createElement("button");b.type="button";b.className="club-home-card";b.innerHTML=`<strong>${escapeHTML(club.name||"Club")}</strong><small>Maître officiel : ${escapeHTML(member.name)}</small><span class="club-open">Ouvrir le club ›</span>`;b.onclick=()=>{showTab("competition");novaOpenClubSpace(club.id);};host.appendChild(b);});
+}
+function renderMyCompetitions() {
+    const host=document.getElementById("myCompetitionsContainer"); if(!host||!data) return;
+    const member=getCurrentMember();
+    if(!member){host.innerHTML="<p class='small-info'>Connecte-toi pour voir tes compétitions.</p>";return;}
+    const rows=(data.nova?.clubs||[]).flatMap(club=>(club.competitions||[]).filter(comp=>String(comp.createdBy)===String(member.id)).map(comp=>({club,comp})));
+    if(!rows.length){host.innerHTML="<p class='small-info'>Tu n'as encore créé aucune compétition.</p>";return;}
+    host.innerHTML=rows.map(({club,comp})=>`<div class="history-item"><strong>${escapeHTML(comp.name||"Compétition")}</strong><br><small>${escapeHTML(club.name||"Club")}</small><br><button class="action" onclick="showTab('competition');novaOpenClubSpace('${String(club.id).replace(/'/g,"\\'")}');setTimeout(()=>novaOpenCompetition('${String(comp.id).replace(/'/g,"\\'")}'),0)">Ouvrir</button></div>`).join("");
 }
 
 function renderMyPurchases(member) {
@@ -3974,27 +4202,63 @@ window.adminChangePlayerPassword = function() {
     alert("✅ Mot de passe modifié.");
 };
 
+window.saveAdminAccessCodes = async function() {
+    if (!verifyAdminAuth() || !data) return;
+    const adminCode = String(document.getElementById("newAdminAccessCode")?.value || "").trim();
+    const registrationCode = String(document.getElementById("newRegistrationCode")?.value || "").trim();
+    const message = document.getElementById("adminCodesMessage");
+    const say = value => { if (message) message.textContent = value; };
+    if (adminCode.length < 6 || adminCode.length > 32) { say("Le code administrateur doit contenir entre 6 et 32 caractères."); return; }
+    if (registrationCode.length < 4 || registrationCode.length > 20) { say("Le code d'inscription doit contenir entre 4 et 20 caractères."); return; }
+    if (adminCode === registrationCode) { say("Choisis deux codes différents."); return; }
+    const previous = { admin: ADMIN_PASSWORD, registration: REGISTRATION_PASSWORD, saved: data.securityCodes ? {...data.securityCodes} : {} };
+    data.securityCodes = { admin: adminCode, registration: registrationCode };
+    ADMIN_PASSWORD = adminCode;
+    REGISTRATION_PASSWORD = registrationCode;
+    if (await saveData()) {
+        say("✅ Les deux codes ont été enregistrés.");
+        const a=document.getElementById("newAdminAccessCode"); if(a) a.value=adminCode;
+        const r=document.getElementById("newRegistrationCode"); if(r) r.value=registrationCode;
+    } else {
+        ADMIN_PASSWORD = previous.admin;
+        REGISTRATION_PASSWORD = previous.registration;
+        data.securityCodes = previous.saved;
+        say("❌ Sauvegarde Firebase non confirmée. Les anciens codes sont conservés.");
+    }
+};
+
 function renderMemberContributions() {
     const tbody = document.getElementById("memberContributionsBody");
-    if (!data || !tbody) return;
-    const monthData = getCurrentMonthData();
-    tbody.innerHTML = data.members.map(member => {
-        const attendance = getMemberAttendance(member.id);
-        const fee = Math.max(0, Number(monthData.dailyFee || 0));
-        let total = 0;
-        attendance.forEach(checked => { if (checked) total += fee; });
-        return `<tr><td><strong>${escapeHTML(member.name)}</strong></td><td><span style="color:#55bdff; font-weight:bold;">${formatNumber(total)} FC</span></td></tr>`;
-    }).join("");
+    if (!tbody) return;
+    if (!data) { tbody.innerHTML = `<tr><td colspan="2" class="small-info">Chargement des données…</td></tr>`; return; }
+    try {
+        ensureMonthsStructure();
+        const monthData = getCurrentMonthData();
+        if (!monthData) { tbody.innerHTML = `<tr><td colspan="2" class="small-info">Les données du mois ne sont pas disponibles.</td></tr>`; return; }
+        const members = Array.isArray(data.members) ? data.members : [];
+        if (!members.length) { tbody.innerHTML = `<tr><td colspan="2" class="empty-state">Aucun membre enregistré.</td></tr>`; return; }
+        const feeValue = Number(monthData.dailyFee);
+        const fee = Number.isFinite(feeValue) ? Math.max(0, feeValue) : 0;
+        tbody.innerHTML = members.map(member => {
+            const attendance = getMemberAttendance(member.id);
+            const total = attendance.reduce((sum, checked) => sum + (checked === true || checked === 1 ? fee : 0), 0);
+            return `<tr><td><strong>${escapeHTML(member.name || "Membre")}</strong></td><td><span style="color:#55bdff;font-weight:bold;">${formatNumber(total)} FC</span></td></tr>`;
+        }).join("");
+    } catch (error) {
+        console.error("Affichage des cotisations membres :", error);
+        tbody.innerHTML = `<tr><td colspan="2" class="notice error">Impossible d’afficher les cotisations pour le moment. Réessaie après le chargement des données.</td></tr>`;
+    }
 }
 
 function renderCashHistory() {
     const container = document.getElementById("cashPublicHistory");
     if (!data || !container) return;
-    if (!data.cashHistory.length) {
+    const cashHistory = Array.isArray(data.cashHistory) ? data.cashHistory : [];
+    if (!cashHistory.length) {
         container.innerHTML = "<p>Aucun mouvement.</p>";
         return;
     }
-    container.innerHTML = data.cashHistory.slice(0,50).map(item => `
+    container.innerHTML = cashHistory.slice(0,50).map(item => `
         <div class="history-item">
             <span style="color:${Number(item.amount)>=0?'#43d58d':'#ff7373'}">${Number(item.amount)>=0?'+':''}${formatNumber(item.amount)} FC</span> — ${escapeHTML(item.reason || "")}<br>
             <small>${new Date(item.date).toLocaleString("fr-FR")}</small>
@@ -4005,40 +4269,34 @@ function renderCashHistory() {
 function renderShop() {
     const container = document.getElementById("shopContainer");
     if (!container || !data) return;
-    container.innerHTML = "";
-    data.shopItems.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "shop-item";
-        div.innerHTML = `
-            <h3>${escapeHTML(item.name)}</h3>
-            <div class="shop-price">💎 ${formatNumber(item.price)} tokens</div>
-            <button class="action orange" onclick="buyShopItem('${item.id}')">🛒 Acheter</button>
-        `;
-        container.appendChild(div);
-    });
+    const member=getCurrentMember();
+    if(!member){container.innerHTML="<p class='small-info'>Connecte-toi pour acheter un article.</p>";return;}
+    const items=Array.isArray(data.shopItems)?data.shopItems:[];
+    if(!items.length){container.innerHTML="<p class='small-info'>Aucun article disponible pour le moment.</p>";return;}
+    container.innerHTML=items.map(item=>`<div class="shop-item"><h3>${escapeHTML(item.name||"Article")}</h3><div class="shop-price">💰 ${formatNumber(item.price||0)} FC · tokens</div><button class="action orange" onclick="buyShopItem('${String(item.id).replace(/'/g,"\\'")}')">🛒 Acheter</button></div>`).join("");
 }
-
+let shopPurchaseBusy=false;
 window.buyShopItem = async function(itemId) {
-    const memberId = document.getElementById("shopMemberSelect").value;
-    const password = document.getElementById("shopPassword").value;
-    const member = data.members.find(m => m.id === memberId);
-    const item = data.shopItems.find(i => i.id === itemId);
-
-    if (!item) { alert("❌ Article introuvable."); return; }
-    if (!member || String(member.password) !== String(password)) {
-        alert("❌ Membre ou mot de passe incorrect.");
-        return;
-    }
-    if (Number(member.tokens || 0) < item.price) {
-        alert("❌ Pas assez de tokens.");
-        return;
-    }
-
-    member.tokens = Number(member.tokens || 0) - item.price;
-    data.tokenHistory.unshift({id:makeId(),date:new Date().toISOString(),memberId:member.id,memberName:member.name,amount:-item.price,reason:"Achat boutique : "+item.name});
-    data.purchaseHistory.unshift({ id: makeId(), date: new Date().toISOString(), memberId: member.id, memberName: member.name, itemId: item.id, itemName: item.name, price: item.price, currency:"tokens" });
-    saveData();
-    alert(`✅ Achat réussi : ${item.name}`);
+    if(shopPurchaseBusy)return;
+    const member=getCurrentMember();
+    const item=(data.shopItems||[]).find(i=>String(i.id)===String(itemId));
+    if(!member){alert("Connecte-toi avec ton profil pour acheter.");return;}
+    if(!item){alert("❌ Article introuvable.");return;}
+    const price=Number(item.price||0), balance=Number(member.tokens||0);
+    if(!Number.isFinite(price)||price<0||balance<price){alert("❌ Pas assez de tokens.");return;}
+    if(!confirm(`Acheter « ${item.name} » pour ${formatNumber(price)} FC (tokens) ?`))return;
+    shopPurchaseBusy=true;
+    const oldTokens=member.tokens, oldTokensHistory=[...(data.tokenHistory||[])], oldPurchases=[...(data.purchaseHistory||[])];
+    try{
+      const now=new Date().toISOString();
+      member.tokens=balance-price;
+      data.tokenHistory.unshift({id:makeId(),date:now,memberId:member.id,memberName:member.name,amount:-price,reason:"Achat boutique : "+item.name});
+      data.purchaseHistory.unshift({id:makeId(),date:now,memberId:member.id,memberName:member.name,itemId:item.id,itemName:item.name,price,currency:"tokens"});
+      if(!await saveData())throw new Error("Sauvegarde non confirmée");
+      renderProfile();renderTokenHistory();renderHistory();
+      alert(`✅ Achat réussi : ${item.name}`);
+    }catch(e){member.tokens=oldTokens;data.tokenHistory=oldTokensHistory;data.purchaseHistory=oldPurchases;renderProfile();alert("❌ Achat non confirmé. Aucun achat ne doit être considéré comme validé.");}
+    finally{shopPurchaseBusy=false;}
 };
 
 window.addShopItem = async function() {
@@ -4046,10 +4304,11 @@ window.addShopItem = async function() {
     const name = document.getElementById("newShopName").value.trim();
     const price = Number(document.getElementById("newShopPrice").value);
     if (!name || !Number.isInteger(price) || price < 0) { alert("❌ Nom et prix (entier positif) obligatoires."); return; }
+    const beforeItems=[...(data.shopItems||[])],beforeHistory=[...(data.history||[])];
     data.shopItems.push({ id: makeId(), name, price, duration: "", description: "" });
     data.history.unshift({id:makeId(),date:new Date().toISOString(),type:"shop",member:"Administration",amount:0,reason:"Ajout d'un article",text:`Article ajouté au catalogue : ${name} — ${formatNumber(price)} tokens`});
-    saveData(); renderAdminShop(); renderShop();
-    alert("✅ Achat ajouté.");
+    if(!await saveData()){data.shopItems=beforeItems;data.history=beforeHistory;alert("❌ Ajout non confirmé dans le Cloud.");return;}
+    renderAdminShop(); renderShop(); alert("✅ Article ajouté.");
 };
 
 function renderAdminShop() {
@@ -4069,16 +4328,20 @@ window.updateShopItem = async function(id) {
     const item=data.shopItems.find(x=>String(x.id)===String(id));if(!item)return;
     const name=document.getElementById("shopName_"+id)?.value.trim();const price=Number(document.getElementById("shopPrice_"+id)?.value);
     if(!name||!Number.isInteger(price)||price<0){alert("Nom et prix entier positif obligatoires.");return;}
+    const old={name:item.name,price:item.price},beforeHistory=[...(data.history||[])];
     item.name=name;item.price=price;
     data.history.unshift({id:makeId(),date:new Date().toISOString(),type:"shop",member:"Administration",amount:0,reason:"Modification du catalogue",text:`Article modifié : ${name} — ${formatNumber(price)} tokens`});
-    await saveData();renderShop();renderAdminShop();
+    if(!await saveData()){item.name=old.name;item.price=old.price;data.history=beforeHistory;alert("Modification non confirmée dans le Cloud.");return;}
+    renderShop();renderAdminShop();
 };
 window.deleteShopItem = async function(id) {
     if (!verifyAdminAuth()) return;
+    const beforeItems=[...(data.shopItems||[])],beforeHistory=[...(data.history||[])];
     const removed=data.shopItems.find(i=>i.id===id);
     data.shopItems = data.shopItems.filter(i => i.id !== id);
     data.history.unshift({id:makeId(),date:new Date().toISOString(),type:"shop",member:"Administration",amount:0,reason:"Suppression d'un article",text:"Article supprimé du catalogue : "+(removed?.name||id)});
-    saveData(); renderAdminShop();
+    if(!await saveData()){data.shopItems=beforeItems;data.history=beforeHistory;alert("Suppression non confirmée dans le Cloud.");return;}
+    renderAdminShop();renderShop();
 };
 
 window.renderPurchaseHistory = function() {
@@ -4095,9 +4358,24 @@ window.renderPurchaseHistory = function() {
     container.innerHTML = userPurchases.map(p => `<div class="purchase-item">🛒 <strong>${escapeHTML(p.itemName)}</strong> (-${formatNumber(p.price)} tokens)</div>`).join("");
 };
 
-window.clearGeneralHistory = () => { if(verifyAdminAuth() && confirm("Vider tout l'historique général ?")) { data.history=[]; saveData(); } };
-window.clearPurchaseHistory = () => { if(verifyAdminAuth() && confirm("Vider l'historique des achats ?")) { data.purchaseHistory=[]; saveData(); } };
-window.clearCashHistory = () => { if(verifyAdminAuth() && confirm("Vider l'historique de la caisse ?")) { data.cashHistory=[]; saveData(); } };
+window.clearCurrentHistory = async function(){
+    if(!verifyAdminAuth()||!data)return;
+    const names={general:"général",cash:"caisse",contributions:"cotisations",tokens:"tokens",purchases:"achats"};
+    const name=names[activeHistoryCategory]||"général";
+    if(!confirm(`Effacer uniquement l'historique ${name} ? Cette action ne supprime pas les soldes, les achats déjà effectués, les cotisations ni les clubs.`))return;
+    const keys=activeHistoryCategory==="general"?["history"]:activeHistoryCategory==="cash"||activeHistoryCategory==="contributions"?["cashHistory"]:activeHistoryCategory==="tokens"?["tokenHistory"]:["purchaseHistory"];
+    const backup={};keys.forEach(k=>backup[k]=[...(data[k]||[])]);
+    if(activeHistoryCategory==="general")data.history=[];
+    else if(activeHistoryCategory==="cash")data.cashHistory=(data.cashHistory||[]).filter(x=>/(cotisation|contribution|pointage)/i.test(String(x.reason||"")));
+    else if(activeHistoryCategory==="contributions")data.cashHistory=(data.cashHistory||[]).filter(x=>!/(cotisation|contribution|pointage)/i.test(String(x.reason||"")));
+    else if(activeHistoryCategory==="tokens")data.tokenHistory=[];
+    else if(activeHistoryCategory==="purchases")data.purchaseHistory=[];
+    if(await saveData())renderHistory();else{keys.forEach(k=>data[k]=backup[k]);renderHistory();alert("La suppression n'a pas été confirmée dans le Cloud. L'historique a été restauré à l'écran.");}
+};
+window.clearGeneralHistory = async () => { activeHistoryCategory="general"; await clearCurrentHistory(); };
+window.clearPurchaseHistory = async () => { activeHistoryCategory="purchases"; await clearCurrentHistory(); };
+window.clearCashHistory = async () => { activeHistoryCategory="cash"; await clearCurrentHistory(); };
+window.clearTokenHistory = async () => { activeHistoryCategory="tokens"; await clearCurrentHistory(); };
 window.resetCloudData = async () => {
     if (!verifyAdminAuth()) return;
     if (!data) { alert("Les données ne sont pas encore chargées. Réessaie lorsque Firebase est connecté."); return; }
